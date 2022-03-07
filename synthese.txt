@@ -1,0 +1,31 @@
+FT_IRC
+Internet Relay Chat
+
+The project asks us to make a IRC server which is able to communicate with a client
+
+The project is in C++ 98 and the use of some external C functions (listed below) is authorized
+
+External authorized functions :
+
+SOCKET : <sys/socket.h>
+
+	int		socket( int domain, int type, int protocol );
+
+		domain : specifies the domain where the communication will take place (defines).
+		type : specifies the semantics of communication (defines).
+		protocol : there is usually one default protocol in each type, but the protocol number
+			is particular to the communication domain.
+
+	Socket() creates an endpoint for communication and returns a descriptor (int).
+	The function returns -1 if there is an error
+
+GETSOCKOPT : <sys/soxket.h>
+
+	int		getsockopt( int socket, int level, int option_name, void *restrict option_value,
+						socklen_t *restrict option_len );
+
+		socket : 
+
+	Getsockopt() manipulates the options associated with a socket, options may exist at multiple
+	protocol levels; they're always present at the uppermost "socket" level.
+	The function returns 0 if successful completion, -1 if there is an error.
