@@ -6,7 +6,7 @@
 /*   By: maperrea <maperrea@student.s19.be>         +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/03/10 16:27:00 by maperrea          #+#    #+#             */
-/*   Updated: 2022/03/10 17:03:10 by maperrea         ###   ########.fr       */
+/*   Updated: 2022/03/10 19:10:37 by maperrea         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -18,23 +18,23 @@ Database::Database() {
 Databade::~Database() {
 }
 
-Client * Database::get_client(/* Client identifier */) {
-	client_map::iterator client = clients.find(/* Client identifier */);
+Client * Database::get_client(uint32_t ip) {
+	client_map::iterator client = clients.find(ip);
 	if (client == clients.end())
 		return NULL;
 	return &(*client);
 }
 
 Channel * Database::get_channel(std::string const & name) {
-	channel_map::iterator channel = channels.find(/* channel identifier */);
+	channel_map::iterator channel = channels.find(name);
 	if (channel == channels.end())
 		return NULL;
 	return &(*channel);
 }
 
-Client & Database::add_client(/* Client identifier */) {
+Client & Database::add_client(uint32_t ip) {
 	std::pair<clients_map::iterator, bool> ret;
-	ret = clients.insert(std::make_pair(/* Client identifier */, Client(/* Client identifier */)));
+	ret = clients.insert(std::make_pair(ip, Client(ip)));
 	if (!ret.second)
 		throw Database::already_exists();
 	return *ret.first;

@@ -6,7 +6,7 @@
 /*   By: maperrea <maperrea@student.s19.be>         +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/03/10 16:09:27 by maperrea          #+#    #+#             */
-/*   Updated: 2022/03/10 17:03:09 by maperrea         ###   ########.fr       */
+/*   Updated: 2022/03/10 19:10:37 by maperrea         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -28,8 +28,8 @@ class Database {
 		Database(Database const & cpy);
 		Database & operator=(Database const & rhs);
 
-		typedef std::map</* Client identifier */, Client> client_map;
-		typedef std::map<std::stringk, Channel> channel_map;
+		typedef std::map<uint32_t, Client> client_map;
+		typedef std::map<std::string, Channel> channel_map;
 
 		client_map clients;
 		channel_map channels;
@@ -46,11 +46,11 @@ class Database {
 		~Database();
 
 		// returns the client/channel or NULL if it doesn't exist
-		Client * get_client(/* Client identifier */);
+		Client * get_client(uint32_t ip);
 		Channel * get_channel(std::string const & name);
 
 		// creates a new client/channel & returns it
-		Client & add_client(/* Client identifier */); //throws exception if element exists
+		Client & add_client(uint32_t ip); //throws exception if element exists
 		Channel & add_channel(std::string const & name); //throws exception if element exists
 
 		// only way to get the instance
