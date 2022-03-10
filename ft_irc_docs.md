@@ -8,3 +8,4 @@
 * There must be operators and regular users
 	* OPER
 * The must be the commands specific to the operators
+	* SQUIT?, PRIVMSG masks, KILL, ERROR?, REHASH, RESTART
