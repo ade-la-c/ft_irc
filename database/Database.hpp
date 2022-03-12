@@ -6,7 +6,7 @@
 /*   By: maperrea <maperrea@student.s19.be>         +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/03/10 16:09:27 by maperrea          #+#    #+#             */
-/*   Updated: 2022/03/10 19:10:37 by maperrea         ###   ########.fr       */
+/*   Updated: 2022/03/11 14:57:19 by maperrea         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -28,8 +28,8 @@ class Database {
 		Database(Database const & cpy);
 		Database & operator=(Database const & rhs);
 
-		typedef std::map<uint32_t, Client> client_map;
-		typedef std::map<std::string, Channel> channel_map;
+		typedef std::map<uint32_t, Client> client_map;	// {ip, client} map
+		typedef std::map<std::string, Channel> channel_map; // {name, channel} map
 
 		client_map clients;
 		channel_map channels;
@@ -45,13 +45,17 @@ class Database {
 
 		~Database();
 
+		// getter/setter make no sense
+		std::string port;
+		std::string password;
+
 		// returns the client/channel or NULL if it doesn't exist
 		Client * get_client(uint32_t ip);
 		Channel * get_channel(std::string const & name);
 
-		// creates a new client/channel & returns it
-		Client & add_client(uint32_t ip); //throws exception if element exists
-		Channel & add_channel(std::string const & name); //throws exception if element exists
+		// creates a new client/channel & returns it. Throws an exception if it already exists.
+		Client & add_client(uint32_t ip);
+		Channel & add_channel(std::string const & name);
 
 		// only way to get the instance
 		static Database & get_instance();

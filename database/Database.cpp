@@ -6,7 +6,7 @@
 /*   By: maperrea <maperrea@student.s19.be>         +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/03/10 16:27:00 by maperrea          #+#    #+#             */
-/*   Updated: 2022/03/10 19:10:37 by maperrea         ###   ########.fr       */
+/*   Updated: 2022/03/12 16:06:58 by maperrea         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -50,5 +50,5 @@ Channel & Database::add_channel(std::string const & name) {
 
 Database * Database::get_instance() {
 	static Database db;
-	return db;
+	return &db;
 }
