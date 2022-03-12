@@ -82,12 +82,14 @@ Realname must be the last parameter and must be prefixed by a colon (:) because 
 
 * 431 - ERR\_NONICKNAMEGIVEN
 * 461 - ERR\_NEEDMOREPARAMS
-> "\<command\> :Not enough parameters"
-
+```
+"<command> :Not enough parameters"
 returned when there aren't enough parameters
+```
 * 462 - ERR\_ALREADYREGISTERED
-> ":You may not reregister"
-
+```
+":You may not reregister"
 returned when there is an attempt to change part of the registered details (e.g. second PASS or USER command)
+```
 
 #### Command responses
