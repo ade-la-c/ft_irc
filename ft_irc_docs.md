@@ -1,7 +1,7 @@
 # ft\_irc documentation
 
 ### A (very) small irc server made in c++98 with sockets during the 42 cursus
-### follows the most recent RFC specification
+### Follows the most recent RFC specification
 
 ## Requirements
 
@@ -57,9 +57,8 @@ parameters : <nickname>
 ```
 
 Give a nickname or change the existing one\
-Maximun 9 characters\
-If it is already in use, a nickname collision occurs.\
-As a result, all instances of the nickname are removed & if it comes from a nickname change, the old one is also removed\
+It has a maximum of 9 characters\
+If it is already in use, a nickname collision occurs. As a result, all instances of the nickname are removed & if it comes from a nickname change, the old one is also removed\
 If the collusion comes from a directly connected client (always the case for us), the server may simply drop the command and respond with ERR\_NICKCOLLISION
 
 * Replies:
@@ -78,6 +77,8 @@ Used at the beginning of connection to specify info about the user\
 \<mode\> should be numeric. It is a bitmask with 2 significant bits:
 * bit 2 for user mode 'w' (user receives wallops)
 * bit 3 for user mode 'i' (user becomse invisible)
+
+\<unused\> is, well, unused. It's there for legacy purposes.\
 Realname may contain space character but the parameter must then be prefix by a colon (:)
 
 * Replies:
@@ -93,9 +94,9 @@ Parameters: ( <channel> *( "," <channel> ) [ <key> *( "," <key> ) ] ) / "0"
 
 Used to join a channel or a list of channels.\
 If they don't exist, it creates them\
-Servers must be able to parse lists bbut never send lists to clients\
-Users that have joined a channel receive information about all the command affecting the channel\
-> JOIN, PRIVMSG\
+Servers must be able to parse lists but never send lists to clients\
+Users that have joined a channel receive information about all the command affecting the channel (JOIN, PRIVMSG)
+
 On a succesful JOIN, The user first receives a JOIN message back as confirmation, then the topic with RPL\_TOPIC, then the list of users on the channel with RPL\_NAMREPLY which must include the user himself
 
 "0" is a special argument which is a request to leave all channels a user is a member of.\
