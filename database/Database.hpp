@@ -6,7 +6,7 @@
 /*   By: maperrea <maperrea@student.s19.be>         +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/03/10 16:09:27 by maperrea          #+#    #+#             */
-/*   Updated: 2022/03/11 14:57:19 by maperrea         ###   ########.fr       */
+/*   Updated: 2022/03/12 16:18:54 by maperrea         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -46,8 +46,8 @@ class Database {
 		~Database();
 
 		// getter/setter make no sense
-		std::string port;
 		std::string password;
+		std::string port;
 
 		// returns the client/channel or NULL if it doesn't exist
 		Client * get_client(uint32_t ip);
@@ -57,8 +57,11 @@ class Database {
 		Client & add_client(uint32_t ip);
 		Channel & add_channel(std::string const & name);
 
+		//returns false if wrong amount of args
+		bool init(int argc, char **argv);
+
 		// only way to get the instance
-		static Database & get_instance();
+		static Database * get_instance();
 }
 
 #endif

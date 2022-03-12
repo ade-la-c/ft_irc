@@ -1,31 +1,28 @@
 /* ************************************************************************** */
 /*                                                                            */
 /*                                                        :::      ::::::::   */
-/*   Channel.hpp                                        :+:      :+:    :+:   */
+/*   ft_irc.h                                           :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
 /*   By: maperrea <maperrea@student.s19.be>         +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
-/*   Created: 2022/03/10 19:24:24 by maperrea          #+#    #+#             */
-/*   Updated: 2022/03/11 14:44:52 by maperrea         ###   ########.fr       */
+/*   Created: 2022/03/12 16:04:12 by maperrea          #+#    #+#             */
+/*   Updated: 2022/03/12 16:17:12 by maperrea         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
-#ifndef CHANNEL_HPP
-# define CHANNEL_HPP
+#ifndef FT_IRC_H
+# define FT_IRC_H
 
-class Channel {
+# include "Database.hpp"
+# include "Client.hpp"
+# include "Channel.hpp"
 
-	public:
+void error(std::string const & str);
 
-		Channel();
-		Channel(std::string const & name);
-		Channel(Channel const & cpy);
-		~Channel();
+void parse_input(Client & client);
 
-	private:
-
-		std::string name;
-
-}
+template <typename Iter>
+void send_response(Iter begin, Iter end);
+//#include "response.hpp" TODO
 
 #endif

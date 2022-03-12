@@ -6,7 +6,7 @@
 /*   By: maperrea <maperrea@student.s19.be>         +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/03/10 16:27:00 by maperrea          #+#    #+#             */
-/*   Updated: 2022/03/12 16:06:58 by maperrea         ###   ########.fr       */
+/*   Updated: 2022/03/12 16:14:32 by maperrea         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -46,6 +46,13 @@ Channel & Database::add_channel(std::string const & name) {
 	if (!ret.second)
 		throw Database::already_exists();
 	return *ret.first;
+}
+
+bool Database::init(int argc, char **argv) {
+	if (argc != 3)
+		return false;
+	password = argv[1];
+	port = argv[2];
 }
 
 Database * Database::get_instance() {

@@ -1,31 +1,15 @@
 /* ************************************************************************** */
 /*                                                                            */
 /*                                                        :::      ::::::::   */
-/*   Channel.hpp                                        :+:      :+:    :+:   */
+/*   error.cpp                                          :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
 /*   By: maperrea <maperrea@student.s19.be>         +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
-/*   Created: 2022/03/10 19:24:24 by maperrea          #+#    #+#             */
-/*   Updated: 2022/03/11 14:44:52 by maperrea         ###   ########.fr       */
+/*   Created: 2022/03/12 16:12:33 by maperrea          #+#    #+#             */
+/*   Updated: 2022/03/12 16:14:32 by maperrea         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
-#ifndef CHANNEL_HPP
-# define CHANNEL_HPP
-
-class Channel {
-
-	public:
-
-		Channel();
-		Channel(std::string const & name);
-		Channel(Channel const & cpy);
-		~Channel();
-
-	private:
-
-		std::string name;
-
+void error(std::string const & str) {
+	std::cerr << str << std::endl;
 }
-
-#endif
