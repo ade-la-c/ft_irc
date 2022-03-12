@@ -1,15 +1,3 @@
-/* ************************************************************************** */
-/*                                                                            */
-/*                                                        :::      ::::::::   */
-/*   Client.hpp                                         :+:      :+:    :+:   */
-/*                                                    +:+ +:+         +:+     */
-/*   By: maperrea <maperrea@student.s19.be>         +#+  +:+       +#+        */
-/*                                                +#+#+#+#+#+   +#+           */
-/*   Created: 2022/03/10 19:21:14 by maperrea          #+#    #+#             */
-/*   Updated: 2022/03/12 16:26:40 by maperrea         ###   ########.fr       */
-/*                                                                            */
-/* ************************************************************************** */
-
 #ifndef CLIENT_HPP
 # define CLIENT_HPP
 
@@ -22,6 +10,9 @@ class Client {
 		Client(Client const & cpy);
 		~Client();
 
+		void parse_input();
+
+		// either keep public or make a read member function and put in private
 		char buf[512];
 		ssize_t length;
 
