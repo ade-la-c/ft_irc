@@ -5,6 +5,8 @@
 # include "Client.hpp"
 # include "Channel.hpp"
 
+# include "../includes/ft_irc.hpp"
+
 // Singleton Database class
 class Database {
 	private:
@@ -29,7 +31,7 @@ class Database {
 				virtual char const * what() const throw() {
 					return "Element already exists";
 				}
-		}
+		};
 
 		~Database();
 
@@ -50,6 +52,6 @@ class Database {
 
 		// only way to get the instance
 		static Database * get_instance();
-}
+};
 
 #endif

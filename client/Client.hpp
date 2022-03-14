@@ -1,6 +1,8 @@
 #ifndef CLIENT_HPP
 # define CLIENT_HPP
 
+# include "../includes/ft_irc.hpp"
+
 class Client {
 
 	public:
@@ -19,6 +21,6 @@ class Client {
 	private:
 
 		uint32_t ip;
-}
+};
 
 #endif

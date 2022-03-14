@@ -1,7 +1,15 @@
-#ifndef FT_IRC_H
-# define FT_IRC_H
+#ifndef FT_IRC_HPP
+# define FT_IRC_HPP
 
 # include <iostream>
+
+# include <sys/socket.h>
+# include <netdb.h>
+# include <sys/types.h>
+# include <arpa/inet.h>
+# include <signal.h>
+# include <fcntl.h>
+# include <poll.h>
 
 # include "Database.hpp"
 # include "Client.hpp"

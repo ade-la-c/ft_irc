@@ -1,9 +1,9 @@
-#include "Databse.hpp"
+#include "Database.hpp"
 
 Database::Database() {
 }
 
-Databade::~Database() {
+Database::~Database() {
 }
 
 Client * Database::get_client(uint32_t ip) {
