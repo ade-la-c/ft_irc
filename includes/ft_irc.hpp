@@ -9,7 +9,7 @@
 # include <arpa/inet.h>
 # include <signal.h>
 # include <fcntl.h>
-# include <poll.h>
+# include <sys/select.h>
 
 # include "Database.hpp"
 # include "Client.hpp"
