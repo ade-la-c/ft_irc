@@ -8,7 +8,7 @@ class Client {
 	public:
 
 		Client();
-		Client(uint32_t ip);
+		Client(int socket);
 		Client(Client const & cpy);
 		~Client();
 
@@ -20,7 +20,8 @@ class Client {
 
 	private:
 
-		uint32_t ip;
-};
+		int socket;
+
+}
 
 #endif

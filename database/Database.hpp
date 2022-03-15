@@ -18,7 +18,7 @@ class Database {
 		Database(Database const & cpy);
 		Database & operator=(Database const & rhs);
 
-		typedef std::map<uint32_t, Client> client_map;	// {ip, client} map
+		typedef std::map<int, Client> client_map;	// {ip, client} map
 		typedef std::map<std::string, Channel> channel_map; // {name, channel} map
 
 		client_map clients;
@@ -40,7 +40,7 @@ class Database {
 		std::string port;
 
 		// returns the client/channel or NULL if it doesn't exist
-		Client * get_client(uint32_t ip);
+		Client * get_client(int socket);
 		Channel * get_channel(std::string const & name);
 
 		// creates a new client/channel & returns it. Throws an exception if it already exists.

@@ -6,8 +6,8 @@ Database::Database() {
 Database::~Database() {
 }
 
-Client * Database::get_client(uint32_t ip) {
-	client_map::iterator client = clients.find(ip);
+Client * Database::get_client(int socket) {
+	client_map::iterator client = clients.find(socket);
 	if (client == clients.end())
 		return NULL;
 	return &(*client);
@@ -20,9 +20,9 @@ Channel * Database::get_channel(std::string const & name) {
 	return &(*channel);
 }
 
-Client & Database::add_client(uint32_t ip) {
+Client & Database::add_client(int socket) {
 	std::pair<clients_map::iterator, bool> ret;
-	ret = clients.insert(std::make_pair(ip, Client(ip)));
+	ret = clients.insert(std::make_pair(socket, Client(socket)));
 	if (!ret.second)
 		throw Database::already_exists();
 	return *ret.first;
