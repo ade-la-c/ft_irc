@@ -20,7 +20,7 @@ OPER
 ```
 * There must be the commands specific to the operators
 ```
-PRIVMSG masks, KILL, REHASH, RESTART
+PRIVMSG masks, KILL, REHASH, RESTART, DIE
 ```
 * We must **NOT** develop a client
 * We must **NOT** handle server to server connections
@@ -190,6 +190,19 @@ Parameters: None
 ```
 
 Used by operators to restart the server
+
+* Replies:
+```
+ERR_NOPRIVILEGES
+```
+
+#### DIE
+
+```
+Parameters: None
+```
+
+Used by operators to shut down the server
 
 * Replies:
 ```
