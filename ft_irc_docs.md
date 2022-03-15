@@ -1,6 +1,7 @@
 # ft\_irc documentation
 
 ### A (very) small irc server made in c++98 with sockets during the 42 cursus
+### The first one ever at 19
 ### Follows the most recent RFC specification
 
 ## Requirements
@@ -9,7 +10,7 @@ launched as follows
 ```
 ./ircserv <password> <port>
 ```
-* Client must be able to authenticate, set a nickname, a username, join a channel and send and receive private messages
+* Clients must be able to authenticate, set a nickname, a username, join a channel and send and receive private messages
 ```
 PASS, NICK, USER, JOIN, PRIVMSG
 ```
@@ -24,6 +25,7 @@ PRIVMSG masks, KILL, REHASH, RESTART, DIE
 ```
 * We must **NOT** develop a client
 * We must **NOT** handle server to server connections
+* While a configuration file is recommended by the rfc standard, it is not *required*
 
 ## Command Details
 
@@ -35,9 +37,9 @@ PRIVMSG masks, KILL, REHASH, RESTART, DIE
 parameters : <password>
 ```
 
-Must be entered before the latter of the USER/NICK pair\
-Password must match the one from the server arguments\
-Can send multiple ones but only the last one is used
+Must be entered before the latter of the USER/NICK pair.\
+Password must match the one from the server arguments.\
+Can send multiple ones but only the last one is used.
 
 Recommended order:
 1. PASS
@@ -54,10 +56,10 @@ ERR_NEEDMOREPARAMS              ERR_ALREADYREGISTRED
 parameters : <nickname>
 ```
 
-Give a nickname or change the existing one\
-It has a maximum of 9 characters\
-If it is already in use, a nickname collision occurs. As a result, all instances of the nickname are removed & if it comes from a nickname change, the old one is also removed\
-If the collusion comes from a directly connected client (always the case for us), the server may simply drop the command and respond with ERR\_NICKCOLLISION
+Give a nickname or change the existing one.\
+It has a maximum of 9 characters.\
+If it is already in use, a nickname collision occurs. As a result, all instances of the nickname are removed & if it comes from a nickname change, the old one is also removed.\
+If the collision comes from a directly connected client (always the case for us), the server may simply drop the command and respond with ERR\_NICKCOLLISION.
 
 * Replies:
 ```
@@ -71,13 +73,13 @@ ERR_NICKNAMEINUSE               ERR_NICKCOLLISION
 Parameters: <username> <mode> <unused> <realname>
 ```
 
-Used at the beginning of connection to specify info about the user\
+Used at the beginning of connection to specify info about the user.\
 \<mode\> should be numeric. It is a bitmask with 2 significant bits:
 * bit 2 for user mode 'w' (user receives wallops)
 * bit 3 for user mode 'i' (user becomse invisible)
 
 \<unused\> is, well, unused. It's there for legacy purposes.\
-Realname may contain space character but the parameter must then be prefix by a colon (:)
+Realname may contain space character but the parameter must then be prefix by a colon (:).
 
 * Replies:
 ```
@@ -91,14 +93,14 @@ Parameters: ( <channel> *( "," <channel> ) [ <key> *( "," <key> ) ] ) / "0"
 ```
 
 Used to join a channel or a list of channels.\
-If they don't exist, it creates them\
-Servers must be able to parse lists but never send lists to clients\
-Users that have joined a channel receive information about all the command affecting the channel (JOIN, PRIVMSG)
+If they don't exist, it creates them.\
+Servers must be able to parse lists but never send lists to clients.\
+Users that have joined a channel receive information about all the command affecting the channel (JOIN, PRIVMSG).
 
-On a succesful JOIN, The user first receives a JOIN message back as confirmation, then the topic with RPL\_TOPIC, then the list of users on the channel with RPL\_NAMREPLY which must include the user himself
+On a succesful JOIN, The user first receives a JOIN message back as confirmation, then the topic with RPL\_TOPIC, then the list of users on the channel with RPL\_NAMREPLY which must include the user himself.
 
 "0" is a special argument which is a request to leave all channels a user is a member of.\
-It is processed as if the user had sent a PART command for every channel
+It is processed as if the user had sent a PART command for every channel.
 
 * Replies:
 ```
@@ -189,7 +191,7 @@ RPL_REHASHING                 ERR_NOPRIVILEGES
 Parameters: None
 ```
 
-Used by operators to restart the server
+Used by operators to restart the server.
 
 * Replies:
 ```
@@ -202,7 +204,7 @@ ERR_NOPRIVILEGES
 Parameters: None
 ```
 
-Used by operators to shut down the server
+Used by operators to shut down the server.
 
 * Replies:
 ```
@@ -213,11 +215,9 @@ ERR_NOPRIVILEGES
 
 #### Error replies
 
-RPL\_REHASHING
 ERR\_CANTKILLSERVER
 ERR\_NOPRIVILEGES
 ERR\_NOSUCHSERVER
-RPL\_YOUREOPER
 ERR\_NOOPERHOST
 ERR\_PASSWDMISMATCH
 ERR\_NORECIPIENT
@@ -226,7 +226,6 @@ ERR\_CANNOTSENDTOCHAN
 ERR\_NOTOPLEVEL
 ERR\_WILDTOPLEVEL
 ERR\_NOSUCHNICK
-RPL\_AWAY
 ERR\_UNAVAILRESOURCE
 ERR\_TOOMANYTARGETS
 ERR\_TOOMANYCHANNELS
@@ -254,3 +253,6 @@ returned when there is an attempt to change part of the registered details (e.g.
 #### Command responses
 
 RPL\_TOPIC
+RPL\_AWAY
+RPL\_YOUREOPER
+RPL\_REHASHING
