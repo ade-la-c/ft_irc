@@ -1,12 +1,12 @@
 # ft\_irc documentation
 
 ### A (very) small irc server made in c++98 with sockets during the 42 cursus
-### The first one ever at 19
+### The first one ever made at 19
 ### Follows the most recent RFC specification
 
 ## Requirements
 
-launched as follows
+Launched as follows:
 ```
 ./ircserv <password> <port>
 ```
@@ -34,7 +34,7 @@ PRIVMSG masks, KILL, REHASH, RESTART, DIE
 #### PASS
 
 ```
-parameters : <password>
+Parameters : <password>
 ```
 
 Must be entered before the latter of the USER/NICK pair.\
@@ -53,7 +53,7 @@ ERR_NEEDMOREPARAMS              ERR_ALREADYREGISTRED
 
 #### NICK
 ```
-parameters : <nickname>
+Parameters : <nickname>
 ```
 
 Give a nickname or change the existing one.\
@@ -215,44 +215,165 @@ ERR_NOPRIVILEGES
 
 #### Error replies
 
-ERR\_CANTKILLSERVER
-ERR\_NOPRIVILEGES
-ERR\_NOSUCHSERVER
-ERR\_NOOPERHOST
-ERR\_PASSWDMISMATCH
-ERR\_NORECIPIENT
-ERR\_NOTEXTTOSEND
-ERR\_CANNOTSENDTOCHAN
-ERR\_NOTOPLEVEL
-ERR\_WILDTOPLEVEL
-ERR\_NOSUCHNICK
-ERR\_UNAVAILRESOURCE
-ERR\_TOOMANYTARGETS
-ERR\_TOOMANYCHANNELS
-ERR\_NOSUCHCHANNEL
-ERR\_BADCHANMASK
-ERR\_CHANNELISFULL
-ERR\_BADCHANNELKEY
-ERR\_INVITEONLYCHAN
-ERR\_BANNEDFROMCHAN
-ERR\_ERRONEUSNICKNAME
-ERR\_NICKNAMEINUSE
-ERR\_NICKCOLLISION
+
+* 401 - ERR\_NOSUCHNICK
+```
+"<nickname> :No such nick/channel"
+Used to indicate the nickname parameter supplied to a command is currently unused.
+```
+* 402 - ERR\_NOSUCHSERVER
+```
+"<server name> :No such server"
+Used to indicate the server name given currently does not exist.
+```
+* 403 - ERR\_NOSUCHCHANNEL
+```
+"<channel name> :No such channel"
+Used to indicate that a channel name is invalid
+```
+* 404 - ERR\_CANNOTSENDTOCHAN
+```
+"<channel name> :Cannot send to channel"
+Sent to a user who is either (a) not on a channel which is mode +n or (b) not a chanop (or mode +v) on a channel which has mode +m set or where the user is
+banned and is trying to send a PRIVMSG message to that channel.
+```
+* 405 - ERR\_TOOMANYCHANNELS
+```
+"<channel name> :You have joined too many channels"
+Sent to a user when they have joined the maximum number of allowed channels and they try to join another channel.
+```
+* 407 - ERR\_TOOMANYTARGETS
+```
+"<target> :<error code> recipients. <abort message>"
+Returned to a client which is attempting to send a PRIVMSG/NOTICE using the user@host destination format and for a user@host which has several occurrences.
+Returned to a client which trying to send a PRIVMSG/NOTICE to too many recipients.
+Returned to a client which is attempting to JOIN a safe channel using the shortname when there are more than one such channel.
+```
+* 411 - ERR\_NORECIPIENT
+```
+":No recipient given (<command>)"
+Returned by PRIVMSG to indicate that the message wasn't delivered.
+```
+* 412 - ERR\_NOTEXTTOSEND
+```
+":No text to send"
+Returned by PRIVMSG to indicate that the message wasn't delivered.
+```
+* 413 - ERR\_NOTOPLEVEL
+```
+"<mask> :No toplevel domain specified"
+Returned when an invalid use of "PRIVMSG $<server>" or "PRIVMSG #<host>" is attempted.
+```
+* 414 - ERR\_WILDTOPLEVEL
+```
+"<mask> :Wildcard in toplevel domain"
+Returned when an invalid use of "PRIVMSG $<server>" or "PRIVMSG #<host>" is attempted.
+```
 * 431 - ERR\_NONICKNAMEGIVEN
+```
+":No nickname given"
+Returned when a nickname parameter is expected for a command and isn't found.
+```
+* 432 - ERR\_ERRONEUSNICKNAME
+```
+"<nick> :Erroneus nickname"
+Returned after receiving a NICK message which contains characters which do not fall in the defined set:
+( letter / special ) *8( letter / digit / special / "-" )
+```
+* 433 - ERR\_NICKNAMEINUSE
+```
+"<nick> :Nickname is already in use"
+Returned when a NICK message is processed that results in an attempt to change to a currently existing nickname.
+```
+* 436 - ERR\_NICKCOLLISION
+```
+"<nick> :Nickname collision KILL"
+Returned by a server to a client when it detects a nickname collision
+```
+* 437 - ERR\_UNAVAILRESOURCE
+```
+"<nick/channel> :Nick/channel is temporarily unavailable"
+Returned by a server to a user trying to join a channel currently blocked by the channel delay mechanism.
+Returned by a server to a user trying to change nickname when the desired nickname is blocked by the nick delay mechanism.
+```
 * 461 - ERR\_NEEDMOREPARAMS
 ```
 "<command> :Not enough parameters"
-returned when there aren't enough parameters
+Returned when there aren't enough parameters.
 ```
 * 462 - ERR\_ALREADYREGISTERED
 ```
 ":You may not reregister"
-returned when there is an attempt to change part of the registered details (e.g. second PASS or USER command)
+Returned when there is an attempt to change part of the registered details (e.g. second PASS or USER command).
+```
+* 464 - ERR\_PASSWDMISMATCH
+```
+":Password incorrect"
+Returned to indicate a failed attempt at registering a connection for which a password was required and was either not given or incorrect.
+```
+* 471 - ERR\_CHANNELISFULL
+```
+"<channel> :Cannot join channel (+l)"
+```
+* 473 - ERR\_INVITEONLYCHAN
+```
+<channel> :Cannot join channel (+i)"
+```
+* 474 - ERR\_BANNEDFROMCHAN
+```
+"<channel> :Cannot join channel (+b)"
+```
+* 475 - ERR\_BADCHANNELKEY
+```
+<channel> :Cannot join channel (+i)"
+```
+* 476 - ERR\_BADCHANMASK
+```
+"<channel> :Bad Channel Mask"
+```
+* 481 - ERR\_NOPRIVILEGES
+```
+":Permission Denied- You're not an IRC operator"
+Any command requiring operator privileges to operate MUST return this error to indicate the attempt was unsuccessful.
+```
+* 483 - ERR\_CANTKILLSERVER
+```
+":You cant kill a server!"
+Returned when attempting to kill a server
+```
+* 491 - ERR\_NOOPERHOST
+```
+":No O-lines for your host"
+If a client sends an OPER message and the server has not been configured to allow connections from the
+client's host as an operator, this error MUST be returned.
 ```
 
 #### Command responses
 
-RPL\_TOPIC
-RPL\_AWAY
-RPL\_YOUREOPER
-RPL\_REHASHING
+
+* 301 - RPL\_AWAY
+```
+"<nick> :<away message>"
+Sent when sending a message to a user that is away
+```
+* 332 - RPL\_TOPIC
+```
+"<channel> :<topic>"
+When sending a TOPIC message to determine the channel topic, one of two replies is sent.  If
+the topic is set, RPL_TOPIC is sent back else RPL_NOTOPIC.
+```
+* 381 - RPL\_YOUREOPER
+```
+":You are now an IRC operator"
+Sent back to a client which has just successfully issued an OPER message and gained operator status.
+```
+* 382 - RPL\_REHASHING
+```
+"<config file> :Rehashing"
+If the REHASH option is used and an operator sends a REHASH message, an RPL_REHASHING is sent back to the operator.
+```
+
+
+
+
+
