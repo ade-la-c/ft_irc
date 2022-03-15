@@ -372,8 +372,3 @@ Sent back to a client which has just successfully issued an OPER message and gai
 "<config file> :Rehashing"
 If the REHASH option is used and an operator sends a REHASH message, an RPL_REHASHING is sent back to the operator.
 ```
-
-
-
-
-
