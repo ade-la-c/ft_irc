@@ -14,6 +14,7 @@
 # include "Database.hpp"
 # include "Client.hpp"
 # include "Channel.hpp"
+# include "../message/Message.hpp"
 
 void error(std::string const & str);
 
