@@ -18,6 +18,9 @@ class Message {
 
 		/* Setters and Getters */
 
+		std::string & get_prefix() const;
+		std::string & get_command() const;
+		std::vector<std::string> & get_params() const;
 
 		/* Operator overloads */
 
@@ -27,8 +30,13 @@ class Message {
 		
 		/* Member variables */
 
+		void parse();
+
 		std::string msg;
 
+		std::string prefix;
+		std::string command;
+		std::vector<std::string> params;
 };
 
 #endif

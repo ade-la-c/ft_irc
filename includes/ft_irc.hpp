@@ -10,6 +10,7 @@
 # include <signal.h>
 # include <fcntl.h>
 # include <poll.h>
+# include <list.h>
 
 # include "Database.hpp"
 # include "Client.hpp"
@@ -20,6 +21,7 @@ void error(std::string const & str);
 
 template <typename Iter>
 void send_response(Iter begin, Iter end);
+
 //#include "response.hpp" TODO
 
 #endif
