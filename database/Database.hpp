@@ -2,8 +2,6 @@
 # define DATABASE_HPP
 
 # include <map>
-# include "Client.hpp"
-# include "Channel.hpp"
 
 # include "../includes/ft_irc.hpp"
 
