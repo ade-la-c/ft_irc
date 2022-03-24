@@ -6,6 +6,13 @@
 class Message {
 	public:
 
+		class IllFormedMessageException : public std::excpetion {
+			public:
+				virtual char const * what() const throw() {
+					return "Ill-formed Message";
+				}
+		}
+
 		/* Constructors and destructors */
 
 		Message();
@@ -27,10 +34,14 @@ class Message {
 		Message & operator=(const Message & rhs);
 
 	private:
-		
-		/* Member variables */
 
 		void parse();
+
+		std::string::size_type prefix(std::string::size_type pos);
+		std::string::size_type command(std::string::size_type pos);
+		std::string::size_type params(std::string::size_type pos);
+		
+		/* Member variables */
 
 		std::string msg;
 

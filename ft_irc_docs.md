@@ -269,6 +269,11 @@ Returned when an invalid use of "PRIVMSG $<server>" or "PRIVMSG #<host>" is atte
 "<mask> :Wildcard in toplevel domain"
 Returned when an invalid use of "PRIVMSG $<server>" or "PRIVMSG #<host>" is attempted.
 ```
+* 421 - ERR\_UNKNOWNCOMMAND
+```
+"<command> :Unknown command"
+Returned to a registered client to indicate that the command sent is unknown by the server.
+```
 * 431 - ERR\_NONICKNAMEGIVEN
 ```
 ":No nickname given"
