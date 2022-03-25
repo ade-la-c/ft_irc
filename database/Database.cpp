@@ -10,30 +10,30 @@ Client * Database::get_client(int socket) {
 	client_map::iterator client = clients.find(socket);
 	if (client == clients.end())
 		return NULL;
-	return &(*client);
+	return &(client->second);
 }
 
 Channel * Database::get_channel(std::string const & name) {
 	channel_map::iterator channel = channels.find(name);
 	if (channel == channels.end())
 		return NULL;
-	return &(*channel);
+	return &(channel->second);
 }
 
 Client & Database::add_client(int socket) {
-	std::pair<clients_map::iterator, bool> ret;
+	std::pair<client_map::iterator, bool> ret;
 	ret = clients.insert(std::make_pair(socket, Client(socket)));
 	if (!ret.second)
 		throw Database::already_exists();
-	return *ret.first;
+	return ret.first->second;
 }
 
 Channel & Database::add_channel(std::string const & name) {
-	std::pair<channels_map::iterator, bool> ret;
-	ret = channels.insert(std::make_pair(name, channel(name)));
+	std::pair<channel_map::iterator, bool> ret;
+	ret = channels.insert(std::make_pair(name, Channel(name)));
 	if (!ret.second)
 		throw Database::already_exists();
-	return *ret.first;
+	return ret.first->second;
 }
 
 bool Database::init(int argc, char **argv) {
@@ -41,6 +41,7 @@ bool Database::init(int argc, char **argv) {
 		return false;
 	password = argv[1];
 	port = argv[2];
+	return true;
 }
 
 Database * Database::get_instance() {

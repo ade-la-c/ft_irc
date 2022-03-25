@@ -10,11 +10,17 @@
 # include <signal.h>
 # include <fcntl.h>
 # include <poll.h>
-# include <list.h>
+# include <list>
+# include <vector>
 
-# include "Database.hpp"
-# include "Client.hpp"
-# include "Channel.hpp"
+class Database;
+class Client;
+class Channel;
+class Message;
+
+# include "../database/Database.hpp"
+# include "../client/Client.hpp"
+# include "../channel/Channel.hpp"
 # include "../message/Message.hpp"
 
 void error(std::string const & str);

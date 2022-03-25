@@ -1,4 +1,4 @@
-#include "ft_irc.hpp"
+#include "includes/ft_irc.hpp"
 
 int main(int argc, char **argv) {
 
@@ -10,4 +10,14 @@ int main(int argc, char **argv) {
 	}
 
 	//main loop starts here
+	try {
+		Message msg(std::string(":nickname COMMAND these are :some parameters\r\n"));
+		std::cout << "[" << msg.get_prefix() << "]" << std::endl;
+		std::cout << "[" << msg.get_command() << "]" << std::endl;
+		for (std::vector<std::string>::size_type i = 0; i < msg.get_params().size(); i++) {
+		std::cout << "[" << msg.get_params()[i] << "]" << std::endl;
+		}
+	} catch (std::exception & e) {
+		std::cerr << e.what() << std::endl;
+	}
 }

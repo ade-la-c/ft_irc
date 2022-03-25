@@ -2,16 +2,19 @@
 
 Message::Message() {
 	params.reserve(15);
+	complete = false;
 	parse();
 }
 
-Message::Message(std::string & message) : msg(message) {
+Message::Message(std::string const & message) : msg(message) {
 	params.reserve(15);
+	complete = false;
 	parse();
 }
 
-Message::Message(const Message & copy) : msg(copy.message) {
+Message::Message(const Message & copy) : msg(copy.msg) {
 	params.reserve(15);
+	complete = false;
 	parse();
 }
 
@@ -19,29 +22,128 @@ Message::~Message() {
 }
 
 void Message::parse() {
-	std::string::size_type pos;
+	std::string::size_type pos = 0;
+	std::string::size_type end;
 
-	if (!msg.find("\r\n"))
-		//TODO no crlf
+	msg = buffer + msg;
+	end = msg.find("\r\n");
+
+	if (end > MAX_SIZE - 2 && end != std::string::npos) {
+		throw IllFormedMessageException();
+	} else if (end == std::string::npos) {
+		buffer = msg;
+		return;
+	}
+
+	complete = true;
+
 	if (msg[0] == ':') {
-		pos = prefix();
+		pos = parse_prefix(end);
+		pos++;
 	}
-	pos = command(pos);
-	if (msg[pos] != '\r' && msg[pos + 1] != '\n') {
-		pos = params(pos);
+
+	pos = parse_command(pos, end);
+
+	if (pos != end) {
+		pos++;
+		pos = parse_params(pos, end);
 	}
 }
 
-std::string::size_type prefix(std::string::size_type pos) {
-
+bool Message::is_complete() {
+	return complete;
 }
 
-std::string::size_type command(std::string::size_type pos) {
-
+std::string Message::get_prefix() const {
+	return prefix;
 }
 
-std::string::size_type params(std::string::size_type pos) {
+std::string Message::get_command() const {
+	return command;
+}
 
+std::vector<std::string> Message::get_params() const {
+	return params;
+}
+
+bool Message::is_numeric(std::string str, std::string::size_type pos = 0, std::string::size_type count = std::string::npos) {
+	for (std::string::size_type i = pos; i < str.size() && i < pos + count; i++) {
+		if (!std::isdigit(str[i]))
+			return false;
+	}
+	return true;
+}
+
+bool Message::is_special(int c) {
+	return ((c >= '{' && c <= '}') || (c >= '[' && c <= '`'));
+}
+
+bool Message::is_nickname(std::string str, std::string::size_type pos = 0, std::string::size_type count = std::string::npos) {
+	if (!std::isalpha(str[pos]) && !is_special(str[pos]))
+		return false;
+	for (std::string::size_type i = pos; str[i] != ' ' && i < str.size() && i < pos + count; i++) {
+		if ((!std::isalpha(str[i]) && !is_special(str[i]) && str[i] != '-') || i - pos > 8)
+			return false;
+	}
+	return true;
+}
+
+std::string::size_type Message::parse_prefix(std::string::size_type end) {
+	std::string::size_type sp;
+
+	sp = this->msg.find(" ");
+	if (sp >= end)
+		throw IllFormedMessageException();
+	if (!is_nickname(msg, 1, sp)) {
+		throw IllFormedMessageException();
+	}
+	prefix = this->msg.substr(1, sp - 1);
+	return sp;
+}
+
+std::string::size_type Message::parse_command(std::string::size_type pos, std::string::size_type end) {
+	std::string::size_type sp;
+
+	sp = this->msg.find(" ", pos);
+	if (sp > end)
+		sp = end;
+	if (sp - pos == 3 && is_numeric(msg, pos, 3)) {
+		command = msg.substr(pos, 3);
+	} else {
+		for (std::string::size_type i = pos; i < sp; i++) {
+			if (!std::isalpha(msg[i]))
+				throw IllFormedMessageException();
+			command += msg[i];
+		}
+	}
+	return sp;
+}
+
+std::string::size_type Message::parse_params(std::string::size_type pos, std::string::size_type end) {
+	size_t count = 0;
+	std::string::size_type i = pos;
+	
+	while (i < end && msg[i] != ':' && count < 14) {
+		params.push_back(std::string());
+		while (msg[i] != ' ' && i < end) {
+			if (msg[i] == '\0' || msg[i] == '\r' || msg[i] == '\n')
+				throw IllFormedMessageException();
+			params[count] += msg[i];
+			i++;
+		}
+		i++;
+		count++;
+	}
+	if (msg[i] == ':')
+		i++;
+	params.push_back(std::string());
+	while (i < end) {
+		if (msg[i] == '\0' || msg[i] == '\r' || msg[i] == '\n')
+			throw IllFormedMessageException();
+		params[count] += msg[i];
+		i++;
+	}
+	return end;
 }
 
 Message & Message::operator=(const Message & rhs) {

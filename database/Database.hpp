@@ -1,11 +1,8 @@
 #ifndef DATABASE_HPP
 # define DATABASE_HPP
 
-# include <map>
-# include "Client.hpp"
-# include "Channel.hpp"
-
 # include "../includes/ft_irc.hpp"
+# include <map>
 
 // Singleton Database class
 class Database {
@@ -44,7 +41,7 @@ class Database {
 		Channel * get_channel(std::string const & name);
 
 		// creates a new client/channel & returns it. Throws an exception if it already exists.
-		Client & add_client(uint32_t ip);
+		Client & add_client(int socket);
 		Channel & add_channel(std::string const & name);
 
 		//returns false if wrong amount of args
