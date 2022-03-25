@@ -26,12 +26,14 @@ class Message {
 		/* Member functions */
 
 		bool is_complete();
+		void parse_from_str(std::string const & msg);
 
 		/* Setters and Getters */
 
 		std::string get_prefix() const;
 		std::string get_command() const;
 		std::vector<std::string> get_params() const;
+		std::vector<std::string>::size_type get_params_count() const;
 
 		/* Operator overloads */
 
@@ -60,6 +62,7 @@ class Message {
 		std::string prefix;
 		std::string command;
 		std::vector<std::string> params;
+		std::vector<std::string>::size_type params_count;
 };
 
 #endif

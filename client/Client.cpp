@@ -13,5 +13,10 @@ Client::~Client() {
 }
 
 void Client::parse_input() {
-	//TODO
+	Message msg;
+	try {
+		msg.parse_from_str(string(buf, length));
+	} catch (std::exception & e) {
+		//TODO what do
+	}
 }

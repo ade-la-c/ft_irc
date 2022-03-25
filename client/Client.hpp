@@ -18,10 +18,14 @@ class Client {
 		char buf[512];
 		ssize_t length;
 
-	private:
-
 		int socket;
-
+		std::string password;
+		std::string nickname;
+		std::string username;
+		int mode;
+		std::string realname;
+		channel_map subscribed_channels;
+		bool oper;
 };
 
 #endif

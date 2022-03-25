@@ -1,24 +1,26 @@
 # include "../includes/ft_irc.hpp"
 
-Message::Message() {
-	params.reserve(15);
+Message::Message() : params(15) {
 	complete = false;
 	parse();
 }
 
-Message::Message(std::string const & message) : msg(message) {
-	params.reserve(15);
+Message::Message(std::string const & message) : msg(message), params(15) {
 	complete = false;
 	parse();
 }
 
-Message::Message(const Message & copy) : msg(copy.msg) {
-	params.reserve(15);
+Message::Message(const Message & copy) : msg(copy.msg), params(15) {
 	complete = false;
 	parse();
 }
 
 Message::~Message() {
+}
+
+void Message::parse_from_str(std::string const & msg) {
+	this->msg = msg;
+	parse()
 }
 
 void Message::parse() {
@@ -64,6 +66,10 @@ std::string Message::get_command() const {
 
 std::vector<std::string> Message::get_params() const {
 	return params;
+}
+
+std::vector<std::string>::size_type Message::get_params_count() const {
+	return params_count;
 }
 
 bool Message::is_numeric(std::string str, std::string::size_type pos = 0, std::string::size_type count = std::string::npos) {
@@ -124,7 +130,6 @@ std::string::size_type Message::parse_params(std::string::size_type pos, std::st
 	std::string::size_type i = pos;
 	
 	while (i < end && msg[i] != ':' && count < 14) {
-		params.push_back(std::string());
 		while (msg[i] != ' ' && i < end) {
 			if (msg[i] == '\0' || msg[i] == '\r' || msg[i] == '\n')
 				throw IllFormedMessageException();
@@ -136,13 +141,17 @@ std::string::size_type Message::parse_params(std::string::size_type pos, std::st
 	}
 	if (msg[i] == ':')
 		i++;
-	params.push_back(std::string());
+	if (i < end)
+		params_count = 1;
+	else
+		params_count = 0;
 	while (i < end) {
 		if (msg[i] == '\0' || msg[i] == '\r' || msg[i] == '\n')
 			throw IllFormedMessageException();
 		params[count] += msg[i];
 		i++;
 	}
+	params_count += count;
 	return end;
 }
 
