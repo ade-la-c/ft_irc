@@ -22,18 +22,18 @@ External authorized functions :
 		The function returns -1 if there is an error
 
 
-	GETSOCKOPT : <sys/socket.h>
+	SETSOCKOPT : <sys/socket.h>
 
-		int		getsockopt( int socket, int level, int option_name, void *restrict option_value,
-							socklen_t *restrict option_len );
+		int		setsockopt( int socket, int level, int option_name, const void *option_value,
+							socklen_t option_len );
 
-			socket : the descriptor of the socket used 						(?)
+			socket : the descriptor of the socket used
 			level : the level at which the option manipulated resides, to manipulate socket level options,
 			the level is specified as SOL_SOCKET
 			option_name : the defined name of different options in the library (check the man).
 			option_value : most socket-level options use an int in this parameter as a boolean.
 
-		Getsockopt() examines the options associated with a socket, options may exist at multiple
+		Setsockopt() examines the options associated with a socket, options may exist at multiple
 		protocol levels; they're always present at the uppermost "socket" level.
 		The function returns 0 if successful completion, -1 if there is an error.
 
