@@ -22,6 +22,7 @@ class Client {
 		std::string password;
 		std::string nickname;
 		std::string username;
+		bool registered;
 		int mode;
 		std::string realname;
 		channel_map subscribed_channels;

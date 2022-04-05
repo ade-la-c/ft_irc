@@ -12,6 +12,8 @@
 # include <poll.h>
 # include <list>
 # include <vector>
+# include <cstdio>
+# include <cstdarg>
 
 class Database;
 class Client;

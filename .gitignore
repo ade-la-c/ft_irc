@@ -35,3 +35,6 @@ ircserv
 # Vim files
 *.swp
 *.swo
+
+bircd
+bewareircd*

@@ -1,12 +1,12 @@
 #include "Client.hpp"
 
-Client::Client() : socket(-1) {
+Client::Client() : socket(-1), registered(false), oper(false) {
 }
 
-Client::Client(int socket) : socket(socket) {
+Client::Client(int socket) : socket(socket), registered(false), oper(false) {
 }
 
-Client::Client(Client const & cpy) : socket(cpy.socket) {
+Client::Client(Client const & cpy) : socket(cpy.socket), registered(cpy.registered), oper(cpy.oper) {
 }
 
 Client::~Client() {

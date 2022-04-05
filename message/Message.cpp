@@ -141,17 +141,15 @@ std::string::size_type Message::parse_params(std::string::size_type pos, std::st
 	}
 	if (msg[i] == ':')
 		i++;
+	params_count = count;
 	if (i < end)
-		params_count = 1;
-	else
-		params_count = 0;
+		++params_count;
 	while (i < end) {
 		if (msg[i] == '\0' || msg[i] == '\r' || msg[i] == '\n')
 			throw IllFormedMessageException();
 		params[count] += msg[i];
 		i++;
 	}
-	params_count += count;
 	return end;
 }
 
