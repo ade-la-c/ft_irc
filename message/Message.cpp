@@ -20,7 +20,7 @@ Message::~Message() {
 
 void Message::parse_from_str(std::string const & msg) {
 	this->msg = msg;
-	parse()
+	parse();
 }
 
 void Message::parse() {

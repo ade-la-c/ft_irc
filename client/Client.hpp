@@ -13,6 +13,7 @@ class Client {
 		~Client();
 
 		void parse_input();
+		void reg(); //register is a reserved keyword
 
 		// either keep public or make a read member function and put in private
 		char buf[512];
@@ -23,6 +24,9 @@ class Client {
 		std::string nickname;
 		std::string username;
 		bool registered;
+		bool pass_set;
+		bool nick_set;
+		bool user_set;
 		int mode;
 		std::string realname;
 		channel_map subscribed_channels;

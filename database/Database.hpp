@@ -2,10 +2,11 @@
 # define DATABASE_HPP
 
 # include "../includes/ft_irc.hpp"
-# include <map>
 
 // Singleton Database class
 class Database {
+	public:
+
 	private:
 
 		// private constructor -> can only get instance through get_instance;
@@ -15,8 +16,6 @@ class Database {
 		Database(Database const & cpy);
 		Database & operator=(Database const & rhs);
 
-		typedef std::map<int, Client> client_map;	// {ip, client} map
-		typedef std::map<std::string, Channel> channel_map; // {name, channel} map
 
 		client_map clients;
 		channel_map channels;

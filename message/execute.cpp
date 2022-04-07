@@ -1,72 +1,134 @@
 #include "../includes/ft_irc.hpp"
 
+//TODO responses
+
 void pass(Client & client, Message & msg) {
-	if (msg.get_params_count() == 0)
-		response(replies[ERR_NEEDMOREPARAMS], msg.command); //TODO
 	if (client.registered)
-		response(replies[ERR_ALREADYREGISTERED]); //TODO
-	client.password = msg.get_params[0];
+		response(replies.at(ERR_ALREADYREGISTERED));
+	if (msg.get_params_count() == 0)
+		response(replies.at(ERR_NEEDMOREPARAMS), msg.get_command().c_str());
+
+	client.password = msg.get_params()[0];
+	client.pass_set = true;
+	client.reg();
 }
 
 void nick(Client & client, Message & msg) {
 	if (msg.get_params_count() == 0)
-		response(replies[ERR_NEEDMOREPARAMS], msg.command); //TODO
-	if (!
+		response(replies.at(ERR_NEEDMOREPARAMS), msg.get_command().c_str());
+	if (!Message::is_nickname(msg.get_params()[0]))
+		response(replies.at(ERR_ERRONEUSNICKNAME), msg.get_params()[0].c_str());
+	
+	//TODO check if nick doesn't exist yet
+
+	client.nickname = msg.get_params()[0];
+	client.nick_set = true;
+	client.reg();
 }
 
 void user(Client & client, Message & msg) {
+	if (client.registered)
+		response(replies.at(ERR_ALREADYREGISTERED));
+	if (msg.get_params_count() < 4)
+		response(replies.at(ERR_NEEDMOREPARAMS), msg.get_command().c_str());
+
+	//TODO check username syntax (no NUL, \r, \n, " " or @) -> what do if wrong?
+	
+	client.username = msg.get_params()[0];
+	int mode_param = stoi(msg.get_params()[1]);
+	client.mode = mode_param & 0b1100;
+	client.realname = msg.get_params()[3];
+	client.user_set = true;
+	client.reg();
 }
 
 void join(Client & client, Message & msg) {
+	if (!client.registered)
+		reponse(replies.at(ERR_NOTREGISTERED));
+	if (msg.get_params_count() == 0)
+		response(replies.at(ERR_NEEDMOREPARAMS), msg.get_command().c_str());
+
+	Database * db = Database::get_instance();
+	std::string channels = msg.get_command()[0];
+	std::string::size_type start = 0;
+	std::string::size_type end = channels.find(",");
+
 }
 
 void privmsg(Client & client, Message & msg) {
+	if (!client.registered)
+		reponse(replies.at(ERR_NOTREGISTERED));
+	//TODO
 }
 
 void oper(Client & client, Message & msg) {
+	if (!client.registered)
+		reponse(replies.at(ERR_NOTREGISTERED));
+	if (msg.get_params_count() < 2)
+		response(replies.at(ERR_NEEDMOREPARAMS), msg.get_command().c_str());
+	//TODO define oper account through config file or hard code.
 }
 
 void kill(Client & client, Message & msg) {
+	if (!client.registered)
+		reponse(replies.at(ERR_NOTREGISTERED));
+	if (!client.oper)
+		reponse(replies.at(ERR_NOPRIVILEGES));
+	if (msg.get_params_count() == 0)
+		response(replies.at(ERR_NEEDMOREPARAMS), msg.get_command().c_str());
+	//TODO how to disconnect user?
 }
 
 void rehash(Client & client, Message & msg) {
+	if (!client.registered)
+		reponse(replies.at(ERR_NOTREGISTERED));
+	if (!client.oper)
+		reponse(replies.at(ERR_NOPRIVILEGES));
+	//TODO we may not have a config file
 }
 
 void restart(Client & client, Message & msg) {
+	if (!client.registered)
+		reponse(replies.at(ERR_NOTREGISTERED));
+	if (!client.oper)
+		reponse(replies.at(ERR_NOPRIVILEGES));
+	//TODO how?
 }
 
 void die(Client & client, Message & msg) {
+	if (!client.registered)
+		reponse(replies.at(ERR_NOTREGISTERED));
+	if (!client.oper)
+		reponse(replies.at(ERR_NOPRIVILEGES));
+	exit(0); //TODO not allowed :pepesadge:
 }
 
 void execute(Client & client, Message & msg) {
 	if (!msg.is_complete())
 		return; //TODO enough?
 
-	std::string & cmd = msg.get_command();
+	std::string cmd = msg.get_command();
 
-	switch (cmd) {
-		case "PASS":
-			pass(client, msg);
-		case "NICK":
-			nick(client, msg);
-		case "USER":
-			user(client, msg);
-		case "JOIN":
-			join(client, msg);
-		case "PRIVMSG":
-			privmsg(client, msg);
-		case "OPER":
-			oper(client, msg);
-		case "KILL":
-			kill(client, msg);
-		case "REHASH":
-			rehash(client, msg);
-		case "RESTART":
-			restart(client, msg);
-		case "DIE":
-			die(client, msg);
-		default:
-			return ;
-			//TODO ERR_UNKNOWNCOMMAND
-	}
+	if (cmd == "PASS")
+		pass(client, msg);
+	else if (cmd == "NICK")
+		nick(client, msg);
+	else if (cmd == "USER")
+		user(client, msg);
+	else if (cmd == "JOIN")
+		join(client, msg);
+	else if (cmd == "PRIVMSG")
+		privmsg(client, msg);
+	else if (cmd == "OPER")
+		oper(client, msg);
+	else if (cmd == "KILL")
+		kill(client, msg);
+	else if (cmd == "REHASH")
+		rehash(client, msg);
+	else if (cmd == "RESTART")
+		restart(client, msg);
+	else if (cmd == "DIE")
+		die(client, msg);
+	else
+		response(replies.at(ERR_UNKNOWNCOMMAND), msg.get_command().c_str()); //TODO
 }

@@ -21,6 +21,7 @@
 # define ERR_NICKNAMEINUSE		433
 # define ERR_NICKCOLLISION		436
 # define ERR_UNAVAILRESOURCE	437
+# define ERR_NOTREGISTERED		451
 # define ERR_NEEDMOREPARAMS		461
 # define ERR_ALREADYREGISTERED	462
 # define ERR_PASSWDMISMATCH		464
@@ -33,7 +34,8 @@
 # define ERR_CANTKILLSERVER		483
 # define ERR_NOOPERHOST			491
 
-std::pair<uint16_t, str::string> const _rpl_arr[] = {
+typedef std::pair<uint16_t, std::string> reply;
+reply const _rpl_arr[] = {
 	reply(RPL_AWAY, "%s :%s"), //"<nick> :<away message>"
 	reply(RPL_TOPIC, "%s :%s"), //"<channel> :<topic>"
 	reply(RPL_YOUREOPER, ":You are now an IRC operator"), //":You are now an IRC operator"
@@ -50,10 +52,11 @@ std::pair<uint16_t, str::string> const _rpl_arr[] = {
 	reply(ERR_WILDTOPLEVEL, "%s :Wildcard in toplevel domain"), //"<mask> :Wildcard in toplevel domain"
 	reply(ERR_UNKNOWNCOMMAND, "%s :Unknown command"), //"<command> :Unknown command"
 	reply(ERR_NONICKNAMEGIVEN, ":No nickname given"), //":No nickname given"
-	reply(ERR_ERRONEUSNICKNAME, "%s :Erroneus nickname"), //"<nick> :Erroneus nickname"
+	reply(ERR_ERRONEUSNICKNAME, "%s :Erroneous nickname"), //"<nick> :Erroneus nickname"
 	reply(ERR_NICKNAMEINUSE, "%s :Nickname is already in use"), //"<nick> :Nickname is already in use"
 	reply(ERR_NICKCOLLISION, "%s :Nickname collision KILL"), //"<nick> :Nickname collision KILL"
 	reply(ERR_UNAVAILRESOURCE, "%s :Nick/channel is temporarily unavailable"), //"<nick/channel> :Nick/channel is temporarily unavailable"
+	reply(ERR_NOTREGISTERED, ":You have not registered:"), //":You have not registered"
 	reply(ERR_NEEDMOREPARAMS, "%s :Not enough parameters"), //"<command> :Not enough parameters"
 	reply(ERR_ALREADYREGISTERED, ":You may not reregister"), //":You may not reregister"
 	reply(ERR_PASSWDMISMATCH, ":Password incorrect"), //":Password incorrect"

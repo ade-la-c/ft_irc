@@ -1,4 +1,4 @@
-#include "Client.hpp"
+#include "../includes/ft_irc.hpp"
 
 Client::Client() : socket(-1), registered(false), oper(false) {
 }
@@ -15,8 +15,16 @@ Client::~Client() {
 void Client::parse_input() {
 	Message msg;
 	try {
-		msg.parse_from_str(string(buf, length));
+		msg.parse_from_str(std::string(buf, length));
 	} catch (std::exception & e) {
 		//TODO what do
+	}
+}
+
+void Client::reg() {
+	if (pass_set && nick_set && user_set) {
+		if (password == Database::get_instance()->password) {
+			registered = true;
+		}
 	}
 }

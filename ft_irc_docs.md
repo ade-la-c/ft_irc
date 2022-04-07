@@ -281,7 +281,7 @@ Returned when a nickname parameter is expected for a command and isn't found.
 ```
 * 432 - ERR\_ERRONEUSNICKNAME
 ```
-"<nick> :Erroneus nickname"
+"<nick> :Erroneous nickname"
 Returned after receiving a NICK message which contains characters which do not fall in the defined set:
 ( letter / special ) *8( letter / digit / special / "-" )
 ```
@@ -300,6 +300,11 @@ Returned by a server to a client when it detects a nickname collision
 "<nick/channel> :Nick/channel is temporarily unavailable"
 Returned by a server to a user trying to join a channel currently blocked by the channel delay mechanism.
 Returned by a server to a user trying to change nickname when the desired nickname is blocked by the nick delay mechanism.
+```
+* 451 - ERR\_NOTREGISTERED
+```
+":You have not registered"
+Returned by the server to indicate that the client MUST be registered before the server will allow it to be parsed in detail.
 ```
 * 461 - ERR\_NEEDMOREPARAMS
 ```
