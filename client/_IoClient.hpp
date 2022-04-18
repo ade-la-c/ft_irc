@@ -1,13 +1,13 @@
 #include "Client.hpp"
 
-class	ioClient {
+class	_IoClient {
 
 
 public:
 
-	ioClient();
-	ioClient( int socket );
-	~ioClient();
+	_IoClient();
+	_IoClient( int socket );
+	~_IoClient();
 
 	void	setSockFd( int sockFd );
 	int		getSockFd( void ) const;
