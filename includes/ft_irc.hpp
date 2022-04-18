@@ -21,7 +21,7 @@ class Client;
 class Channel;
 class Message;
 
-typedef std::map<int, Client> client_map;	// {ip, client} map
+typedef std::map<int, Client> client_map;	// {socket, client} map
 typedef std::map<std::string, Channel> channel_map; // {name, channel} map
 
 # include "../database/Database.hpp"

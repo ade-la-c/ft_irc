@@ -40,8 +40,8 @@ class Database {
 		Channel * get_channel(std::string const & name);
 
 		// creates a new client/channel & returns it. Throws an exception if it already exists.
-		Client & add_client(int socket);
-		Channel & add_channel(std::string const & name);
+		Client * add_client(int socket);
+		Channel * add_channel(std::string const & name);
 
 		//returns false if wrong amount of args
 		bool init(int argc, char **argv);

@@ -20,20 +20,20 @@ Channel * Database::get_channel(std::string const & name) {
 	return &(channel->second);
 }
 
-Client & Database::add_client(int socket) {
+Client * Database::add_client(int socket) {
 	std::pair<client_map::iterator, bool> ret;
 	ret = clients.insert(std::make_pair(socket, Client(socket)));
 	if (!ret.second)
 		throw Database::already_exists();
-	return ret.first->second;
+	return &(ret.first->second);
 }
 
-Channel & Database::add_channel(std::string const & name) {
+Channel * Database::add_channel(std::string const & name) {
 	std::pair<channel_map::iterator, bool> ret;
 	ret = channels.insert(std::make_pair(name, Channel(name)));
 	if (!ret.second)
 		throw Database::already_exists();
-	return ret.first->second;
+	return &(ret.first->second);
 }
 
 bool Database::init(int argc, char **argv) {

@@ -3,11 +3,11 @@
 
 # include "../includes/ft_irc.hpp"
 
-class Client {
+class Client : public _io_client, _irc_client {
 
 	public:
 
-		Client();
+		Client() : _IoClient(), _IrcClient() ;
 		Client(int socket);
 		Client(Client const & cpy);
 		~Client();

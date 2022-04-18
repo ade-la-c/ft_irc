@@ -16,12 +16,20 @@ void pass(Client & client, Message & msg) {
 void nick(Client & client, Message & msg) {
 	if (msg.get_params_count() == 0)
 		response(replies.at(ERR_NEEDMOREPARAMS), msg.get_command().c_str());
+	std::string nick = msg.get_params()[0]
 	if (!Message::is_nickname(msg.get_params()[0]))
-		response(replies.at(ERR_ERRONEUSNICKNAME), msg.get_params()[0].c_str());
+		response(replies.at(ERR_ERRONEUSNICKNAME), nick.c_str());
 	
-	//TODO check if nick doesn't exist yet
+	Database * db = Database::get_instance();
+	client_map::iterator begin = db->get_client()->begin();
+	client_map::iterator end = db->get_client()->end();
+	while (begin != end) {
+		if (begin->nickname == nick)
+			response(replies.at(ERR_ERRONEUSNICKNAME), nick.c_str());
+		begin++;
+	}
 
-	client.nickname = msg.get_params()[0];
+	client.nickname = nick;
 	client.nick_set = true;
 	client.reg();
 }
@@ -50,9 +58,16 @@ void join(Client & client, Message & msg) {
 
 	Database * db = Database::get_instance();
 	std::string channels = msg.get_command()[0];
-	std::string::size_type start = 0;
-	std::string::size_type end = channels.find(",");
 
+	char * tok = strtok(channels.c_str(), ",");
+	Channel * chan;
+	while (tok) {
+		chan = db.get_channel(tok);
+		if (!chan)
+			chan = db.add_channel(tok);
+		chan.add_client(client);
+		tok = strtok(NULL, ",");
+	}
 }
 
 void privmsg(Client & client, Message & msg) {

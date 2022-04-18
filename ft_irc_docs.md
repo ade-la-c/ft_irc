@@ -81,6 +81,8 @@ Used at the beginning of connection to specify info about the user.\
 \<unused\> is, well, unused. It's there for legacy purposes.\
 Realname may contain space character but the parameter must then be prefix by a colon (:).
 
+The \<realname\> may contain space characters.
+
 * Replies:
 ```
 ERR_NEEDMOREPARAMS              ERR_ALREADYREGISTRED
