@@ -2,8 +2,9 @@
 # define CLIENT_HPP
 
 # include "../includes/ft_irc.hpp"
+# include "_IoClient.hpp"
 
-class Client {
+class Client : public _IoClient {
 
 	public:
 
@@ -14,13 +15,16 @@ class Client {
 
 		void parse_input();
 
+		int				getSocket( void ) const;
+		std::string		getBuf( void ) const;
+
 		// either keep public or make a read member function and put in private
-		char buf[512];
-		ssize_t length;
 
 	private:
 
-		int socket;
+		int			_socket;
+		char		_buf[512];
+		ssize_t		_length = 512;
 
 };
 
