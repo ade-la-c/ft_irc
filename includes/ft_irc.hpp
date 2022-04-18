@@ -19,7 +19,9 @@
 # include "../channel/Channel.hpp"
 # include "../server/Server.hpp"
 
-# define MAXFD	1024
+# define MAXFD		1024
+# define READFD		0
+# define WRITEFD	1
 
 typedef struct sockaddr_in		SA_IN;
 typedef struct sockaddr			SA;
