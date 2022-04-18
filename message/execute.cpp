@@ -3,10 +3,14 @@
 //TODO responses
 
 void pass(Client & client, Message & msg) {
-	if (client.registered)
+	if (client.registered) {
 		response(replies.at(ERR_ALREADYREGISTERED));
-	if (msg.get_params_count() == 0)
+		return ;
+	}
+	if (msg.get_params_count() == 0) {
 		response(replies.at(ERR_NEEDMOREPARAMS), msg.get_command().c_str());
+		return;
+	}
 
 	client.password = msg.get_params()[0];
 	client.pass_set = true;
@@ -14,18 +18,24 @@ void pass(Client & client, Message & msg) {
 }
 
 void nick(Client & client, Message & msg) {
-	if (msg.get_params_count() == 0)
+	if (msg.get_params_count() == 0) {
 		response(replies.at(ERR_NEEDMOREPARAMS), msg.get_command().c_str());
+		return ;
+	}
 	std::string nick = msg.get_params()[0]
-	if (!Message::is_nickname(msg.get_params()[0]))
+	if (!Message::is_nickname(msg.get_params()[0])) {
 		response(replies.at(ERR_ERRONEUSNICKNAME), nick.c_str());
+		return ;
+	}
 	
 	Database * db = Database::get_instance();
 	client_map::iterator begin = db->get_client()->begin();
 	client_map::iterator end = db->get_client()->end();
 	while (begin != end) {
-		if (begin->nickname == nick)
+		if (begin->nickname == nick) {
 			response(replies.at(ERR_ERRONEUSNICKNAME), nick.c_str());
+			return ;
+		}
 		begin++;
 	}
 
@@ -35,13 +45,17 @@ void nick(Client & client, Message & msg) {
 }
 
 void user(Client & client, Message & msg) {
-	if (client.registered)
+	if (client.registered) {
 		response(replies.at(ERR_ALREADYREGISTERED));
-	if (msg.get_params_count() < 4)
+		return ;
+	}
+	if (msg.get_params_count() < 4) {
 		response(replies.at(ERR_NEEDMOREPARAMS), msg.get_command().c_str());
+		return ;
+	}
 
 	//TODO check username syntax (no NUL, \r, \n, " " or @) -> what do if wrong?
-	
+
 	client.username = msg.get_params()[0];
 	int mode_param = stoi(msg.get_params()[1]);
 	client.mode = mode_param & 0b1100;
@@ -51,10 +65,14 @@ void user(Client & client, Message & msg) {
 }
 
 void join(Client & client, Message & msg) {
-	if (!client.registered)
+	if (!client.registered) {
 		reponse(replies.at(ERR_NOTREGISTERED));
-	if (msg.get_params_count() == 0)
+		return ;
+	}
+	if (msg.get_params_count() == 0) {
 		response(replies.at(ERR_NEEDMOREPARAMS), msg.get_command().c_str());
+		return ;
+	}
 
 	Database * db = Database::get_instance();
 	std::string channels = msg.get_command()[0];
@@ -71,51 +89,75 @@ void join(Client & client, Message & msg) {
 }
 
 void privmsg(Client & client, Message & msg) {
-	if (!client.registered)
+	if (!client.registered) {
 		reponse(replies.at(ERR_NOTREGISTERED));
+		return ;
+	}
 	//TODO
 }
 
 void oper(Client & client, Message & msg) {
-	if (!client.registered)
+	if (!client.registered) {
 		reponse(replies.at(ERR_NOTREGISTERED));
-	if (msg.get_params_count() < 2)
+		return ;
+	}
+	if (msg.get_params_count() < 2) {
 		response(replies.at(ERR_NEEDMOREPARAMS), msg.get_command().c_str());
+		return ;
+	}
 	//TODO define oper account through config file or hard code.
 }
 
 void kill(Client & client, Message & msg) {
-	if (!client.registered)
+	if (!client.registered) {
 		reponse(replies.at(ERR_NOTREGISTERED));
-	if (!client.oper)
+		return ;
+	}
+	if (!client.oper) {
 		reponse(replies.at(ERR_NOPRIVILEGES));
-	if (msg.get_params_count() == 0)
+		return ;
+	}
+	if (msg.get_params_count() == 0) {
 		response(replies.at(ERR_NEEDMOREPARAMS), msg.get_command().c_str());
+		return ;
+	}
 	//TODO how to disconnect user?
 }
 
 void rehash(Client & client, Message & msg) {
-	if (!client.registered)
+	if (!client.registered) {
 		reponse(replies.at(ERR_NOTREGISTERED));
-	if (!client.oper)
+		return ;
+	}
+	if (!client.oper) {
 		reponse(replies.at(ERR_NOPRIVILEGES));
+		return ;
+	}
 	//TODO we may not have a config file
 }
 
 void restart(Client & client, Message & msg) {
-	if (!client.registered)
+	if (!client.registered) {
 		reponse(replies.at(ERR_NOTREGISTERED));
-	if (!client.oper)
+		return ;
+	}
+	if (!client.oper) {
 		reponse(replies.at(ERR_NOPRIVILEGES));
+		return ;
+	}
 	//TODO how?
 }
 
 void die(Client & client, Message & msg) {
-	if (!client.registered)
+	if (!client.registered) {
 		reponse(replies.at(ERR_NOTREGISTERED));
-	if (!client.oper)
+		return ;
+	}
+	if (!client.oper) {
 		reponse(replies.at(ERR_NOPRIVILEGES));
-	exit(0); //TODO not allowed :pepesadge:
+		return ;
+	}
+	exit(0);
 }
 
 void execute(Client & client, Message & msg) {
