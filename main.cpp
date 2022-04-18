@@ -9,5 +9,9 @@ int main(int argc, char **argv) {
 		return 1;
 	}
 
+	Server server(atoi(argv[1]));
+
+	
+
 	//main loop starts here
 }

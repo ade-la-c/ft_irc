@@ -265,19 +265,22 @@ External authorized functions :
 		This function returns a different value depending on cmd argument (man), -1 if there is an error.
 
 
-	POLL : <poll.h>
 
-		int		poll( struct pollfd fds[], nfds_t nfds, int timeout );
 
-			fds[] : array of file descriptors.
-			nfds : specifies the size of the fds array.
+	SELECT : <sys/select.h>
+
+		int		select( int nfds, fd_set *restrict readfds, fd_set *restrict writefds,
+						fd_set *restrict errorfds, struct timeval *restrict timeout );
+
+			nfds : the highest fd + 1
+			readfds : descriptors ready for reading
+			writefds : descriptors ready for writing
+			errorfds : descriptors that have exceptional conditions pending
 			timeout : if timeout > 0 it specifies the maximum interval in miliseconds to wait for any fd
 					to become ready, if timeout == 0 poll will return without blocking, if timeout is
 					negative, the poll blocks indefinetly.
 
-		Poll() is a synchronous I/O multiplexing 
-		This function returns the number of descriptors tat are ready for I/O, -1 if there is an error, if
-		timeout is reached, 0 is returned, if poll() returns with an error, the fds array will be unmodified.
+		Select() is a synchronous I/O multiplexing function.
+		This function returns the number of ready descriptors that are contained un the descriptor sets.
+		- 1 if there is an error (the descriptor sets will be unmodified).
 }
-
-
