@@ -9,6 +9,9 @@ Server::Server( int port ) {
 
 	std::cout << "Initialazing server" << std::endl;
 
+	FD_ZERO(&_readFds);
+	FD_ZERO(&_writeFds);
+
 	try {
 
 		if ((_servSocket = socket(AF_INET, SOCK_STREAM, 0)) == -1)
@@ -18,7 +21,7 @@ Server::Server( int port ) {
 		servAddr.sin_port			= htons(port);
 		if (bind(_servSocket, (SA *)&servAddr, sizeof(servAddr)) == -1)
 			throw init_error();
-		if (listen(_servSocket, 10) == -1)
+		if (listen(_servSocket, 20) == -1)
 			throw init_error();
 
 	} catch(const std::exception & e) {
@@ -30,6 +33,14 @@ Server::~Server() {
 
 	std::cout << "Closing server" << std::endl;
 	close(_servSocket);
+}
+
+void	Server::addToFdSet( int fd, int fdType ) {
+
+	if (fdType == READFD)
+		FD_SET(fd, &_readFds);
+	if (fdType == WRITEFD)
+		FD_SET(fd, &_writeFds);
 }
 
 int		Server::getServSocket() const {

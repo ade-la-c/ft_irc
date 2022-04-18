@@ -12,6 +12,8 @@ public:
 	Server( int port );
 	~Server();
 
+	void		addToFdSet( int fd, int fdType );
+
 	int			getServSocket() const;
 
 	class	init_error : public std::exception {
