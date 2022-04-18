@@ -22,6 +22,6 @@ class Client {
 
 		int socket;
 
-}
+};
 
 #endif

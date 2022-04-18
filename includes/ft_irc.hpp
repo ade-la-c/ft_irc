@@ -9,11 +9,12 @@
 # include <arpa/inet.h>
 # include <signal.h>
 # include <fcntl.h>
-# include <poll.h>
+# include <sys/select.h>
+# include <utility>
 
-# include "Database.hpp"
-# include "Client.hpp"
-# include "Channel.hpp"
+# include "../database/Database.hpp"
+# include "../client/Client.hpp"
+# include "../channel/Channel.hpp"
 
 void error(std::string const & str);
 
