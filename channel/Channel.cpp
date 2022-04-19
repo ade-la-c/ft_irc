@@ -16,3 +16,7 @@ void Channel::add_client(Client & client) {
 	if (!subscribed_clients.count(client.socket))
 		subscribed_clients[client.socket] = client;
 }
+
+void Channel::remove_client(Client & client) {
+	subscribed_clients.erase(client.socket);
+}

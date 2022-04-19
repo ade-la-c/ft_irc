@@ -13,6 +13,7 @@ class Channel {
 		~Channel();
 
 		void add_client(Client & client);
+		void remove_client(Client & client);
 
 		std::string name;
 

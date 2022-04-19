@@ -136,6 +136,15 @@ ERR_NOSUCHNICK
 RPL_AWAY
 ```
 
+#### PRIVMSG
+
+```
+Parameters: <msgtarget> <text to be sent>
+```
+
+Same as PRIVMSG but doesn't generate replies.\
+Used to prevent infinite reply loops with bots and such.
+
 #### OPER
 
 ```

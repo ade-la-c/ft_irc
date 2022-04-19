@@ -82,6 +82,17 @@ void join(Client & client, Message & msg) {
 	Database * db = Database::get_instance();
 	std::string channels = msg.get_params()[0];
 
+	if (channels == "0") {
+		channel_map::iterator begin = client.subscribed_channels.begin();
+		channel_map::iterator end = client.subscribed_channels.end();
+		while (begin != end) {
+			begin->second.remove_client(client);
+			begin++;
+		}
+		client.subscribed_channels.clear();
+		return ;
+	}
+
 	char * tok = strtok(const_cast<char *>(channels.c_str()), ",");
 	Channel * chan;
 	while (tok) {
@@ -149,7 +160,7 @@ void rehash(Client & client, Message & msg) {
 		return ;
 	}
 	(void) msg;
-	//TODO we may not have a config file
+	//TODO we may not have a config file -> not implement ?
 }
 
 void restart(Client & client, Message & msg) {
