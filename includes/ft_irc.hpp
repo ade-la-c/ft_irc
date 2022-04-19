@@ -35,7 +35,7 @@ void error(std::string const & str);
 template <typename Iter>
 void send_response(Iter begin, Iter end);
 
-std::string response(std::string const & format, ...);
+std::string response(const char * format, ...);
 
 //#include "response.hpp" TODO
 

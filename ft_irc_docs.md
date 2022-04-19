@@ -285,7 +285,7 @@ Returned when a nickname parameter is expected for a command and isn't found.
 ```
 "<nick> :Erroneous nickname"
 Returned after receiving a NICK message which contains characters which do not fall in the defined set:
-( letter / special ) *8( letter / digit / special / "-" )
+( letter / special ) \*8( letter / digit / special / "-" )
 ```
 * 433 - ERR\_NICKNAMEINUSE
 ```

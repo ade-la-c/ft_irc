@@ -84,7 +84,7 @@ bool Message::is_special(int c) {
 	return ((c >= '{' && c <= '}') || (c >= '[' && c <= '`'));
 }
 
-bool Message::is_nickname(std::string str, std::string::size_type pos = 0, std::string::size_type count = std::string::npos) {
+bool Message::is_nickname(std::string str, std::string::size_type pos, std::string::size_type count) {
 	if (!std::isalpha(str[pos]) && !is_special(str[pos]))
 		return false;
 	for (std::string::size_type i = pos; str[i] != ' ' && i < str.size() && i < pos + count; i++) {

@@ -17,9 +17,6 @@ class Database {
 		Database & operator=(Database const & rhs);
 
 
-		client_map clients;
-		channel_map channels;
-
 	public:
 
 		class already_exists : public std::exception {
@@ -45,6 +42,9 @@ class Database {
 
 		//returns false if wrong amount of args
 		bool init(int argc, char **argv);
+
+		client_map clients;
+		channel_map channels;
 
 		// only way to get the instance
 		static Database * get_instance();

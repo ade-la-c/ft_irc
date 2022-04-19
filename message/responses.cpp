@@ -1,10 +1,10 @@
-#include "ft_irc.h"
+#include "../includes/ft_irc.hpp"
 
-std::string response(std::string const & format, ...) {
+std::string response(const char * format, ...) {
 	va_list arg;
-	char * response;
+	char response[512];
 
-	va_start(arg, format.c_str()); //unsure of this c_str(), maybe should be &format
-	vsprintf(response, format.c_str(), arg);
+	va_start(arg, format);
+	vsprintf(response, format, arg);
 	return response;
 }
