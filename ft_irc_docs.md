@@ -388,7 +388,7 @@ client's host as an operator, this error MUST be returned.
 "<servername> <version> <available user modes> <available channel modes>"
 ```
 
-> replies 1 to 4 are sent on successful registration
+***replies 1 to 4 are sent on successful registration***
 
 * 301 - RPL\_AWAY
 ```
