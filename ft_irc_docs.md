@@ -371,6 +371,24 @@ client's host as an operator, this error MUST be returned.
 
 #### Command responses
 
+* 001 - RPL\_WELCOME
+```
+"Welcome to the Internet Relay Network <nick>!<user>@<host>"
+```
+* 002 - RPL\_YOURHOST
+```
+"Your host is <servername>, running version <ver>"
+```
+* 003 - RPL\_CREATED
+```
+"This server was created <date>"
+```
+* 004 - RPL\_MYINFO
+```
+"<servername> <version> <available user modes> <available channel modes>"
+```
+
+	replies 1 to 4 are sent on successful registration
 
 * 301 - RPL\_AWAY
 ```
