@@ -22,18 +22,18 @@ External authorized functions :
 		The function returns -1 if there is an error
 
 
-	GETSOCKOPT : <sys/socket.h>
+	SETSOCKOPT : <sys/socket.h>
 
-		int		getsockopt( int socket, int level, int option_name, void *restrict option_value,
-							socklen_t *restrict option_len );
+		int		setsockopt( int socket, int level, int option_name, const void *option_value,
+							socklen_t option_len );
 
-			socket : the descriptor of the socket used 						(?)
+			socket : the descriptor of the socket used
 			level : the level at which the option manipulated resides, to manipulate socket level options,
 			the level is specified as SOL_SOCKET
 			option_name : the defined name of different options in the library (check the man).
 			option_value : most socket-level options use an int in this parameter as a boolean.
 
-		Getsockopt() examines the options associated with a socket, options may exist at multiple
+		Setsockopt() examines the options associated with a socket, options may exist at multiple
 		protocol levels; they're always present at the uppermost "socket" level.
 		The function returns 0 if successful completion, -1 if there is an error.
 
@@ -92,14 +92,15 @@ External authorized functions :
 		int		getaddrinfo( const char *restrict nodename, const char *restrict servname,
 							const struct addrinfo *restrict hints, struct addrinfo **restrict res );
 
-			nodename : name of the host ?
-			servname : name of the service ?
-			hints : optional pointer to a struct addrinfo (defined by netdb.h).
+			nodename : name of the host we're trying to set up.
+			servname : name or number of the service (as a string).
+			hints : optional pointer to a struct addrinfo containing relevant information (defined by netdb.h).
 			res : pointer to a linked list of one or more addrinfo structures.
 
 		Getaddrinfo() function is used to get a list of IP addresses and port numbers for host and service,
 		it is a replacement for gethostbyname() (defined above) and getservbyname() functions. At least one of
-		nodename and servname must be non-null.
+		nodename and servname must be non-null. This function is called to set up (allocate, etc) the res parameter
+		with the informations of the other function parameters.
 		The function returns 0 if successful completion, or one of the error codes listed in gai_strerror(3)
 		in case of error.
 
