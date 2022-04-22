@@ -27,4 +27,5 @@ void Client::reg() {
 			registered = true;
 		}
 	}
+	//TODO send registration messages (1 to 4)
 }
