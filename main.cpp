@@ -1,4 +1,4 @@
-#include "ft_irc.hpp"
+#include "includes/ft_irc.hpp"
 
 int main(int argc, char **argv) {
 
@@ -10,6 +10,7 @@ int main(int argc, char **argv) {
 	}
 
 
+<<<<<<< HEAD
 	Server	serv(atoi(argv[1]);
 	int		newfd, fdmax;
 	fd_set	
@@ -55,6 +56,9 @@ int main(int argc, char **argv) {
 		}
 	}
 	return 0;
+=======
+	//main loop starts here
+>>>>>>> 9694c2e4b893bd1761d0eaff270df41af69b9987
 }
 
 // si on peut read dans le fd du serveur (celui qu'on donne a accept),

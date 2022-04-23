@@ -1,17 +1,14 @@
-#include "Client.hpp"
+#include "../includes/ft_irc.hpp"
 
-Client::Client() : _socket(-1) {
+Client::Client() : _IoClient(), _IRCClient() {
 }
 
-Client::Client(int socket) : _socket(socket) {
+Client::Client(int socket) : _IoClient(socket), _IRCClient() {
 }
 
-Client::Client(Client const & cpy) : _socket(cpy._socket) {
+Client::Client(Client const & cpy) : _IoClient(cpy), _IRCClient(cpy) {
 }
 
 Client::~Client() {
 }
 
-void Client::parse_input() {
-	//TODO
-}

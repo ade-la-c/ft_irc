@@ -12,9 +12,14 @@ class Channel {
 		Channel(Channel const & cpy);
 		~Channel();
 
-	private:
+		void add_client(Client & client);
+		void remove_client(Client & client);
 
 		std::string name;
+
+	private:
+
+		client_map subscribed_clients;
 
 };
 
