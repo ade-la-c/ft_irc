@@ -12,9 +12,12 @@ public:
 	Server( int port );
 	~Server();
 
-	void		addToFdSet( int fd, int fdType );
-
 	int			getServSocket() const;
+	int			getFdSet() const;
+
+	void		addToFdSet( int fd, int fdType );
+	int			acceptNewConnection() const;
+	void		doSelect();
 
 	class	init_error : public std::exception {
 		public:

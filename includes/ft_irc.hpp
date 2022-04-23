@@ -9,6 +9,7 @@
 # include <arpa/inet.h>
 # include <unistd.h>
 # include <csignal>
+# include <cstdlib>
 # include <fcntl.h>
 # include <sys/select.h>
 # include <utility>
@@ -19,7 +20,6 @@
 # include "../channel/Channel.hpp"
 # include "../server/Server.hpp"
 
-# define MAXFD		1024
 # define READFD		0
 # define WRITEFD	1
 

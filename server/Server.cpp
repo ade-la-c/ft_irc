@@ -35,6 +35,19 @@ Server::~Server() {
 	close(_servSocket);
 }
 
+fd_set	Server::getFdSet( int fdType ) const {
+
+	if (fdType == READFD)
+		return this->_readFds;
+	if (fdType == WRITEFD)
+		return this->_writeFds;
+}
+
+int		Server::getServSocket() const {
+
+	return this->_servSocket;
+}
+
 void	Server::addToFdSet( int fd, int fdType ) {
 
 	if (fdType == READFD)
@@ -43,7 +56,21 @@ void	Server::addToFdSet( int fd, int fdType ) {
 		FD_SET(fd, &_writeFds);
 }
 
-int		Server::getServSocket() const {
+int		Server::acceptNewConnection() const {
 
-	return this->_servSocket;
+	int		clientSocket = accept(_servSocket, (SA *), NULL, NULL);
+
+	if (clientSocket < 0) {
+		error("accept call failed");
+		exit(EXIT_FAILURE);
+	}
+	return clientSocket;
+}
+
+void	Server::doSelect() {
+
+	if (select(FD_SETSIZE+1, &_readFds, &_writeFds, NULL, NULL) < 0) {
+		error("select failed");
+		exit(EXIT_FAILURE);
+	}
 }
