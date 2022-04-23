@@ -46,6 +46,7 @@ int main(int argc, char **argv) {
 					serv.addToFdSet(newfd, READFD);
 				} else {
 					//TODO si c'est un autre readfd
+					
 				}
 			}
 			if (FD_ISSET(i, serv.getFdSet(WRITEFD))) {
