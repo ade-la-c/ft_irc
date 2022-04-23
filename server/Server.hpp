@@ -14,6 +14,9 @@ public:
 
 	int			getServSocket() const;
 	int			getFdSet() const;
+	int			getMaxFd() const;
+
+	void		setMaxFd( int newMaxFd );
 
 	void		addToFdSet( int fd, int fdType );
 	int			acceptNewConnection() const;
@@ -26,10 +29,18 @@ public:
 			}
 	};
 
+	class	server_error : public std::exception {
+		public:
+			virtual char const * what() const throw() {
+				return "error: fatal";
+			}
+	}
+
 
 private:
 
 	int			_servSocket;
+	int			_maxFd;
 	fd_set		_readFds;
 	fd_set		_writeFds;
 

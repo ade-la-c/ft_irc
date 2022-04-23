@@ -24,7 +24,7 @@ Server::Server( int port ) {
 		if (listen(_servSocket, 20) == -1)
 			throw init_error();
 
-	} catch(const std::exception & e) {
+	} catch (const std::exception & e) {
 		std::cerr << e.what() << std::endl;
 	}
 }
@@ -35,6 +35,11 @@ Server::~Server() {
 	close(_servSocket);
 }
 
+int		Server::getServSocket() const {
+
+	return this->_servSocket;
+}
+
 fd_set	Server::getFdSet( int fdType ) const {
 
 	if (fdType == READFD)
@@ -43,10 +48,12 @@ fd_set	Server::getFdSet( int fdType ) const {
 		return this->_writeFds;
 }
 
-int		Server::getServSocket() const {
+int		Server::getMaxFd() const {
 
-	return this->_servSocket;
+	return this->_maxFd;
 }
+
+void		setMaxFd( int newMaxFd ) : _maxFd(newMaxFd) {}
 
 void	Server::addToFdSet( int fd, int fdType ) {
 
@@ -60,17 +67,21 @@ int		Server::acceptNewConnection() const {
 
 	int		clientSocket = accept(_servSocket, (SA *), NULL, NULL);
 
-	if (clientSocket < 0) {
-		error("accept call failed");
-		exit(EXIT_FAILURE);
+	try {
+		if (clientSocket < 0)
+			throw server_error();
+	} catch (const std::exception & e) {
+		std::cerr << e.what() << std::endl;
 	}
 	return clientSocket;
 }
 
 void	Server::doSelect() {
 
-	if (select(FD_SETSIZE+1, &_readFds, &_writeFds, NULL, NULL) < 0) {
-		error("select failed");
-		exit(EXIT_FAILURE);
+	try {
+		if (select(FD_SETSIZE+1, &_readFds, &_writeFds, NULL, NULL) < 0)
+			throw server_error();
+	} catch (const std::exception & e) {
+		std::cerr << e.what() << std::endl;
 	}
 }

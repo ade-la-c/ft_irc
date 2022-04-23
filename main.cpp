@@ -10,11 +10,12 @@ int main(int argc, char **argv) {
 	}
 
 
-	Server serv(atoi(argv[1]);
-
+	Server	serv(atoi(argv[1]);
+	int		newfd, fdmax;
+	fd_set	
 
 	serv.addToFdSet(serv.getServSocket(), READFD);
-
+	serv.setMaxFd(serv.getServSocket());
 
 	while (true) {
 
@@ -36,10 +37,19 @@ int main(int argc, char **argv) {
 		for (int i = 0; i < FD_SETSIZE; i++) {
 
 			if (FD_ISSET(i, serv.getFdSet(READFD))) {
-				db.get_client(i)->
+
+				if (i == serv.getServSocket()) {
+					// handle new connections
+					newfd = serv.acceptNewConnection();
+					if (newfd > fdmax)
+						serv.setMaxFd(newfd);
+					serv.addToFdSet(newfd, READFD);
+				} else {
+					//TODO si c'est un autre readfd
+				}
 			}
 			if (FD_ISSET(i, serv.getFdSet(WRITEFD))) {
-
+				//TODO si c'est un writefd
 			}
 		}
 	}
