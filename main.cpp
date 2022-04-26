@@ -1,4 +1,4 @@
-#include "ft_irc.hpp"
+#include "includes/ft_irc.hpp"
 
 int main(int argc, char **argv) {
 
@@ -10,8 +10,6 @@ int main(int argc, char **argv) {
 	}
 
 	Server server(atoi(argv[1]));
-
-	
 
 	//main loop starts here
 }

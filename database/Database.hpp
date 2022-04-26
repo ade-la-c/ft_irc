@@ -2,7 +2,6 @@
 # define DATABASE_HPP
 
 # include <map>
-
 # include "../includes/ft_irc.hpp"
 
 // Singleton Database class
@@ -16,11 +15,6 @@ class Database {
 		Database(Database const & cpy);
 		Database & operator=(Database const & rhs);
 
-		typedef std::map<int, Client> client_map;	// {ip, client} map
-		typedef std::map<std::string, Channel> channel_map; // {name, channel} map
-
-		client_map clients;
-		channel_map channels;
 
 	public:
 
@@ -42,11 +36,14 @@ class Database {
 		Channel * get_channel(std::string const & name);
 
 		// creates a new client/channel & returns it. Throws an exception if it already exists.
-		Client & add_client(uint32_t ip);
-		Channel & add_channel(std::string const & name);
+		Client * add_client(int socket);
+		Channel * add_channel(std::string const & name);
 
 		//returns false if wrong amount of args
 		bool init(int argc, char **argv);
+
+		client_map clients;
+		channel_map channels;
 
 		// only way to get the instance
 		static Database * get_instance();

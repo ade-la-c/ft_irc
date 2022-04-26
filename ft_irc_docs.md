@@ -81,6 +81,8 @@ Used at the beginning of connection to specify info about the user.\
 \<unused\> is, well, unused. It's there for legacy purposes.\
 Realname may contain space character but the parameter must then be prefix by a colon (:).
 
+The \<realname\> may contain space characters.
+
 * Replies:
 ```
 ERR_NEEDMOREPARAMS              ERR_ALREADYREGISTRED
@@ -133,6 +135,15 @@ ERR_WILDTOPLEVEL                ERR_TOOMANYTARGETS
 ERR_NOSUCHNICK
 RPL_AWAY
 ```
+
+#### PRIVMSG
+
+```
+Parameters: <msgtarget> <text to be sent>
+```
+
+Same as PRIVMSG but doesn't generate replies.\
+Used to prevent infinite reply loops with bots and such.
 
 #### OPER
 
@@ -269,6 +280,11 @@ Returned when an invalid use of "PRIVMSG $<server>" or "PRIVMSG #<host>" is atte
 "<mask> :Wildcard in toplevel domain"
 Returned when an invalid use of "PRIVMSG $<server>" or "PRIVMSG #<host>" is attempted.
 ```
+* 421 - ERR\_UNKNOWNCOMMAND
+```
+"<command> :Unknown command"
+Returned to a registered client to indicate that the command sent is unknown by the server.
+```
 * 431 - ERR\_NONICKNAMEGIVEN
 ```
 ":No nickname given"
@@ -276,9 +292,9 @@ Returned when a nickname parameter is expected for a command and isn't found.
 ```
 * 432 - ERR\_ERRONEUSNICKNAME
 ```
-"<nick> :Erroneus nickname"
+"<nick> :Erroneous nickname"
 Returned after receiving a NICK message which contains characters which do not fall in the defined set:
-( letter / special ) *8( letter / digit / special / "-" )
+( letter / special ) \*8( letter / digit / special / "-" )
 ```
 * 433 - ERR\_NICKNAMEINUSE
 ```
@@ -295,6 +311,11 @@ Returned by a server to a client when it detects a nickname collision
 "<nick/channel> :Nick/channel is temporarily unavailable"
 Returned by a server to a user trying to join a channel currently blocked by the channel delay mechanism.
 Returned by a server to a user trying to change nickname when the desired nickname is blocked by the nick delay mechanism.
+```
+* 451 - ERR\_NOTREGISTERED
+```
+":You have not registered"
+Returned by the server to indicate that the client MUST be registered before the server will allow it to be parsed in detail.
 ```
 * 461 - ERR\_NEEDMOREPARAMS
 ```
@@ -350,6 +371,24 @@ client's host as an operator, this error MUST be returned.
 
 #### Command responses
 
+* 001 - RPL\_WELCOME
+```
+"Welcome to the Internet Relay Network <nick>!<user>@<host>"
+```
+* 002 - RPL\_YOURHOST
+```
+"Your host is <servername>, running version <ver>"
+```
+* 003 - RPL\_CREATED
+```
+"This server was created <date>"
+```
+* 004 - RPL\_MYINFO
+```
+"<servername> <version> <available user modes> <available channel modes>"
+```
+
+***replies 1 to 4 are sent on successful registration***
 
 * 301 - RPL\_AWAY
 ```

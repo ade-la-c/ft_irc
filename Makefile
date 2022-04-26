@@ -6,19 +6,19 @@
 #    By: ade-la-c <ade-la-c@student.42.fr>          +#+  +:+       +#+         #
 #                                                 +#+#+#+#+#+   +#+            #
 #    Created: 2022/03/09 11:48:49 by ade-la-c          #+#    #+#              #
-#    Updated: 2022/03/14 13:20:01 by ade-la-c         ###   ########.fr        #
+#    Updated: 2022/03/25 07:00:44 by maperrea         ###   ########.fr        #
 #                                                                              #
 # **************************************************************************** #
 
 NAME			= ircserv
 
-SRCS			= ${shell find */*.cpp}
+SRCS			= ${shell find */*.cpp} main.cpp
 
 OBJS			= ${SRCS:.cpp=.o}
 
-CXX				= c++
+CXX				= c++ #-g -fsanitize=address
 
-CXXFLAGS		= -Wall -Werror -Wextra -std=c++98 \
+CXXFLAGS		= -Wall -Werror -Wextra -std=c++98 -Wno-unused-variable \
 				# -g -fsanitize=address
 
 RM				= rm -f

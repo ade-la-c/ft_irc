@@ -30,7 +30,11 @@
 *.exe
 *.out
 *.app
+ircserv
 
 # Vim files
 *.swp
 *.swo
+
+bircd
+bewareircd*
