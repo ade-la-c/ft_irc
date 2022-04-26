@@ -45,6 +45,8 @@ class Database {
 		client_map clients;
 		channel_map channels;
 
+		response_list responses;
+
 		// only way to get the instance
 		static Database * get_instance();
 };
