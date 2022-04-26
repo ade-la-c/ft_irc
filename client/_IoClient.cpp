@@ -9,11 +9,6 @@ _IoClient::_IoClient( _IoClient const & cpy ) : _sockFd(cpy._sockFd) {}
 
 _IoClient::~_IoClient() {}
 
-void	_IoClient::setSockFd( int sockFd ) {
-
-	this->_sockFd = sockFd;
-}
-
 int		_IoClient::getSockFd( void ) const {
 
 	return this->_sockFd;
@@ -21,4 +16,14 @@ int		_IoClient::getSockFd( void ) const {
 
 char *	_IoClient::getBuf( void ) {
 	return this->_buf;
+}
+
+void	_IoClient::setBuf( char buf[512] ) {
+
+	this->_buf = buf;
+}
+
+void	_IoClient::setSockFd( int sockFd ) {
+
+	this->_sockFd = sockFd;
 }
