@@ -1,17 +1,9 @@
 #include "includes/ft_irc.hpp"
-
-int main(int argc, char **argv) {
-
-	Database * db = Database::get_instance();
-
-	if (!db->init(argc, argv)) {
-		error("Wrong number of arguments (need two)");
-		return 1;
-	}
-
-	Server	serv(atoi(argv[1]);
-	int		newfd, fdmax;
-	fd_set	
+void	do_main( int argc, char **argv ) {
+(void)argc;
+	Server	serv(atoi(argv[1]));
+	int		newfd;
+	// fd_set	
 
 	serv.addToFdSet(serv.getServSocket(), READFD);
 	serv.setMaxFd(serv.getServSocket());
@@ -40,9 +32,10 @@ int main(int argc, char **argv) {
 				if (i == serv.getServSocket()) {
 					// handle new connections
 					newfd = serv.acceptNewConnection();
-					if (newfd > fdmax)
+					if (newfd > serv.getMaxFd())
 						serv.setMaxFd(newfd);
 					serv.addToFdSet(newfd, READFD);
+					
 				} else {
 					//TODO si c'est un autre readfd
 					
@@ -53,6 +46,18 @@ int main(int argc, char **argv) {
 			}
 		}
 	}
+}
+
+int		main(int argc, char **argv) {
+
+	Database * db = Database::get_instance();
+
+	if (!db->init(argc, argv)) {
+		error("Wrong number of arguments (need two)");
+		return 1;
+	}
+
+	do_main(argc, argv);
 	return 0;
 }
 

@@ -19,6 +19,7 @@
 # include <map>
 # include <cstdio>
 # include <cstdarg>
+# include <cstring>
 
 # define READFD		0
 # define WRITEFD	1

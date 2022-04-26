@@ -13,7 +13,7 @@ public:
 	~Server();
 
 	int			getServSocket() const;
-	int			getFdSet() const;
+	fd_set *		getFdSet( int fdType );
 	int			getMaxFd() const;
 
 	void		setMaxFd( int newMaxFd );

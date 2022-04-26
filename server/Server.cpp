@@ -40,12 +40,16 @@ int		Server::getServSocket() const {
 	return this->_servSocket;
 }
 
-fd_set	Server::getFdSet( int fdType ) const {
+fd_set *	Server::getFdSet( int fdType ) {
 
+	if (fdType != READFD && fdType != WRITEFD) {
+		std::cerr << "wrong fdType getFdSet" << std::endl;
+		exit(1);
+	}
 	if (fdType == READFD)
-		return this->_readFds;
-	if (fdType == WRITEFD)
-		return this->_writeFds;
+		return &_readFds;
+	else
+		return &_writeFds;
 }
 
 int		Server::getMaxFd() const {
@@ -53,7 +57,10 @@ int		Server::getMaxFd() const {
 	return this->_maxFd;
 }
 
-void		setMaxFd( int newMaxFd ) : _maxFd(newMaxFd) {}
+void	Server::setMaxFd( int newMaxFd ) {
+
+	this->_maxFd = newMaxFd;
+}
 
 void	Server::addToFdSet( int fd, int fdType ) {
 
@@ -65,7 +72,7 @@ void	Server::addToFdSet( int fd, int fdType ) {
 
 int		Server::acceptNewConnection() const {
 
-	int		clientSocket = accept(_servSocket, (SA *), NULL, NULL);
+	int		clientSocket = accept(_servSocket, (SA *)NULL, NULL);
 
 	try {
 		if (clientSocket < 0)
