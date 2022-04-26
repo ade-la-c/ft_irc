@@ -35,7 +35,7 @@ Server::~Server() {
 	close(_servSocket);
 }
 
-int		Server::getServSocket() const {
+int			Server::getServSocket() const {
 
 	return this->_servSocket;
 }
@@ -52,17 +52,17 @@ fd_set *	Server::getFdSet( int fdType ) {
 		return &_writeFds;
 }
 
-int		Server::getMaxFd() const {
+int			Server::getMaxFd() const {
 
 	return this->_maxFd;
 }
 
-void	Server::setMaxFd( int newMaxFd ) {
+void		Server::setMaxFd( int newMaxFd ) {
 
 	this->_maxFd = newMaxFd;
 }
 
-void	Server::addToFdSet( int fd, int fdType ) {
+void		Server::addToFdSet( int fd, int fdType ) {
 
 	if (fdType == READFD)
 		FD_SET(fd, &_readFds);
@@ -70,7 +70,7 @@ void	Server::addToFdSet( int fd, int fdType ) {
 		FD_SET(fd, &_writeFds);
 }
 
-int		Server::acceptNewConnection() const {
+int			Server::acceptNewConnection() const {
 
 	int		clientSocket = accept(_servSocket, (SA *)NULL, NULL);
 
@@ -83,7 +83,7 @@ int		Server::acceptNewConnection() const {
 	return clientSocket;
 }
 
-void	Server::doSelect() {
+void		Server::doSelect() {
 
 	try {
 		if (select(FD_SETSIZE+1, &_readFds, &_writeFds, NULL, NULL) < 0)
@@ -92,3 +92,18 @@ void	Server::doSelect() {
 		std::cerr << e.what() << std::endl;
 	}
 }
+
+char *		Server::doRecv( int fd ) const {
+
+	char	* buf;
+
+	try {
+		if (recv(fd, buf, 512, 0) < 1)
+			throw server_error();
+	} catch (const std::exception & e) {
+		std::cerr << e.what() << std::endl;
+	}
+	return buf;
+}
+
+//TODO doSend()

@@ -1,9 +1,10 @@
 #include "includes/ft_irc.hpp"
-void	do_main( int argc, char **argv ) {
+void	do_main( int argc, char **argv, Database & db ) {
 (void)argc;
+
 	Server	serv(atoi(argv[1]));
-	int		newfd;
-	// fd_set	
+	int		newFd;
+	fd_set	tmpReadFdSet, tmpWriteFdSet;
 
 	serv.addToFdSet(serv.getServSocket(), READFD);
 	serv.setMaxFd(serv.getServSocket());
@@ -35,14 +36,16 @@ void	do_main( int argc, char **argv ) {
 					if (newfd > serv.getMaxFd())
 						serv.setMaxFd(newfd);
 					serv.addToFdSet(newfd, READFD);
-					
+					db.add_client(newfd);
 				} else {
 					//TODO si c'est un autre readfd
-					
+					db.get_client(i)->setBuf(serv.doRecv(i));
+					db.get_client(i)->parse_input();
 				}
 			}
 			if (FD_ISSET(i, serv.getFdSet(WRITEFD))) {
 				//TODO si c'est un writefd
+				serv.doSend() //todo
 			}
 		}
 	}
@@ -57,7 +60,7 @@ int		main(int argc, char **argv) {
 		return 1;
 	}
 
-	do_main(argc, argv);
+	do_main(argc, argv, db);
 	return 0;
 }
 

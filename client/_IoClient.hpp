@@ -10,9 +10,11 @@ class	_IoClient {
 		_IoClient(_IoClient const & cpy);
 		~_IoClient();
 	
-		void	setSockFd( int sockFd );
 		int		getSockFd( void ) const;
 		char *	getBuf( void );
+
+		void	setBuf( char * buf );
+		void	setSockFd( int sockFd );
 	
 	
 	protected:
