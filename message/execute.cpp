@@ -60,7 +60,7 @@ void user(Client & client, Message & msg) {
 		user = user.substr(0, end);
 
 	client.username = user;
-	int mode_param = stoi(msg.get_params()[1]);
+	int mode_param = atoi(msg.get_params()[1].c_str());
 	client.mode = mode_param & 0b1100;
 	client.realname = msg.get_params()[3];
 	client.user_set = true;

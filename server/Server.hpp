@@ -34,7 +34,7 @@ public:
 			virtual char const * what() const throw() {
 				return "error: fatal";
 			}
-	}
+	};
 
 
 private:
