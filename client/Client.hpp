@@ -1,9 +1,8 @@
 #ifndef CLIENT_HPP
 # define CLIENT_HPP
 
-# include "../client/_IoClient.hpp"
-# include "../client/_IRCClient.hpp"
-# include "../includes/ft_irc.hpp"
+# include "_IoClient.hpp"
+# include "_IRCClient.hpp"
 
 class Client : public _IoClient, public _IRCClient {
 
