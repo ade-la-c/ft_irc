@@ -12,27 +12,38 @@
 
 NAME			= ircserv
 
-SRCS			= ${shell find */*.cpp} main.cpp
+INCDIR			= includes
 
-OBJS			= ${SRCS:.cpp=.o}
+SRCDIR			= sources
 
-CXX				= c++ #-g -fsanitize=address
+OBJDIR			= objects
+
+SRCS			= $(shell find *.cpp **/*.cpp)
+
+OBJS			= $(addprefix $(OBJDIR)/, $(SRCS:.cpp=.o))
+
+CXX				= c++
 
 CXXFLAGS		= -Wall -Werror -Wextra -std=c++98 -Wno-unused-variable \
 				# -g -fsanitize=address
 
 RM				= rm -f
 
-all:			${NAME}
+$(OBJDIR)/%.o: %.cpp
+				mkdir -p $(@D)
+				$(CXX) $(CXXFLAGS) -I $(INCDIR) -c $^ -o $@
 
-${NAME}:		${OBJS}
-				${CXX} ${CXXFLAGS} ${OBJS} -o ${NAME}
+all:			$(NAME)
+
+$(NAME):		$(OBJS)
+				@echo $(SRCS)
+				$(CXX) $(CXXFLAGS) -I $(INCDIR) $(OBJS) -o $(NAME)
 
 clean:
-				${RM} ${OBJS}
+				$(RM) -r $(OBJDIR)
 
 fclean:			clean
-				${RM} ${NAME}
+				$(RM) $(NAME)
 
 re:				fclean all
 
