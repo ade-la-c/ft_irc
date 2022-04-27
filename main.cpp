@@ -1,5 +1,5 @@
 #include "includes/ft_irc.hpp"
-void	do_main( int argc, char **argv, Database & db ) {
+void	do_main( int argc, char **argv, Database * db ) {
 (void)argc;
 
 	Server	serv(atoi(argv[1]));
@@ -28,25 +28,30 @@ void	do_main( int argc, char **argv, Database & db ) {
 		// call client parse_input sur chaque readfd
 		for (int i = 0; i < FD_SETSIZE; i++) {
 
-			if (FD_ISSET(i, serv.getFdSet(READFD))) {
+			tmpReadFdSet = serv.getFdSet(READFD);
+			tmpWriteFdSet = serv.getFdSet(WRITEFD);
+
+			if (FD_ISSET(i, &tmpReadFdSet)) {
 
 				if (i == serv.getServSocket()) {
-					// handle new connections
-					newfd = serv.acceptNewConnection();
-					if (newfd > serv.getMaxFd())
-						serv.setMaxFd(newfd);
-					serv.addToFdSet(newfd, READFD);
-					db.add_client(newfd);
+					//? handle new connections
+					newFd = serv.acceptNewConnection();
+					if (newFd > serv.getMaxFd())
+						serv.setMaxFd(newFd);
+					serv.addToFdSet(newFd, READFD);
+					db->add_client(newFd);
 				} else {
-					//TODO si c'est un autre readfd
-					db.get_client(i)->setBuf(serv.doRecv(i));
-					db.get_client(i)->parse_input();
+					//? si c'est un autre readfd
+					db->get_client(i)->setBuf(serv.doRecv(i));
+					db->get_client(i)->parse_input();
 				}
 			}
-			if (FD_ISSET(i, serv.getFdSet(WRITEFD))) {
-				//TODO si c'est un writefd
-				serv.doSend() //todo
+			if (FD_ISSET(i, &tmpWriteFdSet)) {
+				//? si c'est un writefd
+				serv.doSend(db->responses);
 			}
+			serv.setFdSet(tmpReadFdSet, READFD);
+			serv.setFdSet(tmpWriteFdSet, WRITEFD);
 		}
 	}
 }

@@ -13,10 +13,11 @@ public:
 	~Server();
 
 	int			getServSocket() const;
-	fd_set *	getFdSet( int fdType );
+	fd_set		getFdSet( int fdType );
 	int			getMaxFd() const;
 
 	void		setMaxFd( int newMaxFd );
+	void		setFdSet( fd_set set, int fdType );
 
 	void		addToFdSet( int fd, int fdType );
 	int			acceptNewConnection() const;

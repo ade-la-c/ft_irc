@@ -40,16 +40,16 @@ int			Server::getServSocket() const {
 	return this->_servSocket;
 }
 
-fd_set *	Server::getFdSet( int fdType ) {
+fd_set		Server::getFdSet( int fdType ) {
 
 	if (fdType != READFD && fdType != WRITEFD) {
 		std::cerr << "wrong fdType getFdSet" << std::endl;
 		exit(1);
 	}
 	if (fdType == READFD)
-		return &_readFds;
+		return _readFds;
 	else
-		return &_writeFds;
+		return _writeFds;
 }
 
 int			Server::getMaxFd() const {
@@ -60,6 +60,18 @@ int			Server::getMaxFd() const {
 void		Server::setMaxFd( int newMaxFd ) {
 
 	this->_maxFd = newMaxFd;
+}
+
+void		Server::setFdSet( fd_set set, int fdType ) {
+
+	if (fdType != READFD && fdType != WRITEFD) {
+		std::cerr << "wrong fdType getFdSet" << std::endl;
+		exit(1);
+	}
+	if (fdType == READFD)
+		_readFds = set;
+	else
+		_writeFds = set;
 }
 
 void		Server::addToFdSet( int fd, int fdType ) {
@@ -95,7 +107,7 @@ void		Server::doSelect() {
 
 char *		Server::doRecv( int fd ) const {
 
-	char	* buf;
+	char *	buf = NULL;
 
 	try {
 		if (recv(fd, buf, 512, 0) < 1)
@@ -106,4 +118,23 @@ char *		Server::doRecv( int fd ) const {
 	return buf;
 }
 
-//TODO doSend()
+void		Server::doSend( response_list responses ) {
+
+	try {
+
+		std::pair<Client *, char *>		pair;
+
+		while (responses.empty() == false) {
+
+			pair = responses.front();
+			responses.pop_front();
+
+			if (send(pair.first->getSockFd(), pair.second, sizeof(pair.second), 0) < 0)
+				throw server_error();
+		}
+
+	} catch (const std::exception & e) {
+		std::cerr << e.what() << std::endl;
+	}
+	responses.clear();
+}
