@@ -40,6 +40,16 @@ Channel * Database::add_channel(std::string const & name) {
 	return &(ret.first->second);
 }
 
+void	Database::add_response(response_pair response) {
+	response_list.append(response);
+}
+
+response_pair	Database::next_response() {
+	response_pair tmp = response_list.front();
+	response_list.pop_front();
+	return tmp;
+}
+
 bool Database::init(int argc, char **argv) {
 
 	if (argc != 3)

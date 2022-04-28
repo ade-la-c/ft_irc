@@ -39,6 +39,9 @@ class Database {
 		Client * add_client(int socket);
 		Channel * add_channel(std::string const & name);
 
+		void add_response(response_pair response);
+		response_pair next_response(); // sends (NULL, NULL) if no response.
+
 		//returns false if wrong amount of args
 		bool init(int argc, char **argv);
 
