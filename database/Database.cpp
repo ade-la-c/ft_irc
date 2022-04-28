@@ -41,12 +41,12 @@ Channel * Database::add_channel(std::string const & name) {
 }
 
 void	Database::add_response(response_pair response) {
-	response_list.append(response);
+	responses.push_back(response);
 }
 
 response_pair	Database::next_response() {
-	response_pair tmp = response_list.front();
-	response_list.pop_front();
+	response_pair tmp = responses.front();
+	responses.pop_front();
 	return tmp;
 }
 
