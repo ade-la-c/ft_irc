@@ -32,7 +32,8 @@ class Message;
 typedef struct sockaddr_in		SA_IN;
 typedef struct sockaddr			SA;
 
-typedef std::list<std::pair<Client *, char *> > response_list;
+typedef std::pair<Client *, char *> response_pair;
+typedef std::list<response_pair> response_list;
 
 typedef std::map<int, Client> client_map;	// {socket, client} map
 typedef std::map<std::string, Channel> channel_map; // {name, channel} map
