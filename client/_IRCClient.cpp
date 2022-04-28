@@ -38,6 +38,10 @@ void _IRCClient::reg() {
 	if (pass_set && nick_set && user_set) {
 		if (password == Database::get_instance()->password) {
 			registered = true;
+			Database::get_instance()->add_response(client.response(RPL_WELCOME, nickname, username, "ft_irc"));
+			Database::get_instance()->add_response(client.response(RPL_YOURHOST, "ft_irc", "0.1"));
+			Database::get_instance()->add_response(client.response(RPL_CREATED, "a long time ago"));
+			Database::get_instance()->add_response(client.response(RPL_MYINFO, "ft_irc", "0.1", "none", "none"));
 		}
 	}
 	//TODO send registration messages (1 to 4)
