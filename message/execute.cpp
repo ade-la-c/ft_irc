@@ -1,14 +1,14 @@
 #include "../includes/ft_irc.hpp"
 
-//TODO responses
+//TODO client.responses
 
 void pass(Client & client, Message & msg) {
 	if (client.registered) {
-		response(ERR_ALREADYREGISTERED);
+		client.response(ERR_ALREADYREGISTERED);
 		return ;
 	}
 	if (msg.get_params_count() == 0) {
-		response(ERR_NEEDMOREPARAMS, msg.get_command().c_str());
+		client.response(ERR_NEEDMOREPARAMS, msg.get_command().c_str());
 		return;
 	}
 
@@ -19,12 +19,12 @@ void pass(Client & client, Message & msg) {
 
 void nick(Client & client, Message & msg) {
 	if (msg.get_params_count() == 0) {
-		response(ERR_NEEDMOREPARAMS, msg.get_command().c_str());
+		client.response(ERR_NEEDMOREPARAMS, msg.get_command().c_str());
 		return ;
 	}
 	std::string nick = msg.get_params()[0];
 	if (!Message::is_nickname(msg.get_params()[0])) {
-		response(ERR_ERRONEUSNICKNAME, nick.c_str());
+		client.response(ERR_ERRONEUSNICKNAME, nick.c_str());
 		return ;
 	}
 	
@@ -33,7 +33,7 @@ void nick(Client & client, Message & msg) {
 	client_map::iterator end = db->clients.end();
 	while (begin != end) {
 		if (begin->second.nickname == nick) {
-			response(ERR_ERRONEUSNICKNAME, nick.c_str());
+			client.response(ERR_ERRONEUSNICKNAME, nick.c_str());
 			return ;
 		}
 		begin++;
@@ -46,11 +46,11 @@ void nick(Client & client, Message & msg) {
 
 void user(Client & client, Message & msg) {
 	if (client.registered) {
-		response(ERR_ALREADYREGISTERED);
+		client.response(ERR_ALREADYREGISTERED);
 		return ;
 	}
 	if (msg.get_params_count() < 4) {
-		response(ERR_NEEDMOREPARAMS, msg.get_command().c_str());
+		client.response(ERR_NEEDMOREPARAMS, msg.get_command().c_str());
 		return ;
 	}
 
@@ -69,11 +69,11 @@ void user(Client & client, Message & msg) {
 
 void join(Client & client, Message & msg) {
 	if (!client.registered) {
-		response(ERR_NOTREGISTERED);
+		client.response(ERR_NOTREGISTERED);
 		return ;
 	}
 	if (msg.get_params_count() == 0) {
-		response(ERR_NEEDMOREPARAMS, msg.get_command().c_str());
+		client.response(ERR_NEEDMOREPARAMS, msg.get_command().c_str());
 		return ;
 	}
 
@@ -106,7 +106,7 @@ void join(Client & client, Message & msg) {
 
 void privmsg(Client & client, Message & msg) {
 	if (!client.registered) {
-		response(ERR_NOTREGISTERED);
+		client.response(ERR_NOTREGISTERED);
 		return ;
 	}
 	(void) msg;
@@ -115,7 +115,7 @@ void privmsg(Client & client, Message & msg) {
 
 void notice(Client & client, Message & msg) {
 	if (!client.registered) {
-		response(ERR_NOTREGISTERED);
+		client.response(ERR_NOTREGISTERED);
 		return ;
 	}
 	(void) msg;
@@ -124,36 +124,36 @@ void notice(Client & client, Message & msg) {
 
 void oper(Client & client, Message & msg) {
 	if (!client.registered) {
-		response(ERR_NOTREGISTERED);
+		client.response(ERR_NOTREGISTERED);
 		return ;
 	}
 	if (msg.get_params_count() < 2) {
-		response(ERR_NEEDMOREPARAMS, msg.get_command().c_str());
+		client.response(ERR_NEEDMOREPARAMS, msg.get_command().c_str());
 		return ;
 	}
 
 	std::string name = msg.get_params()[0];
 	std::string pwd = msg.get_params()[1];
 	if (name != "admin" || pwd != "password") {
-		response(ERR_PASSWDMISMATCH);
+		client.response(ERR_PASSWDMISMATCH);
 		return ;
 	}
 
 	client.oper = true;
-	response(RPL_YOUREOPER);
+	client.response(RPL_YOUREOPER);
 }
 
 void kill(Client & client, Message & msg) {
 	if (!client.registered) {
-		response(ERR_NOTREGISTERED);
+		client.response(ERR_NOTREGISTERED);
 		return ;
 	}
 	if (!client.oper) {
-		response(ERR_NOPRIVILEGES);
+		client.response(ERR_NOPRIVILEGES);
 		return ;
 	}
 	if (msg.get_params_count() == 0) {
-		response(ERR_NEEDMOREPARAMS, msg.get_command().c_str());
+		client.response(ERR_NEEDMOREPARAMS, msg.get_command().c_str());
 		return ;
 	}
 	//TODO how to disconnect user?
@@ -161,11 +161,11 @@ void kill(Client & client, Message & msg) {
 
 void rehash(Client & client, Message & msg) {
 	if (!client.registered) {
-		response(ERR_NOTREGISTERED);
+		client.response(ERR_NOTREGISTERED);
 		return ;
 	}
 	if (!client.oper) {
-		response(ERR_NOPRIVILEGES);
+		client.response(ERR_NOPRIVILEGES);
 		return ;
 	}
 	(void) msg;
@@ -174,11 +174,11 @@ void rehash(Client & client, Message & msg) {
 
 void restart(Client & client, Message & msg) {
 	if (!client.registered) {
-		response(ERR_NOTREGISTERED);
+		client.response(ERR_NOTREGISTERED);
 		return ;
 	}
 	if (!client.oper) {
-		response(ERR_NOPRIVILEGES);
+		client.response(ERR_NOPRIVILEGES);
 		return ;
 	}
 	(void) msg;
@@ -187,11 +187,11 @@ void restart(Client & client, Message & msg) {
 
 void die(Client & client, Message & msg) {
 	if (!client.registered) {
-		response(ERR_NOTREGISTERED);
+		client.response(ERR_NOTREGISTERED);
 		return ;
 	}
 	if (!client.oper) {
-		response(ERR_NOPRIVILEGES);
+		client.response(ERR_NOPRIVILEGES);
 		return ;
 	}
 	(void) msg;
@@ -227,5 +227,5 @@ void execute(Client & client, Message & msg) {
 	else if (cmd == "DIE")
 		die(client, msg);
 	else
-		response(ERR_UNKNOWNCOMMAND, msg.get_command().c_str()); //TODO
+		client.response(ERR_UNKNOWNCOMMAND, msg.get_command().c_str()); //TODO
 }
