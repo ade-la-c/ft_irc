@@ -42,3 +42,13 @@ void _IRCClient::reg() {
 	}
 	//TODO send registration messages (1 to 4)
 }
+
+response_pair _IRCClient::response(uint16_t r, ...) {
+	va_list arg;
+	char response[512];
+	
+	va_start(arg, r);
+	vsprintf(response, format, arg);
+	va_end(arg);
+	return std::string(response, 512);
+}
