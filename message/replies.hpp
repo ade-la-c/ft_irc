@@ -40,6 +40,7 @@
 # define ERR_CANTKILLSERVER		483
 # define ERR_NOOPERHOST			491
 # define CMD_JOIN				1001
+# define CDM_PRIVMSG			1002
 
 typedef std::pair<uint16_t, std::string> reply;
 reply const _rpl_arr[] = {
@@ -49,8 +50,8 @@ reply const _rpl_arr[] = {
 	reply(RPL_MYINFO, "%s %s %s %s\r\n"), //"<servername> <version> <available user modes> <available channel modes>"
 	reply(RPL_AWAY, "%s :%s\r\n"), //"<nick> :<away message>"
 	reply(RPL_TOPIC, "%s :%s\r\n"), //"<channel> :<topic>"
-	reply(RPL_NAMREPLY, "=%s :%s"), //"<channel> :<names>"
-	reply(RPL_ENDOFNAMES, "%s :End of NAMES list"), //"<channel> :End of NAMES list>"
+	reply(RPL_NAMREPLY, "=%s :%s\r\n"), //"<channel> :<names>"
+	reply(RPL_ENDOFNAMES, "%s :End of NAMES list\r\n"), //"<channel> :End of NAMES list>"
 	reply(RPL_YOUREOPER, ":You are now an IRC operator\r\n"), //":You are now an IRC operator"
 	reply(RPL_REHASHING, "%s :Rehashing\r\n"), //"<config file> :Rehashing"
 	reply(ERR_NOSUCHNICK, "%s :No such nick/channel\r\n"), //"<nickname> :No such nick/channel"
@@ -81,7 +82,8 @@ reply const _rpl_arr[] = {
 	reply(ERR_NOPRIVILEGES, ":Permission Denied- You're not an IRC operator\r\n"), //":Permission Denied- You're not an IRC operator"
 	reply(ERR_CANTKILLSERVER, ":You cant kill a server!\r\n"), //":You cant kill a server!"
 	reply(ERR_NOOPERHOST, ":No O-lines for your host\r\n"), //":No O-lines for your host"
-	reply(CMD_JOIN, ":%s!%s@%s JOIN %s\r\n") //":<nick>!<user>@<host> JOIN <channel>"
+	reply(CMD_JOIN, ":%s!%s@%s JOIN %s\r\n"), //":<nick>!<user>@<host> JOIN <channel>"
+	reply(CMD_PRIVMSG, ":%s!%s@%s PRIVMSG %s\r\n"), //":<nick>!<user>@<host> PRIVMSG message"
 };
 
 std::map<uint16_t, std::string> const replies(_rpl_arr, _rpl_arr + sizeof(_rpl_arr) / sizeof(_rpl_arr[0]));
