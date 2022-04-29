@@ -58,8 +58,10 @@ void user(Client & client, Message & msg) {
 		user = user.substr(0, end);
 
 	client.username = user;
-	int mode_param = atoi(msg.get_params()[1].c_str());
-	client.mode = mode_param & 0b1100;
+	if (Message::is_numeric(msg.get_params()[1]))
+		client.mode = atoi(msg.get_params()[1].c_str()) & 0b1100;
+	else
+		client.mode = 0;
 	client.realname = msg.get_params()[3];
 	client.user_set = true;
 	client.reg();

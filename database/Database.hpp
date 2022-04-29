@@ -30,6 +30,7 @@ class Database {
 		// getter/setter make no sense
 		std::string password;
 		std::string port;
+		std::string hostname;
 
 		// returns the client/channel or NULL if it doesn't exist
 		Client * get_client(int socket);
