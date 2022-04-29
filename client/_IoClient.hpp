@@ -10,7 +10,7 @@ class	_IoClient {
 	
 		_IoClient();
 		_IoClient( int socket );
-		_IoClient(_IoClient const & cpy);
+		_IoClient( _IoClient const & cpy );
 		~_IoClient();
 	
 		int		getSockFd( void ) const;

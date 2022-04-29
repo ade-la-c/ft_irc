@@ -90,8 +90,9 @@ int			Server::acceptNewConnection() const {
 		if (clientSocket < 0)
 			throw server_error();
 	} catch (const std::exception & e) {
-		std::cerr << e.what() << std::endl;
+		std::cerr << e.what() << " accept" << std::endl;
 	}
+	std::cout << "New client connection accepted on socket " << clientSocket << std::endl;
 	return clientSocket;
 }
 
@@ -101,7 +102,7 @@ void		Server::doSelect() {
 		if (select(FD_SETSIZE+1, &_readFds, &_writeFds, NULL, NULL) < 0)
 			throw server_error();
 	} catch (const std::exception & e) {
-		std::cerr << e.what() << std::endl;
+		std::cerr << e.what() << " select" << std::endl;
 	}
 }
 

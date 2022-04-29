@@ -10,7 +10,7 @@ void	do_main( int argc, char **argv, Database * db ) {
 	serv.setMaxFd(serv.getServSocket());
 
 	while (true) {
-
+std::cout << "loop" << std::endl;
 		// update clients to write on (writefds)
 		// |->	loop call asking for a set of clients + a message to send
 		// |->	or single client set + message call, (select call will loop faster)
@@ -27,27 +27,28 @@ void	do_main( int argc, char **argv, Database * db ) {
 		// mettre le message dans le buffer client
 		// call client parse_input sur chaque readfd
 		for (int i = 0; i < FD_SETSIZE; i++) {
-
+// std::cout << "for loop" << std::endl;
 			tmpReadFdSet = serv.getFdSet(READFD);
 			tmpWriteFdSet = serv.getFdSet(WRITEFD);
 
 			if (FD_ISSET(i, &tmpReadFdSet)) {
-
+std::cout << "if readfd" << std::endl;
 				if (i == serv.getServSocket()) {
-					//? handle new connections
+							//? handle new connections
 					newFd = serv.acceptNewConnection();
 					if (newFd > serv.getMaxFd())
 						serv.setMaxFd(newFd);
 					serv.addToFdSet(newFd, READFD);
 					db->add_client(newFd);
 				} else {
-					//? si c'est un autre readfd
+							//? si c'est un autre readfd
 					db->get_client(i)->setBuf(serv.doRecv(i));
 					db->get_client(i)->parse_input();
 				}
 			}
 			if (FD_ISSET(i, &tmpWriteFdSet)) {
-				//? si c'est un writefd
+std::cout << "if writefd" << std::endl;
+							//? si c'est un writefd
 				serv.doSend(db->responses);
 			}
 			serv.setFdSet(tmpReadFdSet, READFD);
@@ -68,6 +69,3 @@ int		main(int argc, char **argv) {
 	do_main(argc, argv, db);
 	return 0;
 }
-
-// si on peut read dans le fd du serveur (celui qu'on donne a accept),
-// c'est qu'il faut connecter un nouveau fd (qu'on obtient avec le call d'accept)
