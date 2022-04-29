@@ -40,6 +40,16 @@ Channel * Database::add_channel(std::string const & name) {
 	return &(ret.first->second);
 }
 
+void	Database::add_response(response_pair response) {
+	responses.push_back(response);
+}
+
+response_pair	Database::next_response() {
+	response_pair tmp = responses.front();
+	responses.pop_front();
+	return tmp;
+}
+
 bool Database::init(int argc, char **argv) {
 
 	if (argc != 3)
@@ -47,6 +57,10 @@ bool Database::init(int argc, char **argv) {
 
 	password = argv[1];
 	port = argv[2];
+
+	char name[512];
+	gethostname(name, 512);
+	hostname = name;
 	return true;
 }
 

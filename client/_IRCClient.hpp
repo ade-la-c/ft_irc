@@ -4,6 +4,7 @@
 # include "../includes/ft_irc.hpp"
 
 class _IRCClient {
+
 	public:
 
 		_IRCClient();
@@ -12,6 +13,7 @@ class _IRCClient {
 
 		void parse_input();
 		void reg(); //register is a reserved keyword
+		response_pair response(int r, ...);
 
 		std::string password;
 		std::string nickname;

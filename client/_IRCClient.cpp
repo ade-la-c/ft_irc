@@ -38,7 +38,26 @@ void _IRCClient::reg() {
 	if (pass_set && nick_set && user_set) {
 		if (password == Database::get_instance()->password) {
 			registered = true;
+			Database::get_instance()->add_response(this->response(RPL_WELCOME, nickname.c_str(), username.c_str(), "ft_irc"));
+			Database::get_instance()->add_response(this->response(RPL_YOURHOST, "ft_irc", "0.1"));
+			Database::get_instance()->add_response(this->response(RPL_CREATED, "a long time ago"));
+			Database::get_instance()->add_response(this->response(RPL_MYINFO, "ft_irc", "0.1", "none", "none"));
 		}
 	}
-	//TODO send registration messages (1 to 4)
+}
+
+response_pair _IRCClient::response(int r, ...) {
+	va_list arg;
+	char r_text[512];
+	char response[512];
+
+	sprintf(response, "%03d %s ", r, this->nickname.c_str());
+
+	va_start(arg, r);
+	vsprintf(r_text, replies.at(r).c_str(), arg);
+	va_end(arg);
+
+	strcat(response, r_text);
+
+	return response_pair(static_cast<Client *>(this), response);
 }

@@ -1,14 +1,12 @@
 #include "../includes/ft_irc.hpp"
 
-//TODO responses
-
 void pass(Client & client, Message & msg) {
 	if (client.registered) {
-		response(replies.at(ERR_ALREADYREGISTERED).c_str());
+		Database::get_instance()->add_response(client.response(ERR_ALREADYREGISTERED));
 		return ;
 	}
 	if (msg.get_params_count() == 0) {
-		response(replies.at(ERR_NEEDMOREPARAMS).c_str(), msg.get_command().c_str());
+		Database::get_instance()->add_response(client.response(ERR_NEEDMOREPARAMS, msg.get_command().c_str()));
 		return;
 	}
 
@@ -19,12 +17,12 @@ void pass(Client & client, Message & msg) {
 
 void nick(Client & client, Message & msg) {
 	if (msg.get_params_count() == 0) {
-		response(replies.at(ERR_NEEDMOREPARAMS).c_str(), msg.get_command().c_str());
+		Database::get_instance()->add_response(client.response(ERR_NEEDMOREPARAMS, msg.get_command().c_str()));
 		return ;
 	}
 	std::string nick = msg.get_params()[0];
 	if (!Message::is_nickname(msg.get_params()[0])) {
-		response(replies.at(ERR_ERRONEUSNICKNAME).c_str(), nick.c_str());
+		Database::get_instance()->add_response(client.response(ERR_ERRONEUSNICKNAME, nick.c_str()));
 		return ;
 	}
 	
@@ -33,7 +31,7 @@ void nick(Client & client, Message & msg) {
 	client_map::iterator end = db->clients.end();
 	while (begin != end) {
 		if (begin->second.nickname == nick) {
-			response(replies.at(ERR_ERRONEUSNICKNAME).c_str(), nick.c_str());
+			Database::get_instance()->add_response(client.response(ERR_ERRONEUSNICKNAME, nick.c_str()));
 			return ;
 		}
 		begin++;
@@ -46,11 +44,11 @@ void nick(Client & client, Message & msg) {
 
 void user(Client & client, Message & msg) {
 	if (client.registered) {
-		response(replies.at(ERR_ALREADYREGISTERED).c_str());
+		Database::get_instance()->add_response(client.response(ERR_ALREADYREGISTERED));
 		return ;
 	}
 	if (msg.get_params_count() < 4) {
-		response(replies.at(ERR_NEEDMOREPARAMS).c_str(), msg.get_command().c_str());
+		Database::get_instance()->add_response(client.response(ERR_NEEDMOREPARAMS, msg.get_command().c_str()));
 		return ;
 	}
 
@@ -60,8 +58,10 @@ void user(Client & client, Message & msg) {
 		user = user.substr(0, end);
 
 	client.username = user;
-	int mode_param = atoi(msg.get_params()[1].c_str());
-	client.mode = mode_param & 0b1100;
+	if (Message::is_numeric(msg.get_params()[1]))
+		client.mode = atoi(msg.get_params()[1].c_str()) & 0b1100;
+	else
+		client.mode = 0;
 	client.realname = msg.get_params()[3];
 	client.user_set = true;
 	client.reg();
@@ -69,11 +69,11 @@ void user(Client & client, Message & msg) {
 
 void join(Client & client, Message & msg) {
 	if (!client.registered) {
-		response(replies.at(ERR_NOTREGISTERED).c_str());
+		Database::get_instance()->add_response(client.response(ERR_NOTREGISTERED));
 		return ;
 	}
 	if (msg.get_params_count() == 0) {
-		response(replies.at(ERR_NEEDMOREPARAMS).c_str(), msg.get_command().c_str());
+		Database::get_instance()->add_response(client.response(ERR_NEEDMOREPARAMS, msg.get_command().c_str()));
 		return ;
 	}
 
@@ -106,7 +106,16 @@ void join(Client & client, Message & msg) {
 
 void privmsg(Client & client, Message & msg) {
 	if (!client.registered) {
-		response(replies.at(ERR_NOTREGISTERED).c_str());
+		Database::get_instance()->add_response(client.response(ERR_NOTREGISTERED));
+		return ;
+	}
+	(void) msg;
+	//TODO
+}
+
+void notice(Client & client, Message & msg) {
+	if (!client.registered) {
+		Database::get_instance()->add_response(client.response(ERR_NOTREGISTERED));
 		return ;
 	}
 	(void) msg;
@@ -115,36 +124,36 @@ void privmsg(Client & client, Message & msg) {
 
 void oper(Client & client, Message & msg) {
 	if (!client.registered) {
-		response(replies.at(ERR_NOTREGISTERED).c_str());
+		Database::get_instance()->add_response(client.response(ERR_NOTREGISTERED));
 		return ;
 	}
 	if (msg.get_params_count() < 2) {
-		response(replies.at(ERR_NEEDMOREPARAMS).c_str(), msg.get_command().c_str());
+		Database::get_instance()->add_response(client.response(ERR_NEEDMOREPARAMS, msg.get_command().c_str()));
 		return ;
 	}
 
 	std::string name = msg.get_params()[0];
 	std::string pwd = msg.get_params()[1];
 	if (name != "admin" || pwd != "password") {
-		response(replies.at(ERR_PASSWDMISMATCH).c_str());
+		Database::get_instance()->add_response(client.response(ERR_PASSWDMISMATCH));
 		return ;
 	}
 
 	client.oper = true;
-	response(replies.at(RPL_YOUREOPER).c_str());
+	Database::get_instance()->add_response(client.response(RPL_YOUREOPER));
 }
 
 void kill(Client & client, Message & msg) {
 	if (!client.registered) {
-		response(replies.at(ERR_NOTREGISTERED).c_str());
+		Database::get_instance()->add_response(client.response(ERR_NOTREGISTERED));
 		return ;
 	}
 	if (!client.oper) {
-		response(replies.at(ERR_NOPRIVILEGES).c_str());
+		Database::get_instance()->add_response(client.response(ERR_NOPRIVILEGES));
 		return ;
 	}
 	if (msg.get_params_count() == 0) {
-		response(replies.at(ERR_NEEDMOREPARAMS).c_str(), msg.get_command().c_str());
+		Database::get_instance()->add_response(client.response(ERR_NEEDMOREPARAMS, msg.get_command().c_str()));
 		return ;
 	}
 	//TODO how to disconnect user?
@@ -152,11 +161,11 @@ void kill(Client & client, Message & msg) {
 
 void rehash(Client & client, Message & msg) {
 	if (!client.registered) {
-		response(replies.at(ERR_NOTREGISTERED).c_str());
+		Database::get_instance()->add_response(client.response(ERR_NOTREGISTERED));
 		return ;
 	}
 	if (!client.oper) {
-		response(replies.at(ERR_NOPRIVILEGES).c_str());
+		Database::get_instance()->add_response(client.response(ERR_NOPRIVILEGES));
 		return ;
 	}
 	(void) msg;
@@ -165,11 +174,11 @@ void rehash(Client & client, Message & msg) {
 
 void restart(Client & client, Message & msg) {
 	if (!client.registered) {
-		response(replies.at(ERR_NOTREGISTERED).c_str());
+		Database::get_instance()->add_response(client.response(ERR_NOTREGISTERED));
 		return ;
 	}
 	if (!client.oper) {
-		response(replies.at(ERR_NOPRIVILEGES).c_str());
+		Database::get_instance()->add_response(client.response(ERR_NOPRIVILEGES));
 		return ;
 	}
 	(void) msg;
@@ -178,11 +187,11 @@ void restart(Client & client, Message & msg) {
 
 void die(Client & client, Message & msg) {
 	if (!client.registered) {
-		response(replies.at(ERR_NOTREGISTERED).c_str());
+		Database::get_instance()->add_response(client.response(ERR_NOTREGISTERED));
 		return ;
 	}
 	if (!client.oper) {
-		response(replies.at(ERR_NOPRIVILEGES).c_str());
+		Database::get_instance()->add_response(client.response(ERR_NOPRIVILEGES));
 		return ;
 	}
 	(void) msg;
@@ -205,6 +214,8 @@ void execute(Client & client, Message & msg) {
 		join(client, msg);
 	else if (cmd == "PRIVMSG")
 		privmsg(client, msg);
+	else if (cmd == "NOTICE")
+		notice(client, msg);
 	else if (cmd == "OPER")
 		oper(client, msg);
 	else if (cmd == "KILL")
@@ -216,5 +227,5 @@ void execute(Client & client, Message & msg) {
 	else if (cmd == "DIE")
 		die(client, msg);
 	else
-		response(replies.at(ERR_UNKNOWNCOMMAND).c_str(), msg.get_command().c_str()); //TODO
+		Database::get_instance()->add_response(client.response(ERR_UNKNOWNCOMMAND, msg.get_command().c_str()));
 }

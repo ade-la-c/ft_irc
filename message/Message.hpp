@@ -28,7 +28,7 @@ class Message {
 		bool is_complete();
 		void parse_from_str(std::string const & msg);
 
-		static bool is_numeric(std::string str, std::string::size_type pos, std::string::size_type count);
+		static bool is_numeric(std::string str, std::string::size_type pos = 0, std::string::size_type count = std::string::npos);
 		static bool is_special(int c);
 		static bool is_nickname(std::string str, std::string::size_type pos = 0, std::string::size_type count = std::string::npos);
 

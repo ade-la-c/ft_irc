@@ -12,7 +12,7 @@ Launched as follows:
 ```
 * Clients must be able to authenticate, set a nickname, a username, join a channel and send and receive private messages
 ```
-PASS, NICK, USER, JOIN, PRIVMSG
+PASS, NICK, USER, JOIN, PRIVMSG, NOTICE
 ```
 * All the messages have to be properly forwarded
 * There must be operators and regular users
@@ -136,7 +136,7 @@ ERR_NOSUCHNICK
 RPL_AWAY
 ```
 
-#### PRIVMSG
+#### NOTICE
 
 ```
 Parameters: <msgtarget> <text to be sent>
