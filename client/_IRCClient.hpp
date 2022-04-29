@@ -13,6 +13,7 @@ class _IRCClient {
 		void parse_input();
 		void reg(); //register is a reserved keyword
 		response_pair response(int r, ...);
+		response_pair command(int r, ...);
 
 		std::string password;
 		std::string nickname;

@@ -17,8 +17,6 @@ class Channel {
 
 		std::string name;
 
-	private:
-
 		client_map subscribed_clients;
 
 };

@@ -77,8 +77,6 @@ void join(Client & client, Message & msg) {
 		return ;
 	}
 
-	//TODO many replies missing
-
 	Database * db = Database::get_instance();
 	std::string channels = msg.get_params()[0];
 
@@ -96,10 +94,34 @@ void join(Client & client, Message & msg) {
 	char * tok = strtok(const_cast<char *>(channels.c_str()), ",");
 	Channel * chan;
 	while (tok) {
+
 		chan = db->get_channel(tok);
 		if (!chan)
 			chan = db->add_channel(tok);
+
+		client_map::iterator begin = chan->subscribed_clients.begin();
+		client_map::iterator end = chan->subscribed_clients.end();
+		for (; begin != end; begin++) {
+			db->add_response(begin->second.command(CMD_JOIN, client.nickname.c_str(), client.username.c_str(), db->hostname.c_str(), chan->name.c_str()));
+		}
+
 		chan->add_client(client);
+		db->add_response(client.command(CMD_JOIN, client.nickname.c_str(), client.username.c_str(), db->hostname.c_str(), chan->name.c_str()));
+		db->add_response(client.response(RPL_TOPIC, chan->name.c_str(), "No topic set"));
+
+		begin = chan->subscribed_clients.begin();
+		std::string names;
+		for (; begin != end; begin++) {
+			if (names.length() + begin->second.nickname.length() + chan->name.length() + 6 > 512) {
+				db->add_response(client.response(RPL_NAMREPLY, chan->name.c_str(), names.c_str()));
+				names.clear();
+			}
+			names += " " + begin->second.nickname;
+		}
+		if (!names.empty())
+			db->add_response(client.response(RPL_NAMREPLY, chan->name.c_str(), names.c_str()));
+
+		db->add_response(client.response(RPL_ENDOFNAMES, chan->name.c_str()));
 		tok = strtok(NULL, ",");
 	}
 }

@@ -112,6 +112,7 @@ ERR_CHANNELISFULL               ERR_BADCHANMASK
 ERR_NOSUCHCHANNEL               ERR_TOOMANYCHANNELS
 ERR_TOOMANYTARGETS              ERR_UNAVAILRESOURCE
 RPL_TOPIC                       RPL_NAMREPLY
+RPL_ENDOFNAMES
 ```
 
 #### PRIVMSG
@@ -400,6 +401,16 @@ Sent when sending a message to a user that is away
 "<channel> :<topic>"
 When sending a TOPIC message to determine the channel topic, one of two replies is sent.  If
 the topic is set, RPL_TOPIC is sent back else RPL_NOTOPIC.
+```
+* 353 - RPL\_NAMREPLY
+```
+"( "=" / "*" / "@" ) <channel> :<nick> *( " " <nick> )"
+"@" is used for secret channels, "*" for private channels, and "=" for others (public channels) (only ones we have).
+```
+* 366 - RPL\_ENDOFNAMES
+```
+"<channel> :End of NAMES list"
+Sent to indicate the end of a NAMES list
 ```
 * 381 - RPL\_YOUREOPER
 ```
