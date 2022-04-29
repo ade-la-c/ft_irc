@@ -72,7 +72,7 @@ std::vector<std::string>::size_type Message::get_params_count() const {
 	return params_count;
 }
 
-bool Message::is_numeric(std::string str, std::string::size_type pos = 0, std::string::size_type count = std::string::npos) {
+bool Message::is_numeric(std::string str, std::string::size_type pos, std::string::size_type count) {
 	for (std::string::size_type i = pos; i < str.size() && i < pos + count; i++) {
 		if (!std::isdigit(str[i]))
 			return false;
