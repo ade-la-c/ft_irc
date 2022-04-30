@@ -51,10 +51,10 @@ response_pair _IRCClient::response(int r, ...) {
 	char r_text[512];
 	char response[512];
 
-	char * nick = "*";
+	const char * nick = "*";
 	if (!this->nickname.empty())
 		nick = this->nickname.c_str();
-	sprintf(response, ":%s %03d %s ", Database::get_instance()->hostname, r, nick);
+	sprintf(response, ":%s %03d %s ", Database::get_instance()->hostname.c_str(), r, nick);
 
 	va_start(arg, r);
 	vsprintf(r_text, replies.at(r).c_str(), arg);
