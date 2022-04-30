@@ -163,7 +163,7 @@ std::cout << "recv" << std::endl;
 
 void		Server::doSend( response_list responses ) {
 		//!	fix send and keep unsended bytes in cache to keep sending after
-	std::pair<Client *, char *>		pair;
+	response_pair		pair;
 
 	while (responses.empty() == false) {
 
@@ -171,7 +171,7 @@ void		Server::doSend( response_list responses ) {
 		responses.pop_front();
 
 std::cout << "pre send" << std::endl;
-		if (send(pair.first->getSockFd(), pair.second, sizeof(pair.second), 0) < 0) {
+		if (send(pair.first->getSockFd(), pair.second.c_str(), sizeof(pair.second), 0) < 0) {
 			perror("send");
 			exit(EXIT_FAILURE);
 		}
