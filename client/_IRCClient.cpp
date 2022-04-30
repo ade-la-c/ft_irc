@@ -26,8 +26,8 @@ _IRCClient::~_IRCClient() {
 
 void _IRCClient::parse_input() {
 	Message msg;
-		msg.parse_from_str(std::string(static_cast<Client *>(this)->getBuf(), 512));
 	try {
+		msg.parse_from_str(std::string(static_cast<Client *>(this)->getBuf(), 512));
 	} catch (std::exception & e) {
 		//TODO what do
 	}
@@ -38,10 +38,10 @@ void _IRCClient::reg() {
 	if (pass_set && nick_set && user_set) {
 		if (password == Database::get_instance()->password) {
 			registered = true;
-			Database::get_instance()->add_response(this->response(RPL_WELCOME, nickname.c_str(), username.c_str(), "ft_irc"));
-			Database::get_instance()->add_response(this->response(RPL_YOURHOST, "ft_irc", "0.1"));
+			Database::get_instance()->add_response(this->response(RPL_WELCOME, nickname.c_str(), username.c_str(), Database::get_instance()->hostname.c_str()));
+			Database::get_instance()->add_response(this->response(RPL_YOURHOST, Database::get_instance()->hostname.c_str(), "0.1"));
 			Database::get_instance()->add_response(this->response(RPL_CREATED, "a long time ago"));
-			Database::get_instance()->add_response(this->response(RPL_MYINFO, "ft_irc", "0.1", "none", "none"));
+			Database::get_instance()->add_response(this->response(RPL_MYINFO, Database::get_instance()->hostname.c_str(), "0.1", "none", "none"));
 		}
 	}
 }
@@ -51,13 +51,27 @@ response_pair _IRCClient::response(int r, ...) {
 	char r_text[512];
 	char response[512];
 
-	sprintf(response, "%03d %s ", r, this->nickname.c_str());
+	char * nick = "*";
+	if (!this->nickname.empty())
+		nick = this->nickname.c_str();
+	sprintf(response, ":%s %03d %s ", Database::get_instance()->hostname, r, nick);
 
 	va_start(arg, r);
 	vsprintf(r_text, replies.at(r).c_str(), arg);
 	va_end(arg);
 
 	strcat(response, r_text);
+
+	return response_pair(static_cast<Client *>(this), response);
+}
+
+response_pair _IRCClient::command(int r, ...) {
+	va_list arg;
+	char response[512];
+
+	va_start(arg, r);
+	vsprintf(response, replies.at(r).c_str(), arg);
+	va_end(arg);
 
 	return response_pair(static_cast<Client *>(this), response);
 }
