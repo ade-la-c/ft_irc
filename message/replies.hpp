@@ -50,7 +50,7 @@ reply const _rpl_arr[] = {
 	reply(RPL_MYINFO, "%s %s %s %s\r\n"), //"<servername> <version> <available user modes> <available channel modes>"
 	reply(RPL_AWAY, "%s :%s\r\n"), //"<nick> :<away message>"
 	reply(RPL_TOPIC, "%s :%s\r\n"), //"<channel> :<topic>"
-	reply(RPL_NAMREPLY, "=%s :%s\r\n"), //"<channel> :<names>"
+	reply(RPL_NAMREPLY, "= %s :%s\r\n"), //"<channel> :<names>"
 	reply(RPL_ENDOFNAMES, "%s :End of NAMES list\r\n"), //"<channel> :End of NAMES list>"
 	reply(RPL_YOUREOPER, ":You are now an IRC operator\r\n"), //":You are now an IRC operator"
 	reply(RPL_REHASHING, "%s :Rehashing\r\n"), //"<config file> :Rehashing"

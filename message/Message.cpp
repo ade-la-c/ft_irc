@@ -104,6 +104,7 @@ std::string::size_type Message::parse_prefix(std::string::size_type end) {
 	std::string::size_type sp;
 
 	sp = this->msg.find(" ");
+	//TODO just ignore prefix anyway? -> never send errors
 	if (sp >= end)
 		throw IllFormedMessageException();
 	if (!is_nickname(msg, 1, sp)) {
