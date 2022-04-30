@@ -82,12 +82,13 @@ std::cout<<"preselect"<<std::endl;
 		serv.doSelect(tmpReadFdSet, tmpWriteFdSet);
 std::cout<<"postselect"<<std::endl;
 
-		for (int i = 0; i < serv.getMaxFd()+1; i++) {
+		for (int i = 0; i < FD_SETSIZE; i++) {
 // std::cout<<"print random"<<std::endl;
 			if (FD_ISSET(i, &tmpReadFdSet)) {
 
 				if (i == serv.getServSocket()) {	// handle new connections
-					newFd = serv.doAccept();//std::cout<<"yes"<<std::endl;
+					if ((newFd = serv.doAccept()) < 0)
+						continue;
 					if (newFd > serv.getMaxFd())
 						serv.setMaxFd(newFd);
 					serv.addToFdSet(newFd, READFD);
@@ -97,6 +98,8 @@ std::cout<<"postselect"<<std::endl;
 						db->get_client(i)->setBuf(buf);
 						db->get_client(i)->parse_input();
 					std::cout << "-->" << db->responses.front().second << std::endl;
+					} else {
+						db->remove_client(i);
 					}
 				}
 			}
@@ -107,6 +110,10 @@ exit(1);
 				serv.doSend(db->responses);
 			}
 		}
+		// serv.setFdSet(tmpReadFdSet, READFD);
+		// serv.setFdSet(tmpWriteFdSet, WRITEFD);
+		FD_ZERO(&tmpReadFdSet);
+		FD_ZERO(&tmpWriteFdSet);
 	}
 }
 

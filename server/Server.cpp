@@ -77,11 +77,17 @@ void		Server::setFdSet( fd_set set, int fdType ) {
 
 void		Server::addToFdSet( int fd, int fdType ) {
 
-	if (fdType == READFD)
+	if (fdType == READFD) {
+		fcntl(fd, F_SETFL, O_NONBLOCK);
 		FD_SET(fd, &_readFds);
-	else if (fdType == WRITEFD)
+	} else if (fdType == WRITEFD) {
+		fcntl(fd, F_SETFL, O_NONBLOCK);
 		FD_SET(fd, &_writeFds);
-	else {
+	// } else if (fdType == UPDATEREADFD) {
+	// 	FD_SET(fd, &_readFdUpdate);
+	// } else if (fdType == UPDATEWRITEFD) {
+	// 	FD_SET(fd, &_writeFdUpdate);
+	// } else {
 		std::cerr << "wrong fdType" << std::endl;
 		exit(1);
 	}
@@ -93,7 +99,8 @@ int			Server::doAccept() const {
 
 	if (clientSocket < 0) {
 		perror("accept");
-		exit(EXIT_FAILURE);
+		return -1;
+		// exit(EXIT_FAILURE);
 	}
 	std::cout << "New client connection accepted on socket " << clientSocket << std::endl;
 	return clientSocket;
@@ -111,8 +118,8 @@ void		Server::doSelect( fd_set readfds, fd_set writefds ) const {
 bool		Server::doRecv( int fd, fd_set readfds, char buf[512] ) {
 
 	int		nbytes;
-
-	if ((nbytes = recv(fd, buf, 512, 0)) <= 0) {
+std::cout <<"prerecv"<<std::endl;
+	if ((nbytes = recv(fd, buf, 512, 0)) <= 0) {	// connection close ou error
 		if (nbytes == 0)
 			std::cout << "Connection has been closed on fd " << fd << std::endl;
 		else
@@ -122,8 +129,9 @@ bool		Server::doRecv( int fd, fd_set readfds, char buf[512] ) {
 		FD_CLR(fd, &_readFds);
 		return false;
 	} else {
-	}
+std::cout <<"postrecv"<<std::endl;
 	return true;
+	}
 }
 
 /**
@@ -155,7 +163,6 @@ std::cout << "recv" << std::endl;
 
 void		Server::doSend( response_list responses ) {
 		//!	fix send and keep unsended bytes in cache to keep sending after
-
 	std::pair<Client *, char *>		pair;
 
 	while (responses.empty() == false) {
@@ -163,10 +170,12 @@ void		Server::doSend( response_list responses ) {
 		pair = responses.front();
 		responses.pop_front();
 
+std::cout << "pre send" << std::endl;
 		if (send(pair.first->getSockFd(), pair.second, sizeof(pair.second), 0) < 0) {
 			perror("send");
 			exit(EXIT_FAILURE);
 		}
+std::cout << "post send" << std::endl;
 	}
 
 	responses.clear();

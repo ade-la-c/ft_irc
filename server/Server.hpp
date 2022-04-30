@@ -46,6 +46,8 @@ private:
 	int			_maxFd;
 	fd_set		_readFds;
 	fd_set		_writeFds;
+	fd_set		_readFdUpdate;
+	fd_set		_writeFdUpdate;
 
 };
 
