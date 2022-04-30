@@ -26,8 +26,8 @@ _IRCClient::~_IRCClient() {
 
 void _IRCClient::parse_input() {
 	Message msg;
-		msg.parse_from_str(std::string(static_cast<Client *>(this)->getBuf(), 512));
 	try {
+		msg.parse_from_str(std::string(static_cast<Client *>(this)->getBuf(), 512));
 	} catch (std::exception & e) {
 		//TODO what do
 	}
