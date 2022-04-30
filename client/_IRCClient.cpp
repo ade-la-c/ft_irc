@@ -26,12 +26,13 @@ _IRCClient::~_IRCClient() {
 
 void _IRCClient::parse_input() {
 	Message msg;
-	try {
+	try { //TODO this is bad design, don't do this
 		msg.parse_from_str(std::string(static_cast<Client *>(this)->getBuf(), 512));
+		execute(*static_cast<Client *>(this), msg);
 	} catch (std::exception & e) {
+		std::cerr << e.what() << std::endl;
 		//TODO what do
 	}
-	execute(*static_cast<Client *>(this), msg);
 }
 
 void _IRCClient::reg() {
@@ -62,7 +63,7 @@ response_pair _IRCClient::response(int r, ...) {
 
 	strcat(response, r_text);
 
-	return response_pair(static_cast<Client *>(this), response);
+	return response_pair(static_cast<Client *>(this), std::string(response));
 }
 
 response_pair _IRCClient::command(int r, ...) {
@@ -73,5 +74,5 @@ response_pair _IRCClient::command(int r, ...) {
 	vsprintf(response, replies.at(r).c_str(), arg);
 	va_end(arg);
 
-	return response_pair(static_cast<Client *>(this), response);
+	return response_pair(static_cast<Client *>(this), std::string(response));
 }

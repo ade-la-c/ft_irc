@@ -92,6 +92,7 @@ void join(Client & client, Message & msg) {
 	}
 
 	char * tok = strtok(const_cast<char *>(channels.c_str()), ",");
+	std::cout << ">>" << channels << "<<" << std::endl;
 	Channel * chan;
 	while (tok) {
 
@@ -120,7 +121,7 @@ void join(Client & client, Message & msg) {
 		}
 		if (!names.empty())
 			db->add_response(client.response(RPL_NAMREPLY, chan->name.c_str(), names.c_str()));
-
+		std::cout << "ello" << std::endl;
 		db->add_response(client.response(RPL_ENDOFNAMES, chan->name.c_str()));
 		tok = strtok(NULL, ",");
 	}
