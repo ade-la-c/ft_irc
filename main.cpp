@@ -1,4 +1,6 @@
 #include "includes/ft_irc.hpp"
+
+/**
 void	do_main( int argc, char **argv, Database * db ) {
 (void)argc;
 
@@ -19,30 +21,29 @@ std::cout << "loop" << std::endl;
 		// update clients to read from (readfds)
 			// (add new connexions and close old ones)
 
-		// call select
-		serv.doSelect();
+		tmpReadFdSet = serv.getFdSet(READFD);
+		tmpWriteFdSet = serv.getFdSet(WRITEFD);
 
-		// send in writefds and recv from readfds
+		serv.doSelect(tmpReadFdSet, tmpWriteFdSet);
+
 
 		// mettre le message dans le buffer client
 		// call client parse_input sur chaque readfd
 		for (int i = 0; i < FD_SETSIZE; i++) {
 // std::cout << "for loop" << std::endl;
-			tmpReadFdSet = serv.getFdSet(READFD);
-			tmpWriteFdSet = serv.getFdSet(WRITEFD);
 
 			if (FD_ISSET(i, &tmpReadFdSet)) {
 std::cout << "if readfd" << std::endl;
 				if (i == serv.getServSocket()) {
 							//? handle new connections
-					newFd = serv.acceptNewConnection();
+					newFd = serv.doAccept();
 					if (newFd > serv.getMaxFd())
 						serv.setMaxFd(newFd);
 					serv.addToFdSet(newFd, READFD);
 					db->add_client(newFd);
 				} else {
 							//? si c'est un autre readfd
-					db->get_client(i)->setBuf(serv.doRecv(i));
+					db->get_client(i)->setBuf(serv.doRecv(i, tmpReadFdSet));
 					db->get_client(i)->parse_input();
 				}
 			}
@@ -51,8 +52,60 @@ std::cout << "if writefd" << std::endl;
 							//? si c'est un writefd
 				serv.doSend(db->responses);
 			}
-			serv.setFdSet(tmpReadFdSet, READFD);
-			serv.setFdSet(tmpWriteFdSet, WRITEFD);
+		}
+		serv.setFdSet(tmpReadFdSet, READFD);
+		serv.setFdSet(tmpWriteFdSet, WRITEFD);
+		FD_ZERO(&tmpReadFdSet);
+		FD_ZERO(&tmpWriteFdSet);
+	}
+}
+
+// */
+
+void	do_main( int ac, char ** av, Database * db ) {
+
+	(void)ac;
+
+	Server		serv(atoi(av[1]));
+	fd_set		tmpReadFdSet, tmpWriteFdSet;
+	char		buf[512];
+	int			newFd;
+
+	serv.addToFdSet(serv.getServSocket(), READFD);
+	serv.setMaxFd(serv.getServSocket());
+
+	while (true) {
+
+		tmpReadFdSet = serv.getFdSet(READFD);
+		tmpWriteFdSet = serv.getFdSet(WRITEFD);
+std::cout<<"preselect"<<std::endl;
+		serv.doSelect(tmpReadFdSet, tmpWriteFdSet);
+std::cout<<"postselect"<<std::endl;
+
+		for (int i = 0; i < serv.getMaxFd()+1; i++) {
+// std::cout<<"print random"<<std::endl;
+			if (FD_ISSET(i, &tmpReadFdSet)) {
+
+				if (i == serv.getServSocket()) {	// handle new connections
+					newFd = serv.doAccept();//std::cout<<"yes"<<std::endl;
+					if (newFd > serv.getMaxFd())
+						serv.setMaxFd(newFd);
+					serv.addToFdSet(newFd, READFD);
+					db->add_client(newFd);
+				} else {							// handle other readfds
+					if (serv.doRecv(i, tmpReadFdSet, buf)) {
+						db->get_client(i)->setBuf(buf);
+						db->get_client(i)->parse_input();
+					std::cout << "-->" << db->responses.front().second << std::endl;
+					}
+				}
+			}
+			if (FD_ISSET(i, &tmpWriteFdSet)) {
+
+std::cout << "writefd" << std::endl;
+exit(1);
+				serv.doSend(db->responses);
+			}
 		}
 	}
 }

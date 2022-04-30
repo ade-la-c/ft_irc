@@ -20,9 +20,9 @@ public:
 	void		setFdSet( fd_set set, int fdType );
 
 	void		addToFdSet( int fd, int fdType );
-	int			acceptNewConnection() const;
-	void		doSelect();
-	char *		doRecv( int fd ) const;
+	int			doAccept() const;
+	void		doSelect( fd_set readfds, fd_set writefds ) const;
+	bool		doRecv( int fd, fd_set readfds, char buf[512] );
 	void		doSend( response_list responses );
 
 	class	init_error : public std::exception {

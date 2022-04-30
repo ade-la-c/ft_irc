@@ -6,7 +6,7 @@
 #    By: ade-la-c <ade-la-c@student.42.fr>          +#+  +:+       +#+         #
 #                                                 +#+#+#+#+#+   +#+            #
 #    Created: 2022/03/09 11:48:49 by ade-la-c          #+#    #+#              #
-#    Updated: 2022/03/25 07:00:44 by maperrea         ###   ########.fr        #
+#    Updated: 2022/04/29 22:44:49 by ade-la-c         ###   ########.fr        #
 #                                                                              #
 # **************************************************************************** #
 
@@ -25,7 +25,7 @@ OBJS			= $(addprefix $(OBJDIR)/, $(SRCS:.cpp=.o))
 CXX				= c++
 
 CXXFLAGS		= -Wall -Werror -Wextra -std=c++98 -Wno-unused-variable \
-				# -g -fsanitize=address
+				-g -fsanitize=address
 
 RM				= rm -f
 

@@ -21,6 +21,7 @@ char *	_IoClient::getBuf( void ) {
 void	_IoClient::setBuf( char buf[512] ) {
 
 	std::strcpy(_buf, buf);
+	bzero(buf, 512);
 }
 
 void	_IoClient::setSockFd( int sockFd ) {

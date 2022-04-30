@@ -1,8 +1,9 @@
 #include "Server.hpp"
+#include <sys/select.h>
 
 Server::Server() {}
 
-Server::Server( int port ) {
+Server::Server( int port ) : _maxFd(4) {
 
 	int		clientSocket, addrSize;
 	SA_IN	servAddr;
@@ -78,64 +79,95 @@ void		Server::addToFdSet( int fd, int fdType ) {
 
 	if (fdType == READFD)
 		FD_SET(fd, &_readFds);
-	if (fdType == WRITEFD)
+	else if (fdType == WRITEFD)
 		FD_SET(fd, &_writeFds);
+	else {
+		std::cerr << "wrong fdType" << std::endl;
+		exit(1);
+	}
 }
 
-int			Server::acceptNewConnection() const {
+int			Server::doAccept() const {
 
 	int		clientSocket = accept(_servSocket, (SA *)NULL, NULL);
 
-	try {
-		if (clientSocket < 0)
-			throw server_error();
-	} catch (const std::exception & e) {
-		std::cerr << e.what() << " accept" << std::endl;
+	if (clientSocket < 0) {
+		perror("accept");
+		exit(EXIT_FAILURE);
 	}
 	std::cout << "New client connection accepted on socket " << clientSocket << std::endl;
 	return clientSocket;
 }
 
-void		Server::doSelect() {
+void		Server::doSelect( fd_set readfds, fd_set writefds ) const {
+// std::cout << "select" << std::endl;
 
-	try {
-		if (select(FD_SETSIZE+1, &_readFds, &_writeFds, NULL, NULL) < 0)
-			throw server_error();
-	} catch (const std::exception & e) {
-		std::cerr << e.what() << " select" << std::endl;
+	if (select(FD_SETSIZE+1, &readfds, &writefds, NULL, NULL) < 0) {
+		perror("select");
+		exit(EXIT_FAILURE);
 	}
 }
 
-char *		Server::doRecv( int fd ) const {
+bool		Server::doRecv( int fd, fd_set readfds, char buf[512] ) {
 
+	int		nbytes;
+
+	if ((nbytes = recv(fd, buf, 512, 0)) <= 0) {
+		if (nbytes == 0)
+			std::cout << "Connection has been closed on fd " << fd << std::endl;
+		else
+			perror("recv");
+		close(fd);
+		FD_CLR(fd, &readfds);
+		FD_CLR(fd, &_readFds);
+		return false;
+	} else {
+	}
+	return true;
+}
+
+/**
+char *		Server::doRecv( int fd, fd_set readfds ) const {
+std::cout << "recv" << std::endl;
 	char *	buf = NULL;
+	int		nbytes;
 
 	try {
-		if (recv(fd, buf, 512, 0) < 1)
-			throw server_error();
+		if ((nbytes = recv(fd, buf, sizeof(buf), 0)) <= 0) {
+
+			if (nbytes == 0) {
+				std::cout << "Connection has been closed on fd " << fd << std::endl;
+			} else {
+				close(fd);
+				FD_CLR(fd, &readfds);
+				throw server_error();
+			}
+			close(fd);
+			FD_CLR(fd, &readfds);
+		}
 	} catch (const std::exception & e) {
 		std::cerr << e.what() << std::endl;
 	}
 	return buf;
 }
 
+// */
+
 void		Server::doSend( response_list responses ) {
+		//!	fix send and keep unsended bytes in cache to keep sending after
 
-	try {
+	std::pair<Client *, char *>		pair;
 
-		std::pair<Client *, char *>		pair;
+	while (responses.empty() == false) {
 
-		while (responses.empty() == false) {
+		pair = responses.front();
+		responses.pop_front();
 
-			pair = responses.front();
-			responses.pop_front();
-
-			if (send(pair.first->getSockFd(), pair.second, sizeof(pair.second), 0) < 0)
-				throw server_error();
+		if (send(pair.first->getSockFd(), pair.second, sizeof(pair.second), 0) < 0) {
+			perror("send");
+			exit(EXIT_FAILURE);
 		}
-
-	} catch (const std::exception & e) {
-		std::cerr << e.what() << std::endl;
 	}
+
 	responses.clear();
 }
