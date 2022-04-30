@@ -40,7 +40,7 @@
 # define ERR_CANTKILLSERVER		483
 # define ERR_NOOPERHOST			491
 # define CMD_JOIN				1001
-# define CDM_PRIVMSG			1002
+# define CMD_PRIVMSG			1002
 
 typedef std::pair<uint16_t, std::string> reply;
 reply const _rpl_arr[] = {

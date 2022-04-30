@@ -40,8 +40,8 @@ Channel * Database::add_channel(std::string const & name) {
 	return &(ret.first->second);
 }
 
-void	remove_client(int socket) {
-	client.erase(socket);
+void	Database::remove_client(int socket) {
+	clients.erase(socket);
 }
 
 void	Database::add_response(response_pair response) {

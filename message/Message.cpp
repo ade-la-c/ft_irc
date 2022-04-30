@@ -95,7 +95,8 @@ bool Message::is_nickname(std::string str, std::string::size_type pos, std::stri
 }
 
 bool Message::is_channel(std::string str, std::string::size_type pos, std::string::size_type count) {
-
+	(void)str, (void)pos, (void)count;
+	return true;
 }
 
 std::string::size_type Message::parse_prefix(std::string::size_type end) {
