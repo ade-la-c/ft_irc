@@ -38,5 +38,6 @@ ircserv
 
 bircd
 bewareircd*
+.vscode
 logs*
 miniircd*
