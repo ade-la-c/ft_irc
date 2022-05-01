@@ -49,6 +49,8 @@ void	Database::add_response(response_pair response) {
 }
 
 response_pair	Database::next_response() {
+	if (responses.empty())
+		return response_pair(NULL, "");
 	response_pair tmp = responses.front();
 	responses.pop_front();
 	return tmp;

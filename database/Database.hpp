@@ -43,7 +43,7 @@ class Database {
 		void remove_client(int socket);
 
 		void add_response(response_pair response);
-		response_pair next_response(); // sends (NULL, NULL) if no response.
+		response_pair next_response(); // sends (NULL, "") if no response.
 
 		//returns false if wrong amount of args
 		bool init(int argc, char **argv);
