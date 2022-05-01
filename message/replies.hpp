@@ -44,9 +44,9 @@
 
 typedef std::pair<uint16_t, std::string> reply;
 reply const _rpl_arr[] = {
-	reply(RPL_WELCOME, "Welcome to the Internet Relay Network %s!%s@%s\r\n"), //"Welcome to the Internet Relay Network <nick>!<user>@<host>"
-	reply(RPL_YOURHOST, "Your host is %s, running version %s\r\n"), //"Your host is <servername>, running version <ver>"
-	reply(RPL_CREATED, "This server was created %s\r\n"), //"This server was created <date>"
+	reply(RPL_WELCOME, ":Welcome to the Internet Relay Network %s!%s@%s\r\n"), //"Welcome to the Internet Relay Network <nick>!<user>@<host>"
+	reply(RPL_YOURHOST, ":Your host is %s, running version %s\r\n"), //"Your host is <servername>, running version <ver>"
+	reply(RPL_CREATED, ":This server was created %s\r\n"), //"This server was created <date>"
 	reply(RPL_MYINFO, "%s %s %s %s\r\n"), //"<servername> <version> <available user modes> <available channel modes>"
 	reply(RPL_AWAY, "%s :%s\r\n"), //"<nick> :<away message>"
 	reply(RPL_TOPIC, "%s :%s\r\n"), //"<channel> :<topic>"

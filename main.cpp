@@ -58,27 +58,29 @@ int		main(int argc, char **argv) {
 	}
 
 	Client client(4);
-	strncpy(client.getBuf(), "NICK suske\r\n", 512);
-	client.parse_input();
-	//std::cout << db->next_response().second << std::endl;
-	strncpy(client.getBuf(), "USER suske suske * :suske\r\n", 512);
-	client.parse_input();
-	//std::cout << db->next_response().second << std::endl;
-	strncpy(client.getBuf(), "PASS abc\r\n", 512);
-	client.parse_input();
-	//std::cout << db->next_response().second << std::endl;
-	strncpy(client.getBuf(), "JOIN #abc\r\n", 512);
-	client.parse_input();
-	std::cout << db->responses.size() << std::endl;
-	std::cout << db->next_response().second << std::endl;
-	std::cout << db->next_response().second << std::endl;
-	std::cout << db->next_response().second << std::endl;
-	std::cout << db->next_response().second << std::endl;
-	std::cout << db->next_response().second << std::endl;
-	std::cout << db->next_response().second << std::endl;
-	std::cout << db->next_response().second << std::endl;
-	std::cout << db->next_response().second << std::endl;
-	std::cout << db->next_response().second << std::endl;
+//	strncpy(client.getBuf(), "NICK suske\r\n", 512);
+//	client.parse_input();
+//	//std::cout << db->next_response().second << std::endl;
+//	strncpy(client.getBuf(), "USER suske suske * :suske\r\n", 512);
+//	client.parse_input();
+//	//std::cout << db->next_response().second << std::endl;
+//	strncpy(client.getBuf(), "PASS abc\r\n", 512);
+//	client.parse_input();
+//	//std::cout << db->next_response().second << std::endl;
+//	strncpy(client.getBuf(), "JOIN #abc\r\n", 512);
+//	client.parse_input();
+//	strncpy(client.getBuf(), "OPER admin password\r\n", 512);
+//	client.parse_input();
+//	std::cout << db->responses.size() << std::endl;
+	response_pair response;
+	while (1) {
+		bzero(client.getBuf(), 512);
+		read(1, client.getBuf(), 512);
+
+		client.parse_input();
+		while ((response = db->next_response()).first)
+			std::cout << response.second;
+	}
 	return 0;
 	do_main(argc, argv);
 	return 0;

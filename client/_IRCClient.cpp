@@ -43,6 +43,8 @@ void _IRCClient::reg() {
 			Database::get_instance()->add_response(this->response(RPL_YOURHOST, Database::get_instance()->hostname.c_str(), "0.1"));
 			Database::get_instance()->add_response(this->response(RPL_CREATED, "a long time ago"));
 			Database::get_instance()->add_response(this->response(RPL_MYINFO, Database::get_instance()->hostname.c_str(), "0.1", "none", "none"));
+		} else {
+			Database::get_instance()->add_response(this->response(ERR_PASSWDMISMATCH));
 		}
 	}
 }

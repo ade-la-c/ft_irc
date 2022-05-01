@@ -31,7 +31,7 @@ void nick(Client & client, Message & msg) {
 	client_map::iterator end = db->clients.end();
 	while (begin != end) {
 		if (begin->second.nickname == nick) {
-			Database::get_instance()->add_response(client.response(ERR_ERRONEUSNICKNAME, nick.c_str()));
+			Database::get_instance()->add_response(client.response(ERR_NICKNAMEINUSE, nick.c_str()));
 			return ;
 		}
 		begin++;
@@ -92,13 +92,15 @@ void join(Client & client, Message & msg) {
 	}
 
 	char * tok = strtok(const_cast<char *>(channels.c_str()), ",");
-	std::cout << ">>" << channels << "<<" << std::endl;
 	Channel * chan;
 	while (tok) {
 
 		chan = db->get_channel(tok);
 		if (!chan)
 			chan = db->add_channel(tok);
+
+		if (chan[0] != "#" && chan[0] != "&") {
+		}
 
 		client_map::iterator begin = chan->subscribed_clients.begin();
 		client_map::iterator end = chan->subscribed_clients.end();
@@ -121,7 +123,6 @@ void join(Client & client, Message & msg) {
 		}
 		if (!names.empty())
 			db->add_response(client.response(RPL_NAMREPLY, chan->name.c_str(), names.c_str()));
-		std::cout << "ello" << std::endl;
 		db->add_response(client.response(RPL_ENDOFNAMES, chan->name.c_str()));
 		tok = strtok(NULL, ",");
 	}
@@ -132,15 +133,9 @@ void privmsg(Client & client, Message & msg) {
 		Database::get_instance()->add_response(client.response(ERR_NOTREGISTERED));
 		return ;
 	}
-	(void) msg;
-	//TODO
 }
 
 void notice(Client & client, Message & msg) {
-	if (!client.registered) {
-		Database::get_instance()->add_response(client.response(ERR_NOTREGISTERED));
-		return ;
-	}
 	(void) msg;
 	//TODO
 }

@@ -28,7 +28,8 @@ void Message::parse() {
 	std::string::size_type end;
 
 	msg = buffer + msg;
-	end = msg.find("\r\n");
+	end = msg.find("\n"); //TODO change back
+//	end = msg.find("\r\n");
 
 	if (end > MAX_SIZE - 2 && end != std::string::npos) {
 		throw IllFormedMessageException();
