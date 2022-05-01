@@ -99,7 +99,7 @@ void join(Client & client, Message & msg) {
 		if (!chan)
 			chan = db->add_channel(tok);
 
-		if (chan[0] != "#" && chan[0] != "&") {
+		if (chan->name[0] != '#' && chan->name[0] != '&') {
 		}
 
 		client_map::iterator begin = chan->subscribed_clients.begin();
@@ -133,9 +133,11 @@ void privmsg(Client & client, Message & msg) {
 		Database::get_instance()->add_response(client.response(ERR_NOTREGISTERED));
 		return ;
 	}
+	(void)msg;
 }
 
 void notice(Client & client, Message & msg) {
+	(void) client;
 	(void) msg;
 	//TODO
 }

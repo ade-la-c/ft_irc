@@ -1,6 +1,7 @@
 #ifndef _IRCCLIENT_HPP
 # define _IRCCLIENT_HPP
-#include "../includes/ft_irc.hpp"
+
+# include "../includes/ft_irc.hpp"
 
 class _IRCClient {
 

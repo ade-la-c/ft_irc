@@ -1,15 +1,18 @@
 #include "includes/ft_irc.hpp"
-void	do_main( int argc, char **argv ) {
+
+/**
+void	do_main( int argc, char **argv, Database * db ) {
 (void)argc;
+
 	Server	serv(atoi(argv[1]));
-	int		newfd;
-	// fd_set	
+	int		newFd;
+	fd_set	tmpReadFdSet, tmpWriteFdSet;
 
 	serv.addToFdSet(serv.getServSocket(), READFD);
 	serv.setMaxFd(serv.getServSocket());
 
 	while (true) {
-
+std::cout << "loop" << std::endl;
 		// update clients to write on (writefds)
 		// |->	loop call asking for a set of clients + a message to send
 		// |->	or single client set + message call, (select call will loop faster)
@@ -18,33 +21,99 @@ void	do_main( int argc, char **argv ) {
 		// update clients to read from (readfds)
 			// (add new connexions and close old ones)
 
-		// call select
-		serv.doSelect();
+		tmpReadFdSet = serv.getFdSet(READFD);
+		tmpWriteFdSet = serv.getFdSet(WRITEFD);
 
-		// send in writefds and recv from readfds
+		serv.doSelect(tmpReadFdSet, tmpWriteFdSet);
+
 
 		// mettre le message dans le buffer client
 		// call client parse_input sur chaque readfd
 		for (int i = 0; i < FD_SETSIZE; i++) {
+// std::cout << "for loop" << std::endl;
 
-			if (FD_ISSET(i, serv.getFdSet(READFD))) {
-
+			if (FD_ISSET(i, &tmpReadFdSet)) {
+std::cout << "if readfd" << std::endl;
 				if (i == serv.getServSocket()) {
-					// handle new connections
-					newfd = serv.acceptNewConnection();
-					if (newfd > serv.getMaxFd())
-						serv.setMaxFd(newfd);
-					serv.addToFdSet(newfd, READFD);
-					
+							//? handle new connections
+					newFd = serv.doAccept();
+					if (newFd > serv.getMaxFd())
+						serv.setMaxFd(newFd);
+					serv.addToFdSet(newFd, READFD);
+					db->add_client(newFd);
 				} else {
-					//TODO si c'est un autre readfd
-					
+							//? si c'est un autre readfd
+					db->get_client(i)->setBuf(serv.doRecv(i, tmpReadFdSet));
+					db->get_client(i)->parse_input();
 				}
 			}
-			if (FD_ISSET(i, serv.getFdSet(WRITEFD))) {
-				//TODO si c'est un writefd
+			if (FD_ISSET(i, &tmpWriteFdSet)) {
+std::cout << "if writefd" << std::endl;
+							//? si c'est un writefd
+				serv.doSend(db->responses);
 			}
 		}
+		serv.setFdSet(tmpReadFdSet, READFD);
+		serv.setFdSet(tmpWriteFdSet, WRITEFD);
+		FD_ZERO(&tmpReadFdSet);
+		FD_ZERO(&tmpWriteFdSet);
+	}
+}
+
+// */
+
+void	do_main( int ac, char ** av, Database * db ) {
+
+	(void)ac;
+
+	Server		serv(atoi(av[1]));
+	fd_set		tmpReadFdSet, tmpWriteFdSet;
+	char		buf[512];
+	int			newFd;
+
+	serv.addToFdSet(serv.getServSocket(), READFD);
+	serv.setMaxFd(serv.getServSocket());
+
+	while (true) {
+
+		tmpReadFdSet = serv.getFdSet(READFD);
+		tmpWriteFdSet = serv.getFdSet(WRITEFD);
+std::cout<<"preselect"<<std::endl;
+		serv.doSelect(tmpReadFdSet, tmpWriteFdSet);
+std::cout<<"postselect"<<std::endl;
+
+		for (int i = 0; i < FD_SETSIZE; i++) {
+// std::cout<<"print random"<<std::endl;
+			if (FD_ISSET(i, &tmpReadFdSet)) {
+
+				if (i == serv.getServSocket()) {	// handle new connections
+					if ((newFd = serv.doAccept()) < 0)
+						continue;
+					if (newFd > serv.getMaxFd())
+						serv.setMaxFd(newFd);
+					serv.addToFdSet(newFd, READFD);
+					db->add_client(newFd);
+				} else {							// handle other readfds
+					if (serv.doRecv(i, tmpReadFdSet, buf)) {
+						db->get_client(i)->setBuf(buf);
+						db->get_client(i)->parse_input();
+					std::cout << "-->" << db->responses.front().second << std::endl;
+					} else {
+						db->remove_client(i);
+					}
+				}
+			}
+			if (FD_ISSET(i, &tmpWriteFdSet)) {
+
+std::cout << "writefd" << std::endl;
+exit(1);
+				serv.doSend(db->responses);
+			}
+		}
+		// serv.setFdSet(tmpReadFdSet, READFD);
+		// serv.setFdSet(tmpWriteFdSet, WRITEFD);
+		FD_ZERO(&tmpReadFdSet);
+		FD_ZERO(&tmpWriteFdSet);
 	}
 }
 
@@ -57,34 +126,16 @@ int		main(int argc, char **argv) {
 		return 1;
 	}
 
-	Client client(4);
-//	strncpy(client.getBuf(), "NICK suske\r\n", 512);
-//	client.parse_input();
-//	//std::cout << db->next_response().second << std::endl;
-//	strncpy(client.getBuf(), "USER suske suske * :suske\r\n", 512);
-//	client.parse_input();
-//	//std::cout << db->next_response().second << std::endl;
-//	strncpy(client.getBuf(), "PASS abc\r\n", 512);
-//	client.parse_input();
-//	//std::cout << db->next_response().second << std::endl;
-//	strncpy(client.getBuf(), "JOIN #abc\r\n", 512);
-//	client.parse_input();
-//	strncpy(client.getBuf(), "OPER admin password\r\n", 512);
-//	client.parse_input();
-//	std::cout << db->responses.size() << std::endl;
-	response_pair response;
-	while (1) {
-		bzero(client.getBuf(), 512);
-		read(1, client.getBuf(), 512);
-
-		client.parse_input();
-		while ((response = db->next_response()).first)
-			std::cout << response.second;
-	}
-	return 0;
-	do_main(argc, argv);
+//	Client client(4);
+//	response_pair response;
+//	while (1) {
+//		bzero(client.getBuf(), 512);
+//		read(1, client.getBuf(), 512);
+//		client.parse_input();
+//		while ((response = db->next_response()).first)
+//			std::cout << response.second;
+//	}
+//	return 0;
+	do_main(argc, argv, db);
 	return 0;
 }
-
-// si on peut read dans le fd du serveur (celui qu'on donne a accept),
-// c'est qu'il faut connecter un nouveau fd (qu'on obtient avec le call d'accept)

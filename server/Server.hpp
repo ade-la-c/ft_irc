@@ -13,14 +13,17 @@ public:
 	~Server();
 
 	int			getServSocket() const;
-	fd_set *		getFdSet( int fdType );
+	fd_set		getFdSet( int fdType );
 	int			getMaxFd() const;
 
 	void		setMaxFd( int newMaxFd );
+	void		setFdSet( fd_set set, int fdType );
 
 	void		addToFdSet( int fd, int fdType );
-	int			acceptNewConnection() const;
-	void		doSelect();
+	int			doAccept() const;
+	void		doSelect( fd_set readfds, fd_set writefds ) const;
+	bool		doRecv( int fd, fd_set readfds, char buf[512] );
+	void		doSend( response_list responses );
 
 	class	init_error : public std::exception {
 		public:
