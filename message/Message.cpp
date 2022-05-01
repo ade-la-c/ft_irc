@@ -50,6 +50,8 @@ void Message::parse() {
 	if (pos != end) {
 		pos++;
 		pos = parse_params(pos, end);
+	} else {
+		params_count = 0;
 	}
 }
 
@@ -133,7 +135,7 @@ std::string::size_type Message::parse_command(std::string::size_type pos, std::s
 }
 
 std::string::size_type Message::parse_params(std::string::size_type pos, std::string::size_type end) {
-	size_t count = 0;
+	std::string::size_type count = 0;
 	std::string::size_type i = pos;
 	
 	while (i < end && msg[i] != ':' && count < 14) {

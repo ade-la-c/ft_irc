@@ -89,18 +89,22 @@ void join(Client & client, Message & msg) {
 		}
 		client.subscribed_channels.clear();
 		return ;
+		//TODO send part messages
 	}
 
 	char * tok = strtok(const_cast<char *>(channels.c_str()), ",");
 	Channel * chan;
 	while (tok) {
 
+		if ((tok[0] != '#' && tok[0] != '&') || !tok[1]) {
+			db->add_response(client.response(ERR_NOSUCHCHANNEL, tok));
+			tok = strtok(NULL, ",");
+			continue;
+		}
+
 		chan = db->get_channel(tok);
 		if (!chan)
 			chan = db->add_channel(tok);
-
-		if (chan->name[0] != '#' && chan->name[0] != '&') {
-		}
 
 		client_map::iterator begin = chan->subscribed_clients.begin();
 		client_map::iterator end = chan->subscribed_clients.end();
@@ -133,7 +137,40 @@ void privmsg(Client & client, Message & msg) {
 		Database::get_instance()->add_response(client.response(ERR_NOTREGISTERED));
 		return ;
 	}
-	(void)msg;
+	if (msg.get_params_count() == 0) {
+		Database::get_instance()->add_response(client.response(ERR_NORECIPIENT, msg.get_command().c_str()));
+		return ;
+	}
+	if (msg.get_params_count() == 1) {
+		Database::get_instance()->add_response(client.response(ERR_NOTEXTTOSEND, msg.get_command().c_str()));
+		return ;
+	}
+	
+	Database * db = Database::get_instance();
+	std::string recipient = msg.get_params()[0];
+	if (Message::is_nickname(recipient)) {
+		client_map::iterator begin = db->clients.begin();
+		client_map::iterator end = db->clients.end();
+		while (begin != end) {
+			if (recipient == begin->second.nickname) {
+				db->add_response(begin->second.command(CMD_PRIVMSG, client.nickname.c_str(), client.username.c_str(), db->hostname.c_str(), recipient.c_str(), msg.get_params()[1].c_str()));
+				return ;
+			}
+			begin++;
+		}
+		db->add_response(client.response(ERR_NOSUCHNICK, recipient.c_str()));
+	} else {
+		Channel * chan = db->get_channel(recipient);
+		if (!chan)
+			db->add_response(client.response(ERR_NOSUCHNICK, recipient.c_str()));
+		client_map::iterator begin = chan->subscribed_clients.begin();
+		client_map::iterator end = chan->subscribed_clients.end();
+		while (begin != end) {
+			db->add_response(begin->second.command(CMD_PRIVMSG, client.nickname.c_str(), client.username.c_str(), db->hostname.c_str(), recipient.c_str(), msg.get_params()[1].c_str()));
+			begin++;
+		}
+	}
+	//TODO WILDCARDS
 }
 
 void notice(Client & client, Message & msg) {

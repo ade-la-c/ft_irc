@@ -51,29 +51,29 @@ void _IRCClient::reg() {
 
 response_pair _IRCClient::response(int r, ...) {
 	va_list arg;
-	char r_text[512];
+	char r_text[513];
 	char response[512];
 
 	const char * nick = "*";
 	if (!this->nickname.empty())
 		nick = this->nickname.c_str();
-	sprintf(response, ":%s %03d %s ", Database::get_instance()->hostname.c_str(), r, nick);
+	snprintf(response, 512, ":%s %03d %s ", Database::get_instance()->hostname.c_str(), r, nick);
 
 	va_start(arg, r);
-	vsprintf(r_text, replies.at(r).c_str(), arg);
+	vsnprintf(r_text, 513, replies.at(r).c_str(), arg);
 	va_end(arg);
 
-	strcat(response, r_text);
+	strncat(response, r_text, 512);
 
 	return response_pair(static_cast<Client *>(this), std::string(response));
 }
 
 response_pair _IRCClient::command(int r, ...) {
 	va_list arg;
-	char response[512];
+	char response[513];
 
 	va_start(arg, r);
-	vsprintf(response, replies.at(r).c_str(), arg);
+	vsnprintf(response, 513, replies.at(r).c_str(), arg);
 	va_end(arg);
 
 	return response_pair(static_cast<Client *>(this), std::string(response));

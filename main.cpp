@@ -126,16 +126,16 @@ int		main(int argc, char **argv) {
 		return 1;
 	}
 
-//	Client client(4);
-//	response_pair response;
-//	while (1) {
-//		bzero(client.getBuf(), 512);
-//		read(1, client.getBuf(), 512);
-//		client.parse_input();
-//		while ((response = db->next_response()).first)
-//			std::cout << response.second;
-//	}
-//	return 0;
+	Client client(4);
+	response_pair response;
+	while (1) {
+		bzero(client.getBuf(), 512);
+		read(1, client.getBuf(), 512);
+		client.parse_input();
+		while ((response = db->next_response()).first)
+			std::cout << response.second;
+	}
+	return 0;
 	do_main(argc, argv, db);
 	return 0;
 }

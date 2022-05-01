@@ -83,7 +83,7 @@ reply const _rpl_arr[] = {
 	reply(ERR_CANTKILLSERVER, ":You cant kill a server!\r\n"), //":You cant kill a server!"
 	reply(ERR_NOOPERHOST, ":No O-lines for your host\r\n"), //":No O-lines for your host"
 	reply(CMD_JOIN, ":%s!%s@%s JOIN %s\r\n"), //":<nick>!<user>@<host> JOIN <channel>"
-	reply(CMD_PRIVMSG, ":%s!%s@%s PRIVMSG %s\r\n"), //":<nick>!<user>@<host> PRIVMSG message"
+	reply(CMD_PRIVMSG, ":%s!%s@%s PRIVMSG %s :%s\r\n"), //":<nick>!<user>@<host> PRIVMSG <recipient> <message>"
 };
 
 std::map<uint16_t, std::string> const replies(_rpl_arr, _rpl_arr + sizeof(_rpl_arr) / sizeof(_rpl_arr[0]));
