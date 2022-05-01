@@ -103,15 +103,13 @@ std::cout<<"postselect"<<std::endl;
 					}
 				}
 			}
-			if (FD_ISSET(i, &tmpWriteFdSet)) {
+			if (FD_ISSET(i, &tmpWriteFdSet)) {		//! writefdset ain't gonna fill itself
 
 std::cout << "writefd" << std::endl;
 exit(1);
 				serv.doSend(db->responses);
 			}
 		}
-		// serv.setFdSet(tmpReadFdSet, READFD);
-		// serv.setFdSet(tmpWriteFdSet, WRITEFD);
 		FD_ZERO(&tmpReadFdSet);
 		FD_ZERO(&tmpWriteFdSet);
 	}

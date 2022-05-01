@@ -23,8 +23,6 @@
 
 # define READFD				0
 # define WRITEFD			1
-# define UPDATEREADFD		2
-# define UPDATEWRITEFD		3
 
 class Database;
 class Client;

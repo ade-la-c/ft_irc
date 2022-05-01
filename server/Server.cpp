@@ -83,11 +83,6 @@ void		Server::addToFdSet( int fd, int fdType ) {
 	} else if (fdType == WRITEFD) {
 		fcntl(fd, F_SETFL, O_NONBLOCK);
 		FD_SET(fd, &_writeFds);
-	// } else if (fdType == UPDATEREADFD) {
-	// 	FD_SET(fd, &_readFdUpdate);
-	// } else if (fdType == UPDATEWRITEFD) {
-	// 	FD_SET(fd, &_writeFdUpdate);
-	// } else {
 		std::cerr << "wrong fdType" << std::endl;
 		exit(1);
 	}
@@ -98,16 +93,13 @@ int			Server::doAccept() const {
 	int		clientSocket = accept(_servSocket, (SA *)NULL, NULL);
 
 	if (clientSocket < 0) {
-		perror("accept");
 		return -1;
-		// exit(EXIT_FAILURE);
 	}
 	std::cout << "New client connection accepted on socket " << clientSocket << std::endl;
 	return clientSocket;
 }
 
 void		Server::doSelect( fd_set readfds, fd_set writefds ) const {
-// std::cout << "select" << std::endl;
 
 	if (select(FD_SETSIZE+1, &readfds, &writefds, NULL, NULL) < 0) {
 		perror("select");
@@ -120,46 +112,19 @@ bool		Server::doRecv( int fd, fd_set readfds, char buf[512] ) {
 	int		nbytes;
 std::cout <<"prerecv"<<std::endl;
 	if ((nbytes = recv(fd, buf, 512, 0)) <= 0) {	// connection close ou error
-		if (nbytes == 0)
-			std::cout << "Connection has been closed on fd " << fd << std::endl;
-		else
+		if (nbytes == -1) {
 			perror("recv");
+		}
 		close(fd);
+		std::cout << "Connection has been closed on fd " << fd << std::endl;
 		FD_CLR(fd, &readfds);
 		FD_CLR(fd, &_readFds);
 		return false;
 	} else {
 std::cout <<"postrecv"<<std::endl;
-	return true;
+		return true;
 	}
 }
-
-/**
-char *		Server::doRecv( int fd, fd_set readfds ) const {
-std::cout << "recv" << std::endl;
-	char *	buf = NULL;
-	int		nbytes;
-
-	try {
-		if ((nbytes = recv(fd, buf, sizeof(buf), 0)) <= 0) {
-
-			if (nbytes == 0) {
-				std::cout << "Connection has been closed on fd " << fd << std::endl;
-			} else {
-				close(fd);
-				FD_CLR(fd, &readfds);
-				throw server_error();
-			}
-			close(fd);
-			FD_CLR(fd, &readfds);
-		}
-	} catch (const std::exception & e) {
-		std::cerr << e.what() << std::endl;
-	}
-	return buf;
-}
-
-// */
 
 void		Server::doSend( response_list responses ) {
 		//!	fix send and keep unsended bytes in cache to keep sending after
@@ -170,13 +135,18 @@ void		Server::doSend( response_list responses ) {
 		pair = responses.front();
 		responses.pop_front();
 
-std::cout << "pre send" << std::endl;
 		if (send(pair.first->getSockFd(), pair.second.c_str(), sizeof(pair.second), 0) < 0) {
 			perror("send");
 			exit(EXIT_FAILURE);
 		}
-std::cout << "post send" << std::endl;
 	}
 
 	responses.clear();
 }
+
+// void		Server::doSend( response_list response ) {
+
+// 	response_pair		tmp;
+
+
+// }

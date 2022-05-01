@@ -42,10 +42,11 @@ public:
 
 private:
 
-	int			_servSocket;
-	int			_maxFd;
-	fd_set		_readFds;
-	fd_set		_writeFds;
+	int					_servSocket;
+	int					_maxFd;
+	fd_set				_readFds;
+	fd_set				_writeFds;
+	response_list		_responseCache;
 
 };
 
