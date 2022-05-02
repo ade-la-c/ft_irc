@@ -5,7 +5,6 @@ _IRCClient::_IRCClient() {
 	pass_set = false;
 	nick_set = false;
 	user_set = false;
-	mode = 0;
 	oper = false;
 }
 
@@ -13,11 +12,12 @@ _IRCClient::_IRCClient(_IRCClient const & cpy) {
 	password = cpy.password;
 	nickname = cpy.nickname;
 	username = cpy.username;
+	hostname = cpy.hostname;
+	servername = cpy.servername;
 	registered = cpy.registered;
 	pass_set = cpy.pass_set;
 	nick_set = cpy.nick_set;
 	user_set = cpy.user_set;
-	mode = cpy.mode;
 	oper = cpy.oper;
 }
 

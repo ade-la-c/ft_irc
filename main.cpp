@@ -126,8 +126,6 @@ int		main(int argc, char **argv) {
 		return 1;
 	}
 
-	std::cout << Message::match_wildcard("a*a?c", "abbbbbbhbbbbbbbbac") << std::endl;
-	return 0;
 	Client client(4);
 	response_pair response;
 	while (1) {

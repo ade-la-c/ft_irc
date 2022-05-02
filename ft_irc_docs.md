@@ -70,18 +70,12 @@ ERR_NICKNAMEINUSE               ERR_NICKCOLLISION
 #### USER
 
 ```
-Parameters: <username> <mode> <unused> <realname>
+Parameters: <username> <hostname> <servername> <realname>
 ```
 
-Used at the beginning of connection to specify info about the user.\
-\<mode\> should be numeric. It is a bitmask with 2 significant bits:
-* bit 2 for user mode 'w' (user receives wallops)
-* bit 3 for user mode 'i' (user becomse invisible)
-
-\<unused\> is, well, unused. It's there for legacy purposes.\
+Used at the beginning of a connection to specify username, hostname, servername and realname. \
+Hostname and servername are usually ignored for security purposes. \
 Realname may contain space character but the parameter must then be prefix by a colon (:).
-
-The \<realname\> may contain space characters.
 
 * Replies:
 ```
@@ -123,7 +117,7 @@ Parameters: <msgtarget> <text to be sent>
 
 Used to send messages to users & channels.
 
-For opertors:
+For operators:
 \<msgtarget\> may be a host mask (#\<mask\>) or server mask ($\<mask\>). It will then send to user users having a host or server matching the mask.\
 The mask must have at least 1 '.' and no wildcard after the last one to prevent "$\*" or "#\*".\
 Wildcards are '\*' and '?'.\

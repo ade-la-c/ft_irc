@@ -19,12 +19,13 @@ class _IRCClient {
 		std::string password;
 		std::string nickname;
 		std::string username;
+		std::string hostname;
+		std::string servername;
+		std::string realname;
 		bool registered;
 		bool pass_set;
 		bool nick_set;
 		bool user_set;
-		int mode;
-		std::string realname;
 		channel_map subscribed_channels;
 		bool oper;
 };
