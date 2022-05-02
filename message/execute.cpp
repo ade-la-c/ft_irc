@@ -81,13 +81,20 @@ void join(Client & client, Message & msg) {
 	if (channels == "0") {
 		channel_map::iterator begin = client.subscribed_channels.begin();
 		channel_map::iterator end = client.subscribed_channels.end();
+		client_map::iterator clbegin;
+		client_map::iterator clend;
 		while (begin != end) {
+			clbegin = begin->second.subscribed_clients.begin();
+			clend = begin->second.subscribed_clients.end();
+			while (clbegin != clend) {
+				db->add_response(clbegin->second.command(CMD_PART, client.nickname.c_str(), client.username.c_str(), client.hostname.c_str(), begin->second.name.c_str()));
+				clbegin++;
+			}
 			begin->second.remove_client(client);
 			begin++;
 		}
 		client.subscribed_channels.clear();
 		return ;
-		//TODO send part messages
 	}
 
 	char * tok = strtok(const_cast<char *>(channels.c_str()), ",");
@@ -104,12 +111,19 @@ void join(Client & client, Message & msg) {
 		if (!chan)
 			chan = db->add_channel(tok);
 
+		if (chan->subscribed_clients.count(client.getSockFd())) {
+			tok = strtok(NULL, ",");
+			continue;
+		}
+
+
 		client_map::iterator begin = chan->subscribed_clients.begin();
 		client_map::iterator end = chan->subscribed_clients.end();
 		for (; begin != end; begin++) {
 			db->add_response(begin->second.command(CMD_JOIN, client.nickname.c_str(), client.username.c_str(), client.hostname.c_str(), chan->name.c_str()));
 		}
 
+		client.subscribed_channels[chan->name] = *chan;
 		chan->add_client(client);
 		db->add_response(client.command(CMD_JOIN, client.nickname.c_str(), client.username.c_str(), client.hostname.c_str(), chan->name.c_str()));
 		db->add_response(client.response(RPL_TOPIC, chan->name.c_str(), "No topic set"));

@@ -18,6 +18,7 @@ class Channel {
 		std::string name;
 
 		client_map subscribed_clients;
+		//***** TODO make map with pointers or the clients will not update if needed
 
 };
 

@@ -27,6 +27,7 @@ class _IRCClient {
 		bool nick_set;
 		bool user_set;
 		channel_map subscribed_channels;
+		//****** TODO make map with pointers or they do not update
 		bool oper;
 };
 

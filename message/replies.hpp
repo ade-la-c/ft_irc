@@ -41,6 +41,7 @@
 # define ERR_NOOPERHOST			491
 # define CMD_JOIN				1001
 # define CMD_PRIVMSG			1002
+# define CMD_PART				1003
 
 typedef std::pair<uint16_t, std::string> reply;
 reply const _rpl_arr[] = {
@@ -84,6 +85,7 @@ reply const _rpl_arr[] = {
 	reply(ERR_NOOPERHOST, ":No O-lines for your host\r\n"), //":No O-lines for your host"
 	reply(CMD_JOIN, ":%s!%s@%s JOIN %s\r\n"), //":<nick>!<user>@<host> JOIN <channel>"
 	reply(CMD_PRIVMSG, ":%s!%s@%s PRIVMSG %s :%s\r\n"), //":<nick>!<user>@<host> PRIVMSG <recipient> <message>"
+	reply(CMD_PART, ":%s!%s@%s PART %s\r\n"), //":<nick>!<user>@<host> PART <channel>"
 };
 
 std::map<uint16_t, std::string> const replies(_rpl_arr, _rpl_arr + sizeof(_rpl_arr) / sizeof(_rpl_arr[0]));
