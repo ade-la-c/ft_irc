@@ -20,6 +20,7 @@
 # include <cstdio>
 # include <cstdarg>
 # include <cstring>
+# include <errno.h>
 
 # define READFD				0
 # define WRITEFD			1
@@ -45,7 +46,13 @@ typedef std::map<std::string, Channel> channel_map; // {name, channel} map
 # include "../message/replies.hpp"
 # include "../server/Server.hpp"
 
-void error(std::string const & str);
+
+void	error(std::string const & str);
+void	exit_error( std::string const & str );
+
+bool	fdIsset( int fd, fd_set * set );
+void	fdSet( int fd, fd_set * set );
+void	fdClr( int fd, fd_set * set );
 
 template <typename Iter>
 void send_response(Iter begin, Iter end);

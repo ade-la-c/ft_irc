@@ -23,7 +23,7 @@ public:
 	int			doAccept() const;
 	void		doSelect( fd_set readfds, fd_set writefds ) const;
 	bool		doRecv( int fd, fd_set readfds, char buf[512] );
-	void		doSend( response_list responses );
+	void		doSend( int fd, response_list responses );
 
 	class	init_error : public std::exception {
 		public:

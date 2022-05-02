@@ -78,20 +78,21 @@ void	do_main( int ac, char ** av, Database * db ) {
 
 		tmpReadFdSet = serv.getFdSet(READFD);
 		tmpWriteFdSet = serv.getFdSet(WRITEFD);
-std::cout<<"preselect"<<std::endl;
+// std::cout<<"preselect"<<std::endl;
 		serv.doSelect(tmpReadFdSet, tmpWriteFdSet);
-std::cout<<"postselect"<<std::endl;
+// std::cout<<"postselect"<<std::endl;
 
 		for (int i = 0; i < FD_SETSIZE; i++) {
 // std::cout<<"print random"<<std::endl;
-			if (FD_ISSET(i, &tmpReadFdSet)) {
-
+			if (fdIsset(i, &tmpReadFdSet)) {
+				//? plus besoin de readfdset & writefdset séparés ?
 				if (i == serv.getServSocket()) {	// handle new connections
 					if ((newFd = serv.doAccept()) < 0)
 						continue;
 					if (newFd > serv.getMaxFd())
 						serv.setMaxFd(newFd);
 					serv.addToFdSet(newFd, READFD);
+					serv.addToFdSet(newFd, WRITEFD);
 					db->add_client(newFd);
 				} else {							// handle other readfds
 					if (serv.doRecv(i, tmpReadFdSet, buf)) {
@@ -103,11 +104,9 @@ std::cout<<"postselect"<<std::endl;
 					}
 				}
 			}
-			if (FD_ISSET(i, &tmpWriteFdSet)) {		//! writefdset ain't gonna fill itself
-
+			if (fdIsset(i, &tmpWriteFdSet) && (db->clients.count(i) > 0)) {		//! writefdset ain't gonna fill itself
 std::cout << "writefd" << std::endl;
-exit(1);
-				serv.doSend(db->responses);
+				serv.doSend(i, db->responses);
 			}
 		}
 		FD_ZERO(&tmpReadFdSet);

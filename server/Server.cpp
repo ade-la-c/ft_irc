@@ -1,4 +1,5 @@
 #include "Server.hpp"
+#include "ft_irc.hpp"
 #include <sys/select.h>
 
 Server::Server() {}
@@ -15,18 +16,19 @@ Server::Server( int port ) : _maxFd(4) {
 
 	try {
 
-		if ((_servSocket = socket(AF_INET, SOCK_STREAM, 0)) == -1)
+		if ((_servSocket = socket(AF_INET, SOCK_STREAM, 0)) < 0)
 			throw init_error();
 		servAddr.sin_family			= AF_INET;
 		servAddr.sin_addr.s_addr	= INADDR_ANY;
 		servAddr.sin_port			= htons(port);
-		if (bind(_servSocket, (SA *)&servAddr, sizeof(servAddr)) == -1)
+		if (bind(_servSocket, (SA *)&servAddr, sizeof(servAddr)) < 0)
 			throw init_error();
-		if (listen(_servSocket, 20) == -1)
+		if (listen(_servSocket, 20) < 0)
 			throw init_error();
 
 	} catch (const std::exception & e) {
 		std::cerr << e.what() << std::endl;
+		exit(EXIT_FAILURE);
 	}
 }
 
@@ -77,14 +79,17 @@ void		Server::setFdSet( fd_set set, int fdType ) {
 
 void		Server::addToFdSet( int fd, int fdType ) {
 
+	if (fd < 0)
+		exit_error("addToFdSet: negative fd");
 	if (fdType == READFD) {
-		fcntl(fd, F_SETFL, O_NONBLOCK);
-		FD_SET(fd, &_readFds);
+		fcntl(fd, F_SETFL, O_NONBLOCK);		//! protéger fcntl
+		fdSet(fd, &_readFds);
 	} else if (fdType == WRITEFD) {
 		fcntl(fd, F_SETFL, O_NONBLOCK);
-		FD_SET(fd, &_writeFds);
+		fdSet(fd, &_writeFds);
+	} else {
 		std::cerr << "wrong fdType" << std::endl;
-		exit(1);
+		exit(EXIT_FAILURE);
 	}
 }
 
@@ -110,21 +115,25 @@ void		Server::doSelect( fd_set readfds, fd_set writefds ) const {
 bool		Server::doRecv( int fd, fd_set readfds, char buf[512] ) {
 
 	int		nbytes;
-std::cout <<"prerecv"<<std::endl;
+// std::cout <<"prerecv"<<std::endl;
 	if ((nbytes = recv(fd, buf, 512, 0)) <= 0) {	// connection close ou error
 		if (nbytes == -1) {
 			perror("recv");
-		}
+
+		fdClr(fd, &readfds);
+		fdClr(fd, &_readFds);
+		fdClr(fd, &_writeFds);
 		close(fd);
 		std::cout << "Connection has been closed on fd " << fd << std::endl;
-		FD_CLR(fd, &readfds);
-		FD_CLR(fd, &_readFds);
+		}
 		return false;
 	} else {
-std::cout <<"postrecv"<<std::endl;
+// std::cout <<"postrecv"<<std::endl;
 		return true;
 	}
 }
+
+/**
 
 void		Server::doSend( response_list responses ) {
 		//!	fix send and keep unsended bytes in cache to keep sending after
@@ -144,9 +153,73 @@ void		Server::doSend( response_list responses ) {
 	responses.clear();
 }
 
-// void		Server::doSend( response_list response ) {
+// */
 
-// 	response_pair		tmp;
+// /**
 
+void		Server::doSend( int fd, response_list responses ) {
 
-// }
+	response_pair		pair;
+	std::string			tmp;
+	int					sentbytes;
+
+	while (!(_responseCache.empty())) {
+
+		pair = _responseCache.front();
+		_responseCache.pop_front();
+
+		if (pair.first->getSockFd() != fd) {
+			_responseCache.push_back(pair);
+		} else if ((sentbytes = send(pair.first->getSockFd(), pair.second.c_str(), sizeof(pair.second), 0)) < 0) {
+			perror("send");
+			// exit(EXIT_FAILURE);				//?
+		} else {
+			tmp = pair.second.substr(sentbytes-1, pair.second.size());
+			pair.second = tmp;
+			_responseCache.push_back(pair);
+		}
+	}
+
+	while (!(responses.empty())) {
+
+		pair = responses.front();
+		responses.pop_front();
+
+		if ((sentbytes = send(pair.first->getSockFd(), pair.second.c_str(), sizeof(pair.second), 0)) < 0) {
+			perror("send");
+			exit(EXIT_FAILURE);
+		} else {
+			tmp = pair.second.substr(sentbytes-1, pair.second.size());
+			pair.second = tmp;
+			_responseCache.push_back(pair);
+		}
+	}
+	responses.clear();
+}	//! il est possible qu'il y ait des response_pair "fantomes" de 1 empty byte genre
+
+// */
+/**
+
+void		Server::doSend( int fd, response_list responses ) {
+
+	response_pair		pair;
+	std::string			tmp;
+	int					sentbytes;
+
+	while (!(_responseCache.empty())) {
+
+		pair = _responseCache.front();
+		_responseCache.pop_front();
+
+		if ((sentbytes = send(pair.first->getSockFd(), pair.second.c_str(), sizeof(pair.second), 0)) < 0) {
+			perror("send");
+			exit(EXIT_FAILURE);
+		} else {
+			tmp = pair.second.substr(sentbytes-1, pair.second.size());
+			pair.second = tmp;
+			_responseCache.push_back(pair);
+		}
+	}
+}
+
+// */
