@@ -102,6 +102,34 @@ bool Message::is_channel(std::string str, std::string::size_type pos, std::strin
 	return true;
 }
 
+bool Message::match_wildcard(std::string const & pattern, std::string const & str) {
+	std::string::size_type i = 0, j = 0, k = 0;
+
+	while (i < pattern.length() && j < str.length()) {
+		if (pattern[i] == '*') {
+			while (pattern[i] == '*' || pattern[i] == '?')
+				i++;
+			k = str.find_last_of(pattern[i]);
+			while (k != std::string::npos && k >= j) {
+				if (match_wildcard(pattern.substr(i), str.substr(k)))
+					return true;
+				k = str.find_last_of(pattern[i], k - 1);
+			}
+			return false;
+		} else if (pattern[i] != str[j] && pattern[i] != '?') {
+			return false;
+		}
+
+		i++;
+		j++;
+	}
+
+	if (i == pattern.length() && j == str.length())
+		return true;
+	else
+		return false;
+}
+
 std::string::size_type Message::parse_prefix(std::string::size_type end) {
 	std::string::size_type sp;
 

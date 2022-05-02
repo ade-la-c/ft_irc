@@ -147,6 +147,7 @@ void privmsg(Client & client, Message & msg) {
 	}
 	
 	Database * db = Database::get_instance();
+	Channel * chan;
 	std::string recipient = msg.get_params()[0];
 	if (Message::is_nickname(recipient)) {
 		client_map::iterator begin = db->clients.begin();
@@ -159,18 +160,17 @@ void privmsg(Client & client, Message & msg) {
 			begin++;
 		}
 		db->add_response(client.response(ERR_NOSUCHNICK, recipient.c_str()));
-	} else {
-		Channel * chan = db->get_channel(recipient);
-		if (!chan)
-			db->add_response(client.response(ERR_NOSUCHNICK, recipient.c_str()));
+	} else if ((chan = db->get_channel(recipient))) {
 		client_map::iterator begin = chan->subscribed_clients.begin();
 		client_map::iterator end = chan->subscribed_clients.end();
 		while (begin != end) {
-			db->add_response(begin->second.command(CMD_PRIVMSG, client.nickname.c_str(), client.username.c_str(), db->hostname.c_str(), recipient.c_str(), msg.get_params()[1].c_str()));
+			if (begin->first != client.getSockFd())
+				db->add_response(begin->second.command(CMD_PRIVMSG, client.nickname.c_str(), client.username.c_str(), db->hostname.c_str(), recipient.c_str(), msg.get_params()[1].c_str()));
 			begin++;
 		}
+	} else {
+		
 	}
-	//TODO WILDCARDS
 }
 
 void notice(Client & client, Message & msg) {

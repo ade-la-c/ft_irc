@@ -32,6 +32,7 @@ class Message {
 		static bool is_special(int c);
 		static bool is_nickname(std::string str, std::string::size_type pos = 0, std::string::size_type count = std::string::npos);
 		static bool is_channel(std::string str, std::string::size_type pos = 0, std::string::size_type count = std::string::npos);
+		static bool match_wildcard(std::string const & pattern, std::string const & str);
 
 		/* Setters and Getters */
 
