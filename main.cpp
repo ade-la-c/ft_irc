@@ -82,7 +82,7 @@ std::cout<<"preselect"<<std::endl;
 		serv.doSelect(tmpReadFdSet, tmpWriteFdSet);
 std::cout<<"postselect"<<std::endl;
 
-		for (int i = 0; i < serv.getMaxFd(); i++) {
+		for (int i = 0; i < FD_SETSIZE; i++) {
 // std::cout<<"print random"<<std::endl;
 			if (fdIsset(i, &tmpReadFdSet)) {
 				//? plus besoin de readfdset & writefdset séparés ?
@@ -92,7 +92,7 @@ std::cout<<"postselect"<<std::endl;
 					if (newFd > serv.getMaxFd())
 						serv.setMaxFd(newFd);
 					serv.addToFdSet(newFd, READFD);
-					serv.addToFdSet(newFd, WRITEFD);
+					// serv.addToFdSet(newFd, WRITEFD);
 					db->add_client(newFd);
 				} else {							// handle other readfds
 					if (serv.doRecv(i, tmpReadFdSet, buf)) {

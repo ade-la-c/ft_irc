@@ -74,9 +74,9 @@ void		Server::setMaxFd( int newMaxFd ) {
 void		Server::setFdSet( fd_set set, int fdType ) {
 
 	if (fdType == READFD) {
-		_readFds = set;
+		this->_readFds = set;
 	} else if (fdType == WRITEFD) {
-		_writeFds = set;
+		this->_writeFds = set;
 	} else {
 		std::cerr << "wrong fdType getFdSet" << std::endl;
 		exit(EXIT_FAILURE);
@@ -94,10 +94,10 @@ void		Server::addToFdSet( int fd, int fdType ) {
 		}
 		fdSet(fd, &_readFds);
 	} else if (fdType == WRITEFD) {
-		if (fcntl(fd, F_SETFL, O_NONBLOCK) < 0) {
-			exit_error("fcntl: ");
-			perror("fcntl");
-		}
+		// if (fcntl(fd, F_SETFL, O_NONBLOCK) < 0) {
+		// 	exit_error("fcntl: ");
+		// 	perror("fcntl");
+		// }
 		fdSet(fd, &_writeFds);
 	} else {
 		std::cerr << "wrong fdType" << std::endl;
@@ -118,59 +118,38 @@ int			Server::doAccept() const {
 
 void		Server::doSelect( fd_set readfds, fd_set writefds ) const {
 
-	if (select(_maxFd, &readfds, &writefds, NULL, NULL) < 0) {
+	if (select(FD_SETSIZE, &readfds, &writefds, NULL, NULL) < 0) {
 		perror("select");
 		exit(EXIT_FAILURE);
 	}
 }
 
+// fixing doRecv
 bool		Server::doRecv( int fd, fd_set readfds, char buf[512] ) {
 
 	int		nbytes;
 std::cout <<"prerecv"<<std::endl;
-	if ((nbytes = recv(fd, buf, 512, 0)) <= 0) {	// connection close ou error
+	while ((nbytes = recv(fd, buf, 512, 0)) <= 0) {	// connection close ou error
 		if (nbytes == -1) {
-			perror("recv");
-
-		fdClr(fd, &readfds);
-		fdClr(fd, &_readFds);
-		fdClr(fd, &_writeFds);
-		close(fd);
-		std::cout << "Connection has been closed on fd " << fd << std::endl;
+			continue;
+		} else if (nbytes == 0) {
+			fdClr(fd, &readfds);
+			fdClr(fd, &_readFds);
+			fdClr(fd, &_writeFds);
+			close(fd);
+			std::cout << "Connection has been closed on fd " << fd << std::endl;
+			break;
 		}
 		return false;
-	} else {
-std::cout <<"postrecv"<<std::endl;
-		return true;
-	}
-}
-
-/**
-
-void		Server::doSend( response_list responses ) {
-		//!	fix send and keep unsended bytes in cache to keep sending after
-	response_pair		pair;
-
-	while (responses.empty() == false) {
-
-		pair = responses.front();
-		responses.pop_front();
-
-		if (send(pair.first->getSockFd(), pair.second.c_str(), sizeof(pair.second), 0) < 0) {
-			perror("send");
-			exit(EXIT_FAILURE);
 		}
-	}
-
-	responses.clear();
+	if (nbytes > 0) {
+	std::cout <<"postrecv"<<std::endl;
+			return true;
+	} else { return false; }
 }
-
-// */
-
-// /**
 
 void		Server::doSend( int fd, response_list responses ) {
-
+std::cout << "dosend" << std::endl;
 	response_pair		pair;
 	std::string			tmp;
 	int					sentbytes;
@@ -199,7 +178,7 @@ void		Server::doSend( int fd, response_list responses ) {
 
 		if (pair.first->getSockFd() != fd) {
 			_responseCache.push_back(pair);
-		if ((sentbytes = send(pair.first->getSockFd(), pair.second.c_str(), sizeof(pair.second), 0)) < 0) {
+		} else if ((sentbytes = send(pair.first->getSockFd(), pair.second.c_str(), sizeof(pair.second), 0)) < 0) {
 			perror("send");
 			exit(EXIT_FAILURE);
 		} else {
@@ -210,5 +189,3 @@ void		Server::doSend( int fd, response_list responses ) {
 	}
 	responses.clear();
 }	//! il est possible qu'il y ait des response_pair "fantomes" de 1 empty byte genre
-
-// */
