@@ -119,6 +119,7 @@ bool		Server::doRecv( int fd, fd_set readfds, char buf[512] ) {
 	if ((nbytes = recv(fd, buf, 512, 0)) <= 0) {	// connection close ou error
 		if (nbytes == -1) {
 			perror("recv");
+<<<<<<< Updated upstream
 
 		fdClr(fd, &readfds);
 		fdClr(fd, &_readFds);
@@ -159,6 +160,22 @@ void		Server::doSend( response_list responses ) {
 
 void		Server::doSend( int fd, response_list responses ) {
 
+=======
+		}
+		close(fd);
+		std::cout << "Connection has been closed on fd " << fd << std::endl;
+		FD_CLR(fd, &readfds);
+		FD_CLR(fd, &_readFds);
+		return false;
+	} else {
+std::cout <<"postrecv"<<std::endl;
+		return true;
+	}
+}
+
+void		Server::doSend( response_list responses ) {
+		//!	fix send and keep unsended bytes in cache to keep sending after
+>>>>>>> Stashed changes
 	response_pair		pair;
 	std::string			tmp;
 	int					sentbytes;
@@ -185,7 +202,11 @@ void		Server::doSend( int fd, response_list responses ) {
 		pair = responses.front();
 		responses.pop_front();
 
+<<<<<<< Updated upstream
 		if ((sentbytes = send(pair.first->getSockFd(), pair.second.c_str(), sizeof(pair.second), 0)) < 0) {
+=======
+		if (send(pair.first->getSockFd(), pair.second.c_str(), sizeof(pair.second), 0) < 0) {
+>>>>>>> Stashed changes
 			perror("send");
 			exit(EXIT_FAILURE);
 		} else {
@@ -221,5 +242,14 @@ void		Server::doSend( int fd, response_list responses ) {
 		}
 	}
 }
+<<<<<<< Updated upstream
 
 // */
+=======
+// void		Server::doSend( response_list response ) {
+
+// 	response_pair		tmp;
+
+
+// }
+>>>>>>> Stashed changes
