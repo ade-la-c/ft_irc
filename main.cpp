@@ -72,18 +72,19 @@ void	do_main( int ac, char ** av, Database * db ) {
 	int			newFd;
 
 	serv.addToFdSet(serv.getServSocket(), READFD);
+	// fcntl(serv.getServSocket(), F_SETFL, O_NONBLOCK);
 	serv.setMaxFd(serv.getServSocket());
 
 	while (true) {
 
 		tmpReadFdSet = serv.getFdSet(READFD);
 		tmpWriteFdSet = serv.getFdSet(WRITEFD);
-std::cout<<"preselect"<<std::endl;
-		serv.doSelect(tmpReadFdSet, tmpWriteFdSet);
-std::cout<<"postselect"<<std::endl;
+// std::cout<<"preselect"<<std::endl;
+		serv.doSelect(&tmpReadFdSet, &tmpWriteFdSet);
+// std::cout<<"postselect"<<std::endl;
 
 		for (int i = 0; i < FD_SETSIZE; i++) {
-// std::cout<<"print random"<<std::endl;
+
 			if (fdIsset(i, &tmpReadFdSet)) {
 				//? plus besoin de readfdset & writefdset séparés ?
 				if (i == serv.getServSocket()) {	// handle new connections
@@ -98,7 +99,7 @@ std::cout<<"postselect"<<std::endl;
 					if (serv.doRecv(i, tmpReadFdSet, buf)) {
 						db->get_client(i)->setBuf(buf);
 						db->get_client(i)->parse_input();
-					std::cout << "-->" << db->responses.front().second << std::endl;
+					std::cout << "-->" << db->responses.back().second << std::endl;
 					} else {
 						db->remove_client(i);
 					}

@@ -8,6 +8,7 @@ Server::Server( int port ) : _maxFd(4) {
 
 	int		clientSocket, addrSize;
 	SA_IN	servAddr;
+	int		yes = 1;
 
 	std::cout << "Initialazing server" << std::endl;
 
@@ -23,6 +24,10 @@ Server::Server( int port ) : _maxFd(4) {
 		servAddr.sin_family			= AF_INET;
 		servAddr.sin_addr.s_addr	= INADDR_ANY;
 		servAddr.sin_port			= htons(port);
+
+		if (setsockopt(_servSocket, SOL_SOCKET, SO_REUSEADDR, &yes, sizeof(yes)) < 0)
+			exit_error("setsockopt");
+
 		if (bind(_servSocket, (SA *)&servAddr, sizeof(servAddr)) < 0) {
 			perror("bind");
 			throw init_error();
@@ -94,10 +99,10 @@ void		Server::addToFdSet( int fd, int fdType ) {
 		}
 		fdSet(fd, &_readFds);
 	} else if (fdType == WRITEFD) {
-		// if (fcntl(fd, F_SETFL, O_NONBLOCK) < 0) {
-		// 	exit_error("fcntl: ");
-		// 	perror("fcntl");
-		// }
+		if (fcntl(fd, F_SETFL, O_NONBLOCK) < 0) {
+			exit_error("fcntl: ");
+			perror("fcntl");
+		}
 		fdSet(fd, &_writeFds);
 	} else {
 		std::cerr << "wrong fdType" << std::endl;
@@ -116,14 +121,38 @@ int			Server::doAccept() const {
 	return clientSocket;
 }
 
-void		Server::doSelect( fd_set readfds, fd_set writefds ) const {
+void		Server::doSelect( fd_set *readfds, fd_set *writefds ) const {
 
-	if (select(FD_SETSIZE, &readfds, &writefds, NULL, NULL) < 0) {
+	if (select(FD_SETSIZE, readfds, writefds, NULL, NULL) < 0) {
 		perror("select");
 		exit(EXIT_FAILURE);
 	}
 }
 
+bool		Server::doRecv( int fd, fd_set readfds, char buf[512] ) {
+
+	int		nbytes;
+std::cout <<"prerecv"<<std::endl;
+	if ((nbytes = recv(fd, buf, 512, 0)) <= 0) {	// connection close ou error
+		if (nbytes == -1) {
+			std::cout << fd << std::endl;
+			perror("recv");
+		} else if (nbytes == 0) {
+			fdClr(fd, &readfds);
+			fdClr(fd, &_readFds);
+			fdClr(fd, &_writeFds);
+			close(fd);
+			std::cout << "Connection has been closed on fd " << fd << std::endl;
+		}
+		return false;
+		}
+	if (nbytes > 0) {
+	std::cout <<"postrecv"<<std::endl;
+			return true;
+	} else { return false; }
+}
+
+/**
 // fixing doRecv
 bool		Server::doRecv( int fd, fd_set readfds, char buf[512] ) {
 
@@ -147,6 +176,8 @@ std::cout <<"prerecv"<<std::endl;
 			return true;
 	} else { return false; }
 }
+
+// */
 
 void		Server::doSend( int fd, response_list responses ) {
 std::cout << "dosend" << std::endl;

@@ -21,7 +21,7 @@ public:
 
 	void		addToFdSet( int fd, int fdType );
 	int			doAccept() const;
-	void		doSelect( fd_set readfds, fd_set writefds ) const;
+	void		doSelect( fd_set *readfds, fd_set *writefds ) const;
 	bool		doRecv( int fd, fd_set readfds, char buf[512] );
 	void		doSend( int fd, response_list responses );
 
