@@ -16,15 +16,21 @@ Server::Server( int port ) : _maxFd(4) {
 
 	try {
 
-		if ((_servSocket = socket(AF_INET, SOCK_STREAM, 0)) < 0)
+		if ((_servSocket = socket(AF_INET, SOCK_STREAM, 0)) < 0) {
+			perror("socket");
 			throw init_error();
+		}
 		servAddr.sin_family			= AF_INET;
 		servAddr.sin_addr.s_addr	= INADDR_ANY;
 		servAddr.sin_port			= htons(port);
-		if (bind(_servSocket, (SA *)&servAddr, sizeof(servAddr)) < 0)
+		if (bind(_servSocket, (SA *)&servAddr, sizeof(servAddr)) < 0) {
+			perror("bind");
 			throw init_error();
-		if (listen(_servSocket, 20) < 0)
+		}
+		if (listen(_servSocket, 20) < 0) {
+			perror("listen");
 			throw init_error();
+		}
 
 	} catch (const std::exception & e) {
 		std::cerr << e.what() << std::endl;
@@ -47,7 +53,7 @@ fd_set		Server::getFdSet( int fdType ) {
 
 	if (fdType != READFD && fdType != WRITEFD) {
 		std::cerr << "wrong fdType getFdSet" << std::endl;
-		exit(1);
+		exit(EXIT_FAILURE);
 	}
 	if (fdType == READFD)
 		return _readFds;
@@ -67,14 +73,14 @@ void		Server::setMaxFd( int newMaxFd ) {
 
 void		Server::setFdSet( fd_set set, int fdType ) {
 
-	if (fdType != READFD && fdType != WRITEFD) {
-		std::cerr << "wrong fdType getFdSet" << std::endl;
-		exit(1);
-	}
-	if (fdType == READFD)
+	if (fdType == READFD) {
 		_readFds = set;
-	else
+	} else if (fdType == WRITEFD) {
 		_writeFds = set;
+	} else {
+		std::cerr << "wrong fdType getFdSet" << std::endl;
+		exit(EXIT_FAILURE);
+	}
 }
 
 void		Server::addToFdSet( int fd, int fdType ) {
@@ -82,10 +88,16 @@ void		Server::addToFdSet( int fd, int fdType ) {
 	if (fd < 0)
 		exit_error("addToFdSet: negative fd");
 	if (fdType == READFD) {
-		fcntl(fd, F_SETFL, O_NONBLOCK);		//! protéger fcntl
+		if (fcntl(fd, F_SETFL, O_NONBLOCK) < 0) {		//!	fcntl may not be good for all fds
+			exit_error("fcntl: ");
+			perror("fcntl");
+		}
 		fdSet(fd, &_readFds);
 	} else if (fdType == WRITEFD) {
-		fcntl(fd, F_SETFL, O_NONBLOCK);
+		if (fcntl(fd, F_SETFL, O_NONBLOCK) < 0) {
+			exit_error("fcntl: ");
+			perror("fcntl");
+		}
 		fdSet(fd, &_writeFds);
 	} else {
 		std::cerr << "wrong fdType" << std::endl;
@@ -106,7 +118,7 @@ int			Server::doAccept() const {
 
 void		Server::doSelect( fd_set readfds, fd_set writefds ) const {
 
-	if (select(FD_SETSIZE+1, &readfds, &writefds, NULL, NULL) < 0) {
+	if (select(_maxFd, &readfds, &writefds, NULL, NULL) < 0) {
 		perror("select");
 		exit(EXIT_FAILURE);
 	}
@@ -115,11 +127,10 @@ void		Server::doSelect( fd_set readfds, fd_set writefds ) const {
 bool		Server::doRecv( int fd, fd_set readfds, char buf[512] ) {
 
 	int		nbytes;
-// std::cout <<"prerecv"<<std::endl;
+std::cout <<"prerecv"<<std::endl;
 	if ((nbytes = recv(fd, buf, 512, 0)) <= 0) {	// connection close ou error
 		if (nbytes == -1) {
 			perror("recv");
-<<<<<<< Updated upstream
 
 		fdClr(fd, &readfds);
 		fdClr(fd, &_readFds);
@@ -129,7 +140,7 @@ bool		Server::doRecv( int fd, fd_set readfds, char buf[512] ) {
 		}
 		return false;
 	} else {
-// std::cout <<"postrecv"<<std::endl;
+std::cout <<"postrecv"<<std::endl;
 		return true;
 	}
 }
@@ -160,22 +171,6 @@ void		Server::doSend( response_list responses ) {
 
 void		Server::doSend( int fd, response_list responses ) {
 
-=======
-		}
-		close(fd);
-		std::cout << "Connection has been closed on fd " << fd << std::endl;
-		FD_CLR(fd, &readfds);
-		FD_CLR(fd, &_readFds);
-		return false;
-	} else {
-std::cout <<"postrecv"<<std::endl;
-		return true;
-	}
-}
-
-void		Server::doSend( response_list responses ) {
-		//!	fix send and keep unsended bytes in cache to keep sending after
->>>>>>> Stashed changes
 	response_pair		pair;
 	std::string			tmp;
 	int					sentbytes;
@@ -202,11 +197,9 @@ void		Server::doSend( response_list responses ) {
 		pair = responses.front();
 		responses.pop_front();
 
-<<<<<<< Updated upstream
+		if (pair.first->getSockFd() != fd) {
+			_responseCache.push_back(pair);
 		if ((sentbytes = send(pair.first->getSockFd(), pair.second.c_str(), sizeof(pair.second), 0)) < 0) {
-=======
-		if (send(pair.first->getSockFd(), pair.second.c_str(), sizeof(pair.second), 0) < 0) {
->>>>>>> Stashed changes
 			perror("send");
 			exit(EXIT_FAILURE);
 		} else {
@@ -219,37 +212,3 @@ void		Server::doSend( response_list responses ) {
 }	//! il est possible qu'il y ait des response_pair "fantomes" de 1 empty byte genre
 
 // */
-/**
-
-void		Server::doSend( int fd, response_list responses ) {
-
-	response_pair		pair;
-	std::string			tmp;
-	int					sentbytes;
-
-	while (!(_responseCache.empty())) {
-
-		pair = _responseCache.front();
-		_responseCache.pop_front();
-
-		if ((sentbytes = send(pair.first->getSockFd(), pair.second.c_str(), sizeof(pair.second), 0)) < 0) {
-			perror("send");
-			exit(EXIT_FAILURE);
-		} else {
-			tmp = pair.second.substr(sentbytes-1, pair.second.size());
-			pair.second = tmp;
-			_responseCache.push_back(pair);
-		}
-	}
-}
-<<<<<<< Updated upstream
-
-// */
-=======
-// void		Server::doSend( response_list response ) {
-
-// 	response_pair		tmp;
-
-
-// }
->>>>>>> Stashed changes

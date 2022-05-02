@@ -78,11 +78,11 @@ void	do_main( int ac, char ** av, Database * db ) {
 
 		tmpReadFdSet = serv.getFdSet(READFD);
 		tmpWriteFdSet = serv.getFdSet(WRITEFD);
-// std::cout<<"preselect"<<std::endl;
+std::cout<<"preselect"<<std::endl;
 		serv.doSelect(tmpReadFdSet, tmpWriteFdSet);
-// std::cout<<"postselect"<<std::endl;
+std::cout<<"postselect"<<std::endl;
 
-		for (int i = 0; i < FD_SETSIZE; i++) {
+		for (int i = 0; i < serv.getMaxFd(); i++) {
 // std::cout<<"print random"<<std::endl;
 			if (fdIsset(i, &tmpReadFdSet)) {
 				//? plus besoin de readfdset & writefdset séparés ?
