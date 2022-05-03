@@ -62,14 +62,14 @@ std::cout << "if writefd" << std::endl;
 
 // */
 
-void	do_main( int ac, char ** av, Database * db ) {
+void	do_main() {
 
-	(void)ac;
-
-	Server		serv(atoi(av[1]));
+	Database *	db = Database::get_instance();
+	Server		serv(atoi(db->port.c_str()));
 	fd_set		tmpReadFdSet, tmpWriteFdSet;
 	char		buf[512];
 	int			newFd;
+
 
 	serv.addToFdSet(serv.getServSocket(), READFD);
 	// fcntl(serv.getServSocket(), F_SETFL, O_NONBLOCK);
@@ -99,7 +99,10 @@ void	do_main( int ac, char ** av, Database * db ) {
 					if (serv.doRecv(i, tmpReadFdSet, buf)) {
 						db->get_client(i)->setBuf(buf);
 						db->get_client(i)->parse_input();
-					std::cout << "-->" << db->responses.back().second << std::endl;
+					response_pair response;
+					while ((response = db->next_response()).first)
+						std::cout << "-> " << response.first->nickname << ": " << response.second;
+//					std::cout << "-->" << db->responses.back().second << std::endl;
 					} else {
 						db->remove_client(i);
 					}
@@ -124,16 +127,16 @@ int		main(int argc, char **argv) {
 		return 1;
 	}
 
-	Client client(4);
-	response_pair response;
-	while (1) {
-		bzero(client.getBuf(), 512);
-		read(1, client.getBuf(), 512);
-		client.parse_input();
-		while ((response = db->next_response()).first)
-			std::cout << response.second;
-	}
-	return 0;
-	do_main(argc, argv, db);
+//	Client client(4);
+//	response_pair response;
+//	while (1) {
+//		bzero(client.getBuf(), 512);
+//		read(1, client.getBuf(), 512);
+//		client.parse_input();
+//		while ((response = db->next_response()).first)
+//			std::cout << response.second;
+//	}
+//	return 0;
+	do_main();
 	return 0;
 }
