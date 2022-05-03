@@ -3,11 +3,11 @@
 void pass(Client & client, Message & msg) {
 	Database * db = Database::get_instance();
 	if (client.registered) {
-		db->add_response(client.response(ERR_ALREADYREGISTERED));
+		client.response(ERR_ALREADYREGISTERED);
 		return ;
 	}
 	if (msg.get_params_count() == 0) {
-		db->add_response(client.response(ERR_NEEDMOREPARAMS, msg.get_command().c_str()));
+		client.response(ERR_NEEDMOREPARAMS, msg.get_command().c_str());
 		return;
 	}
 
@@ -19,17 +19,17 @@ void pass(Client & client, Message & msg) {
 void nick(Client & client, Message & msg) {
 	Database * db = Database::get_instance();
 	if (msg.get_params_count() == 0) {
-		db->add_response(client.response(ERR_NEEDMOREPARAMS, msg.get_command().c_str()));
+		client.response(ERR_NEEDMOREPARAMS, msg.get_command().c_str());
 		return ;
 	}
 	std::string nick = msg.get_params()[0];
 	if (!Message::is_nickname(msg.get_params()[0])) {
-		db->add_response(client.response(ERR_ERRONEUSNICKNAME, nick.c_str()));
+		client.response(ERR_ERRONEUSNICKNAME, nick.c_str());
 		return ;
 	}
 	
 	if (db->pclients.count(nick)) {
-		db->add_response(client.response(ERR_NICKNAMEINUSE, nick.c_str()));
+		client.response(ERR_NICKNAMEINUSE, nick.c_str());
 		return ;
 	}
 
@@ -41,11 +41,11 @@ void nick(Client & client, Message & msg) {
 void user(Client & client, Message & msg) {
 	Database * db = Database::get_instance();
 	if (client.registered) {
-		db->add_response(client.response(ERR_ALREADYREGISTERED));
+		client.response(ERR_ALREADYREGISTERED);
 		return ;
 	}
 	if (msg.get_params_count() < 4) {
-		db->add_response(client.response(ERR_NEEDMOREPARAMS, msg.get_command().c_str()));
+		client.response(ERR_NEEDMOREPARAMS, msg.get_command().c_str());
 		return ;
 	}
 
@@ -65,11 +65,11 @@ void user(Client & client, Message & msg) {
 void join(Client & client, Message & msg) {
 	Database * db = Database::get_instance();
 	if (!client.registered) {
-		db->add_response(client.response(ERR_NOTREGISTERED));
+		client.response(ERR_NOTREGISTERED);
 		return ;
 	}
 	if (msg.get_params_count() == 0) {
-		db->add_response(client.response(ERR_NEEDMOREPARAMS, msg.get_command().c_str()));
+		client.response(ERR_NEEDMOREPARAMS, msg.get_command().c_str());
 		return ;
 	}
 
@@ -84,7 +84,7 @@ void join(Client & client, Message & msg) {
 			clbegin = begin->second->subscribed_clients.begin();
 			clend = begin->second->subscribed_clients.end();
 			while (clbegin != clend) {
-				db->add_response(clbegin->second->command(CMD_PART, client.nickname.c_str(), client.username.c_str(), client.hostname.c_str(), begin->second->name.c_str()));
+				clbegin->second->command(CMD_PART, client.nickname.c_str(), client.username.c_str(), client.hostname.c_str(), begin->second->name.c_str());
 				clbegin++;
 			}
 			begin->second->remove_client(client);
@@ -101,7 +101,7 @@ void join(Client & client, Message & msg) {
 	while (tok) {
 
 		if ((tok[0] != '#' && tok[0] != '&') || !tok[1]) {
-			db->add_response(client.response(ERR_NOSUCHCHANNEL, tok));
+			client.response(ERR_NOSUCHCHANNEL, tok);
 			tok = strtok(NULL, ",");
 			continue;
 		}
@@ -118,26 +118,26 @@ void join(Client & client, Message & msg) {
 		pclient_map::iterator begin = chan->subscribed_clients.begin();
 		pclient_map::iterator end = chan->subscribed_clients.end();
 		for (; begin != end; begin++) {
-			db->add_response(begin->second->command(CMD_JOIN, client.nickname.c_str(), client.username.c_str(), client.hostname.c_str(), chan->name.c_str()));
+			begin->second->command(CMD_JOIN, client.nickname.c_str(), client.username.c_str(), client.hostname.c_str(), chan->name.c_str());
 		}
 
 		client.subscribed_channels[chan->name] = chan;
 		chan->add_client(client);
-		db->add_response(client.command(CMD_JOIN, client.nickname.c_str(), client.username.c_str(), client.hostname.c_str(), chan->name.c_str()));
-		db->add_response(client.response(RPL_TOPIC, chan->name.c_str(), "No topic set"));
+		client.command(CMD_JOIN, client.nickname.c_str(), client.username.c_str(), client.hostname.c_str(), chan->name.c_str());
+		client.response(RPL_TOPIC, chan->name.c_str(), "No topic set");
 
 		begin = chan->subscribed_clients.begin();
 		std::string names;
 		for (; begin != end; begin++) {
 			if (names.length() + begin->second->nickname.length() + chan->name.length() + 6 > 512) {
-				db->add_response(client.response(RPL_NAMREPLY, chan->name.c_str(), names.c_str()));
+				client.response(RPL_NAMREPLY, chan->name.c_str(), names.c_str());
 				names.clear();
 			}
 			names += " " + begin->second->nickname;
 		}
 		if (!names.empty())
-			db->add_response(client.response(RPL_NAMREPLY, chan->name.c_str(), names.c_str()));
-		db->add_response(client.response(RPL_ENDOFNAMES, chan->name.c_str()));
+			client.response(RPL_NAMREPLY, chan->name.c_str(), names.c_str());
+		client.response(RPL_ENDOFNAMES, chan->name.c_str());
 		tok = strtok(NULL, ",");
 	}
 }
@@ -149,7 +149,7 @@ bool send_to_channel(Client & client, Message & msg, Channel * chan) {
 	std::string recipient = msg.get_params()[0];
 	while (begin != end) {
 		if (begin->second->getSockFd() != client.getSockFd())
-			db->add_response(begin->second->command(CMD_PRIVMSG, client.nickname.c_str(), client.username.c_str(), client.hostname.c_str(), recipient.c_str(), msg.get_params()[1].c_str()));
+			begin->second->command(CMD_PRIVMSG, client.nickname.c_str(), client.username.c_str(), client.hostname.c_str(), recipient.c_str(), msg.get_params()[1].c_str());
 		begin++;
 	}
 	return true;
@@ -157,15 +157,15 @@ bool send_to_channel(Client & client, Message & msg, Channel * chan) {
 
 void privmsg(Client & client, Message & msg) {
 	if (!client.registered) {
-		Database::get_instance()->add_response(client.response(ERR_NOTREGISTERED));
+		client.response(ERR_NOTREGISTERED);
 		return ;
 	}
 	if (msg.get_params_count() == 0) {
-		Database::get_instance()->add_response(client.response(ERR_NORECIPIENT, msg.get_command().c_str()));
+		client.response(ERR_NORECIPIENT, msg.get_command().c_str());
 		return ;
 	}
 	if (msg.get_params_count() == 1) {
-		Database::get_instance()->add_response(client.response(ERR_NOTEXTTOSEND, msg.get_command().c_str()));
+		client.response(ERR_NOTEXTTOSEND, msg.get_command().c_str());
 		return ;
 	}
 	
@@ -175,23 +175,23 @@ void privmsg(Client & client, Message & msg) {
 	if (Message::is_nickname(recipient)) {
 		pclient_map::iterator cl = db->pclients.find(recipient);
 		if (cl == db->pclients.end())
-			db->add_response(client.response(ERR_NOSUCHNICK, recipient.c_str()));
+			client.response(ERR_NOSUCHNICK, recipient.c_str());
 		else
-			db->add_response(cl->second->command(CMD_PRIVMSG, client.nickname.c_str(), client.username.c_str(), client.hostname.c_str(), recipient.c_str(), msg.get_params()[1].c_str()));
+			cl->second->command(CMD_PRIVMSG, client.nickname.c_str(), client.username.c_str(), client.hostname.c_str(), recipient.c_str(), msg.get_params()[1].c_str());
 	} else if ((chan = db->get_channel(recipient))) {
 		send_to_channel(client, msg, chan);
 	} else if ((recipient[0] == '#' || recipient[0] == '$')
 			&& recipient.find_last_of("*?") != std::string::npos) {
 		if (!client.oper) {
-			db->add_response(client.response(ERR_NOPRIVILEGES));
+			client.response(ERR_NOPRIVILEGES);
 			return ;
 		}
 
 		if (recipient.find_last_of('.') < recipient.find_last_of("*?")) {
-			db->add_response(client.response(ERR_WILDTOPLEVEL, recipient.c_str()));
+			client.response(ERR_WILDTOPLEVEL, recipient.c_str());
 			return ;
 		} else if (recipient.find_last_of('.') == std::string::npos) {
-			db->add_response(client.response(ERR_NOTOPLEVEL, recipient.c_str()));
+			client.response(ERR_NOTOPLEVEL, recipient.c_str());
 			return ;
 		}
 
@@ -201,7 +201,7 @@ void privmsg(Client & client, Message & msg) {
 			pclient_map::iterator end = db->pclients.end();
 			while (begin != end) {
 				if (client.getSockFd() != begin->second->getSockFd()) {
-					db->add_response(begin->second->command(CMD_PRIVMSG, client.nickname.c_str(), client.username.c_str(), client.hostname.c_str(), recipient.c_str(), msg.get_params()[1].c_str()));
+					begin->second->command(CMD_PRIVMSG, client.nickname.c_str(), client.username.c_str(), client.hostname.c_str(), recipient.c_str(), msg.get_params()[1].c_str());
 				}
 				begin++;
 			}
@@ -211,13 +211,13 @@ void privmsg(Client & client, Message & msg) {
 			while (begin != end) {
 				if (Message::match_wildcard(recipient, begin->second->hostname)
 						&& client.getSockFd() != begin->second->getSockFd()) {
-					db->add_response(begin->second->command(CMD_PRIVMSG, client.nickname.c_str(), client.username.c_str(), client.hostname.c_str(), recipient.c_str(), msg.get_params()[1].c_str()));
+					begin->second->command(CMD_PRIVMSG, client.nickname.c_str(), client.username.c_str(), client.hostname.c_str(), recipient.c_str(), msg.get_params()[1].c_str());
 				}
 				begin++;
 			}
 		}
 	} else {
-		db->add_response(client.response(ERR_NOSUCHNICK, recipient.c_str()));
+		client.response(ERR_NOSUCHNICK, recipient.c_str());
 	}
 }
 
@@ -238,7 +238,7 @@ void notice(Client & client, Message & msg) {
 	if (Message::is_nickname(recipient)) {
 		pclient_map::iterator cl = db->pclients.find(recipient);
 		if (cl != db->pclients.end())
-			db->add_response(cl->second->command(CMD_PRIVMSG, client.nickname.c_str(), client.username.c_str(), client.hostname.c_str(), recipient.c_str(), msg.get_params()[1].c_str()));
+			cl->second->command(CMD_PRIVMSG, client.nickname.c_str(), client.username.c_str(), client.hostname.c_str(), recipient.c_str(), msg.get_params()[1].c_str());
 	} else if ((chan = db->get_channel(recipient))) {
 		send_to_channel(client, msg, chan);
 	} else if ((recipient[0] == '#' || recipient[0] == '$')
@@ -259,7 +259,7 @@ void notice(Client & client, Message & msg) {
 			pclient_map::iterator end = db->pclients.end();
 			while (begin != end) {
 				if (client.getSockFd() != begin->second->getSockFd()) {
-					db->add_response(begin->second->command(CMD_PRIVMSG, client.nickname.c_str(), client.username.c_str(), client.hostname.c_str(), recipient.c_str(), msg.get_params()[1].c_str()));
+					begin->second->command(CMD_PRIVMSG, client.nickname.c_str(), client.username.c_str(), client.hostname.c_str(), recipient.c_str(), msg.get_params()[1].c_str());
 				}
 				begin++;
 			}
@@ -269,7 +269,7 @@ void notice(Client & client, Message & msg) {
 			while (begin != end) {
 				if (Message::match_wildcard(recipient, begin->second->hostname)
 						&& client.getSockFd() != begin->second->getSockFd()) {
-					db->add_response(begin->second->command(CMD_PRIVMSG, client.nickname.c_str(), client.username.c_str(), client.hostname.c_str(), recipient.c_str(), msg.get_params()[1].c_str()));
+					begin->second->command(CMD_PRIVMSG, client.nickname.c_str(), client.username.c_str(), client.hostname.c_str(), recipient.c_str(), msg.get_params()[1].c_str());
 				}
 				begin++;
 			}
@@ -279,36 +279,36 @@ void notice(Client & client, Message & msg) {
 
 void oper(Client & client, Message & msg) {
 	if (!client.registered) {
-		Database::get_instance()->add_response(client.response(ERR_NOTREGISTERED));
+		client.response(ERR_NOTREGISTERED);
 		return ;
 	}
 	if (msg.get_params_count() < 2) {
-		Database::get_instance()->add_response(client.response(ERR_NEEDMOREPARAMS, msg.get_command().c_str()));
+		client.response(ERR_NEEDMOREPARAMS, msg.get_command().c_str());
 		return ;
 	}
 
 	std::string name = msg.get_params()[0];
 	std::string pwd = msg.get_params()[1];
 	if (name != "admin" || pwd != "password") {
-		Database::get_instance()->add_response(client.response(ERR_PASSWDMISMATCH));
+		client.response(ERR_PASSWDMISMATCH);
 		return ;
 	}
 
 	client.oper = true;
-	Database::get_instance()->add_response(client.response(RPL_YOUREOPER));
+	client.response(RPL_YOUREOPER);
 }
 
 void kill(Client & client, Message & msg) {
 	if (!client.registered) {
-		Database::get_instance()->add_response(client.response(ERR_NOTREGISTERED));
+		client.response(ERR_NOTREGISTERED);
 		return ;
 	}
 	if (!client.oper) {
-		Database::get_instance()->add_response(client.response(ERR_NOPRIVILEGES));
+		client.response(ERR_NOPRIVILEGES);
 		return ;
 	}
 	if (msg.get_params_count() == 0) {
-		Database::get_instance()->add_response(client.response(ERR_NEEDMOREPARAMS, msg.get_command().c_str()));
+		client.response(ERR_NEEDMOREPARAMS, msg.get_command().c_str());
 		return ;
 	}
 	//TODO how to disconnect user?
@@ -316,11 +316,11 @@ void kill(Client & client, Message & msg) {
 
 void rehash(Client & client, Message & msg) {
 	if (!client.registered) {
-		Database::get_instance()->add_response(client.response(ERR_NOTREGISTERED));
+		client.response(ERR_NOTREGISTERED);
 		return ;
 	}
 	if (!client.oper) {
-		Database::get_instance()->add_response(client.response(ERR_NOPRIVILEGES));
+		client.response(ERR_NOPRIVILEGES);
 		return ;
 	}
 	(void) msg;
@@ -329,11 +329,11 @@ void rehash(Client & client, Message & msg) {
 
 void restart(Client & client, Message & msg) {
 	if (!client.registered) {
-		Database::get_instance()->add_response(client.response(ERR_NOTREGISTERED));
+		client.response(ERR_NOTREGISTERED);
 		return ;
 	}
 	if (!client.oper) {
-		Database::get_instance()->add_response(client.response(ERR_NOPRIVILEGES));
+		client.response(ERR_NOPRIVILEGES);
 		return ;
 	}
 	(void) msg;
@@ -342,11 +342,11 @@ void restart(Client & client, Message & msg) {
 
 void die(Client & client, Message & msg) {
 	if (!client.registered) {
-		Database::get_instance()->add_response(client.response(ERR_NOTREGISTERED));
+		client.response(ERR_NOTREGISTERED);
 		return ;
 	}
 	if (!client.oper) {
-		Database::get_instance()->add_response(client.response(ERR_NOPRIVILEGES));
+		client.response(ERR_NOPRIVILEGES);
 		return ;
 	}
 	(void) msg;
@@ -382,5 +382,5 @@ void execute(Client & client, Message & msg) {
 	else if (cmd == "DIE")
 		die(client, msg);
 	else
-		Database::get_instance()->add_response(client.response(ERR_UNKNOWNCOMMAND, msg.get_command().c_str()));
+		client.response(ERR_UNKNOWNCOMMAND, msg.get_command().c_str());
 }

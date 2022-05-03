@@ -67,18 +67,6 @@ void	Database::remove_channel(Channel * chan) {
 	channels.erase(chan->name);
 }
 
-void	Database::add_response(response_pair response) {
-	responses.push_back(response);
-}
-
-response_pair	Database::next_response() {
-	if (responses.empty())
-		return response_pair(NULL, "");
-	response_pair tmp = responses.front();
-	responses.pop_front();
-	return tmp;
-}
-
 bool Database::init(int argc, char **argv) {
 
 	if (argc != 3)

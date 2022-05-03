@@ -57,12 +57,7 @@ bool	fdIsset( int fd, fd_set * set );
 void	fdSet( int fd, fd_set * set );
 void	fdClr( int fd, fd_set * set );
 
-template <typename Iter>
-void send_response(Iter begin, Iter end);
-
 void execute(Client & client, Message & msg);
-
-std::string response(const char * format, ...);
 
 //#include "response.hpp" TODO
 

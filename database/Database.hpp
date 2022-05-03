@@ -45,9 +45,6 @@ class Database {
 		void remove_client(int socket);
 		void remove_channel(Channel * chan);
 
-		void add_response(response_pair response);
-		response_pair next_response(); // sends (NULL, "") if no response.
-
 		//returns false if wrong amount of args
 		bool init(int argc, char **argv);
 
@@ -55,7 +52,6 @@ class Database {
 		pclient_map pclients;
 		channel_map channels;
 
-		response_list responses;
 
 		// only way to get the instance
 		static Database * get_instance();

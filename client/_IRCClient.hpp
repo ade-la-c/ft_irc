@@ -6,6 +6,12 @@
 class _IRCClient {
 
 	public:
+		
+		class NoResponseException : public std::exception {
+			virtual char const * what() const throw() {
+				return "No response to send";
+			}
+		};
 
 		_IRCClient();
 		_IRCClient(_IRCClient const & cpy);
@@ -13,8 +19,12 @@ class _IRCClient {
 
 		void parse_input();
 		void reg(); //register is a reserved keyword
-		response_pair response(int r, ...);
-		response_pair command(int r, ...);
+		void response(int r, ...);
+		void command(int r, ...);
+
+		bool should_send() const;
+		std::string response() const;
+		void sent_bytes(ssize_t bytes);
 
 		std::string password;
 		std::string nickname;
@@ -28,6 +38,8 @@ class _IRCClient {
 		bool user_set;
 		pchannel_map subscribed_channels;
 		bool oper;
+
+		std::list<std::string> responses;
 };
 
 #endif

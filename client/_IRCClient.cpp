@@ -27,10 +27,11 @@ _IRCClient::~_IRCClient() {
 void _IRCClient::parse_input() {
 	Message msg;
 	try { //TODO this is bad design, don't do this
+		std::cout << "<-" << this->nickname << ": [" << static_cast<Client *>(this)->getBuf() << "]" << std::endl;;
 		msg.parse_from_str(std::string(static_cast<Client *>(this)->getBuf(), 512));
 		execute(*static_cast<Client *>(this), msg);
 	} catch (std::exception & e) {
-		std::cerr << e.what() << std::endl;
+		std::cerr << "parse input: " <<  e.what() << std::endl;
 		//TODO what do
 	}
 }
@@ -41,17 +42,17 @@ void _IRCClient::reg() {
 			registered = true;
 			Database * db = Database::get_instance();
 			db->add_pclient(static_cast<Client *>(this));
-			db->add_response(this->response(RPL_WELCOME, nickname.c_str(), username.c_str(), db->hostname.c_str()));
-			db->add_response(this->response(RPL_YOURHOST, db->hostname.c_str(), "0.1"));
-			db->add_response(this->response(RPL_CREATED, "a long time ago"));
-			db->add_response(this->response(RPL_MYINFO, db->hostname.c_str(), "0.1", "none", "none"));
+			this->response(RPL_WELCOME, nickname.c_str(), username.c_str(), db->hostname.c_str());
+			this->response(RPL_YOURHOST, db->hostname.c_str(), "0.1");
+			this->response(RPL_CREATED, "a long time ago");
+			this->response(RPL_MYINFO, db->hostname.c_str(), "0.1", "none", "none");
 		} else {
-			Database::get_instance()->add_response(this->response(ERR_PASSWDMISMATCH));
+			this->response(ERR_PASSWDMISMATCH);
 		}
 	}
 }
 
-response_pair _IRCClient::response(int r, ...) {
+void _IRCClient::response(int r, ...) {
 	va_list arg;
 	char r_text[513];
 	char response[512];
@@ -67,10 +68,10 @@ response_pair _IRCClient::response(int r, ...) {
 
 	strncat(response, r_text, 512);
 
-	return response_pair(static_cast<Client *>(this), std::string(response));
+	responses.push_back(std::string(response));
 }
 
-response_pair _IRCClient::command(int r, ...) {
+void _IRCClient::command(int r, ...) {
 	va_list arg;
 	char response[513];
 
@@ -78,5 +79,23 @@ response_pair _IRCClient::command(int r, ...) {
 	vsnprintf(response, 513, replies.at(r).c_str(), arg);
 	va_end(arg);
 
-	return response_pair(static_cast<Client *>(this), std::string(response));
+	responses.push_back(std::string(response));
+}
+
+bool _IRCClient::should_send() const {
+	return !responses.empty();
+}
+
+std::string _IRCClient::response() const {
+	if (responses.empty())
+		throw NoResponseException();
+	return responses.front();
+}
+
+void _IRCClient::sent_bytes(ssize_t bytes) {
+	std::string & r = responses.front();
+	if (bytes < static_cast<ssize_t>(r.length()))
+		r = r.substr(bytes);
+	else
+		responses.pop_front();
 }
