@@ -40,6 +40,9 @@ typedef std::list<response_pair> response_list;
 typedef std::map<int, Client> client_map;	// {socket, client} map
 typedef std::map<std::string, Channel> channel_map; // {name, channel} map
 
+typedef std::map<std::string, Client *> pclient_map;	// {nickname, client} map
+typedef std::map<std::string, Channel *> pchannel_map; // {name, channel} map
+
 # include "../database/Database.hpp"
 # include "../client/Client.hpp"
 # include "../channel/Channel.hpp"

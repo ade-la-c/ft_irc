@@ -15,6 +15,15 @@ Client * Database::get_client(int socket) {
 	return &(client->second);
 }
 
+Client * Database::get_client(std::string const & nickname) {
+
+	pclient_map::iterator client = pclients.find(nickname);
+
+	if (client == pclients.end())
+		return NULL;
+	return client->second;
+}
+
 Channel * Database::get_channel(std::string const & name) {
 
 	channel_map::iterator channel = channels.find(name);
@@ -30,6 +39,14 @@ Client * Database::add_client(int socket) {
 	if (!ret.second)
 		throw Database::already_exists();
 	return &(ret.first->second);
+}
+
+Client * Database::add_pclient(Client * client) {
+	std::pair<pclient_map::iterator, bool> ret;
+	ret = pclients.insert(std::make_pair(client->nickname, client));
+	if (!ret.second)
+		throw Database::already_exists();
+	return ret.first->second;
 }
 
 Channel * Database::add_channel(std::string const & name) {

@@ -34,10 +34,12 @@ class Database {
 
 		// returns the client/channel or NULL if it doesn't exist
 		Client * get_client(int socket);
+		Client * get_client(std::string const & nickname);
 		Channel * get_channel(std::string const & name);
 
 		// creates a new client/channel & returns it. Throws an exception if it already exists.
 		Client * add_client(int socket);
+		Client * add_pclient(Client * client);
 		Channel * add_channel(std::string const & name);
 
 		void remove_client(int socket);
@@ -49,6 +51,7 @@ class Database {
 		bool init(int argc, char **argv);
 
 		client_map clients;
+		pclient_map pclients;
 		channel_map channels;
 
 		response_list responses;

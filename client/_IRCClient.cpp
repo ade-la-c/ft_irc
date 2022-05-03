@@ -39,10 +39,12 @@ void _IRCClient::reg() {
 	if (pass_set && nick_set && user_set) {
 		if (password == Database::get_instance()->password) {
 			registered = true;
-			Database::get_instance()->add_response(this->response(RPL_WELCOME, nickname.c_str(), username.c_str(), Database::get_instance()->hostname.c_str()));
-			Database::get_instance()->add_response(this->response(RPL_YOURHOST, Database::get_instance()->hostname.c_str(), "0.1"));
-			Database::get_instance()->add_response(this->response(RPL_CREATED, "a long time ago"));
-			Database::get_instance()->add_response(this->response(RPL_MYINFO, Database::get_instance()->hostname.c_str(), "0.1", "none", "none"));
+			Database * db = Database::get_instance();
+			db->add_pclient(static_cast<Client *>(this));
+			db->add_response(this->response(RPL_WELCOME, nickname.c_str(), username.c_str(), db->hostname.c_str()));
+			db->add_response(this->response(RPL_YOURHOST, db->hostname.c_str(), "0.1"));
+			db->add_response(this->response(RPL_CREATED, "a long time ago"));
+			db->add_response(this->response(RPL_MYINFO, db->hostname.c_str(), "0.1", "none", "none"));
 		} else {
 			Database::get_instance()->add_response(this->response(ERR_PASSWDMISMATCH));
 		}
