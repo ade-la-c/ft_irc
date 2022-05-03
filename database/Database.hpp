@@ -32,6 +32,8 @@ class Database {
 		std::string port;
 		std::string hostname;
 
+		bool debug;
+
 		// returns the client/channel or NULL if it doesn't exist
 		Client * get_client(int socket);
 		Client * get_client(std::string const & nickname);

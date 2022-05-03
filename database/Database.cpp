@@ -69,11 +69,16 @@ void	Database::remove_channel(Channel * chan) {
 
 bool Database::init(int argc, char **argv) {
 
-	if (argc != 3)
+	if (argc != 3 && argc != 4)
 		return false;
 
 	port = argv[1];
 	password = argv[2];
+
+	debug = false;
+	if (argc == 4)
+		if (std::string(argv[3]) == "-d")
+			debug = true;
 
 	char name[512];
 	gethostname(name, 512);

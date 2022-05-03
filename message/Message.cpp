@@ -28,18 +28,20 @@ void Message::parse() {
 	std::string::size_type end;
 
 	msg = buffer + msg;
+	buffer.clear();
 //	end = msg.find("\n");
 	end = msg.find("\r\n");
-	std::cout << "[[" << std::string::npos << "]]" << std::endl;
-	std::cout << ">>" << end << "<<" << std::endl;
 
 	if (end > MAX_SIZE - 2 && end != std::string::npos) {
-		throw IllFormedMessageException();
+		msg = msg.substr(MAX_SIZE);
+		this->parse();
+		return;
 	} else if (end == std::string::npos) {
 		buffer = msg;
 		return;
 	}
 
+	buffer = msg.substr(end + 2);
 	complete = true;
 
 	if (msg[0] == ':') {
@@ -55,6 +57,9 @@ void Message::parse() {
 	} else {
 		params_count = 0;
 	}
+
+	if (!buffer.empty())
+		this->parse();
 }
 
 bool Message::is_complete() {
@@ -170,8 +175,10 @@ std::string::size_type Message::parse_params(std::string::size_type pos, std::st
 	
 	while (i < end && msg[i] != ':' && count < 14) {
 		while (msg[i] != ' ' && i < end) {
-			if (msg[i] == '\0' || msg[i] == '\r' || msg[i] == '\n')
+			if (msg[i] == '\0' || msg[i] == '\r' || msg[i] == '\n') {
+				std::cout << "yo" << std::endl;
 				throw IllFormedMessageException();
+			}
 			params[count] += msg[i];
 			i++;
 		}
@@ -184,8 +191,10 @@ std::string::size_type Message::parse_params(std::string::size_type pos, std::st
 	if (i < end)
 		++params_count;
 	while (i < end) {
-		if (msg[i] == '\0' || msg[i] == '\r' || msg[i] == '\n')
+		if (msg[i] == '\0' || msg[i] == '\r' || msg[i] == '\n') {
+			std::cout << "wsh" << std::endl;
 			throw IllFormedMessageException();
+		}
 		params[count] += msg[i];
 		i++;
 	}

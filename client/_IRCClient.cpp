@@ -27,7 +27,8 @@ _IRCClient::~_IRCClient() {
 void _IRCClient::parse_input() {
 	Message msg;
 	try { //TODO this is bad design, don't do this
-		std::cout << "<-" << this->nickname << ": [" << static_cast<Client *>(this)->getBuf() << "]" << std::endl;;
+		if (Database::get_instance()->debug)
+			std::cout << "<-" << this->nickname << ": [" << static_cast<Client *>(this)->getBuf() << "]" << std::endl;;
 		msg.parse_from_str(std::string(static_cast<Client *>(this)->getBuf(), 512));
 		execute(*static_cast<Client *>(this), msg);
 	} catch (std::exception & e) {
@@ -68,6 +69,8 @@ void _IRCClient::response(int r, ...) {
 
 	strncat(response, r_text, 512);
 
+	if (Database::get_instance()->debug)
+		std::cout << "-> " << this->nickname << ": [" << response << "]" <<std::endl;
 	responses.push_back(std::string(response));
 }
 
@@ -79,6 +82,8 @@ void _IRCClient::command(int r, ...) {
 	vsnprintf(response, 513, replies.at(r).c_str(), arg);
 	va_end(arg);
 
+	if (Database::get_instance()->debug)
+		std::cout << "-> " << this->nickname << ": " << response;
 	responses.push_back(std::string(response));
 }
 
