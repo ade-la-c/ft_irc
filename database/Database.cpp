@@ -72,8 +72,8 @@ bool Database::init(int argc, char **argv) {
 	if (argc != 3)
 		return false;
 
-	password = argv[1];
-	port = argv[2];
+	port = argv[1];
+	password = argv[2];
 
 	char name[512];
 	gethostname(name, 512);
