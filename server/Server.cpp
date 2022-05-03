@@ -159,6 +159,7 @@ void		Server::doSend( Client * client ) {
 
 	if (!(client->should_send()))
 		return;
+std::cout<<client->response();
 	if ((sentbytes = send(client->getSockFd(), client->response().c_str(), sizeof(client->response().c_str()), 0)) < 0)
 		exit_error("send");
 	client->sent_bytes(sentbytes);

@@ -104,10 +104,9 @@ void	do_main() {
 						db->remove_client(i);
 					}
 				}
-			}
+			}std::cout<<fdIsset(i, &tmpWriteFdSet)<<std::endl;;
 			if (fdIsset(i, &tmpWriteFdSet) && (db->clients.count(i) > 0)) {		//! writefdset ain't gonna fill itself
 std::cout << "writefd" << std::endl;
-//				serv.doSend(i, db->responses);
 				serv.doSend(db->get_client(i));
 			}
 		}
@@ -138,3 +137,6 @@ int		main(int argc, char **argv) {
 	do_main();
 	return 0;
 }
+
+
+// tester messages incomplets 
