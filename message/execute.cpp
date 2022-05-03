@@ -88,6 +88,8 @@ void join(Client & client, Message & msg) {
 				clbegin++;
 			}
 			begin->second->remove_client(client);
+			if (begin->second->empty())
+				db->remove_channel(begin->second);
 			begin++;
 		}
 		client.subscribed_channels.clear();
@@ -112,7 +114,6 @@ void join(Client & client, Message & msg) {
 			tok = strtok(NULL, ",");
 			continue;
 		}
-
 
 		pclient_map::iterator begin = chan->subscribed_clients.begin();
 		pclient_map::iterator end = chan->subscribed_clients.end();

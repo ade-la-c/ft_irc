@@ -43,6 +43,7 @@ class Database {
 		Channel * add_channel(std::string const & name);
 
 		void remove_client(int socket);
+		void remove_channel(Channel * chan);
 
 		void add_response(response_pair response);
 		response_pair next_response(); // sends (NULL, "") if no response.

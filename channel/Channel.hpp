@@ -14,11 +14,11 @@ class Channel {
 
 		void add_client(Client & client);
 		void remove_client(Client & client);
+		bool empty();
 
 		std::string name;
 
 		pclient_map subscribed_clients;
-		//***** TODO make map with pointers or the clients will not update if needed
 
 };
 

@@ -20,3 +20,7 @@ void Channel::add_client(Client & client) {
 void Channel::remove_client(Client & client) {
 	subscribed_clients.erase(client.nickname);
 }
+
+bool Channel::empty() {
+	return subscribed_clients.empty();
+}

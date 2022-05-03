@@ -58,7 +58,13 @@ Channel * Database::add_channel(std::string const & name) {
 }
 
 void	Database::remove_client(int socket) {
+	if (clients.count(socket) && clients.at(socket).registered)
+		pclients.erase(clients.at(socket).nickname);
 	clients.erase(socket);
+}
+
+void	Database::remove_channel(Channel * chan) {
+	channels.erase(chan->name);
 }
 
 void	Database::add_response(response_pair response) {
