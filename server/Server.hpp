@@ -23,7 +23,7 @@ public:
 	int			doAccept() const;
 	void		doSelect( fd_set *readfds, fd_set *writefds ) const;
 	bool		doRecv( int fd, fd_set readfds, char buf[512] );
-	void		doSend( int fd, response_list responses );
+	void		doSend( Client * client );
 
 	class	init_error : public std::exception {
 		public:
@@ -46,7 +46,6 @@ private:
 	int					_maxFd;
 	fd_set				_readFds;
 	fd_set				_writeFds;
-	response_list		_responseCache;
 
 };
 

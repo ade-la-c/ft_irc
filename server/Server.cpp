@@ -133,6 +133,7 @@ bool		Server::doRecv( int fd, fd_set readfds, char buf[512] ) {
 
 	int		nbytes;
 std::cout <<"prerecv"<<std::endl;
+	bzero(buf, 512);
 	if ((nbytes = recv(fd, buf, 512, 0)) <= 0) {	// connection close ou error
 		if (nbytes == -1) {
 			std::cout << fd << std::endl;
@@ -152,9 +153,19 @@ std::cout <<"prerecv"<<std::endl;
 	} else { return false; }
 }
 
-/**
+void		Server::doSend( Client * client ) {
 
-// */
+	int		sentbytes;
+
+	if (!(client->should_send()))
+		return;
+	if ((sentbytes = send(client->getSockFd(), client->response().c_str(), sizeof(client->response().c_str()), 0)) < 0)
+		exit_error("send");
+	client->sent_bytes(sentbytes);
+	
+}
+
+/**
 
 void		Server::doSend( int fd, response_list responses ) {
 std::cout << "dosend" << std::endl;
@@ -197,3 +208,5 @@ std::cout << "dosend" << std::endl;
 	}
 	responses.clear();
 }	//! il est possible qu'il y ait des response_pair "fantomes" de 1 empty byte genre
+
+// */

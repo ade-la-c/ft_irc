@@ -86,7 +86,7 @@ void	do_main() {
 		for (int i = 0; i < FD_SETSIZE; i++) {
 
 			if (fdIsset(i, &tmpReadFdSet)) {
-				//? plus besoin de readfdset & writefdset séparés ?
+
 				if (i == serv.getServSocket()) {	// handle new connections
 					if ((newFd = serv.doAccept()) < 0)
 						continue;
@@ -108,6 +108,7 @@ void	do_main() {
 			if (fdIsset(i, &tmpWriteFdSet) && (db->clients.count(i) > 0)) {		//! writefdset ain't gonna fill itself
 std::cout << "writefd" << std::endl;
 //				serv.doSend(i, db->responses);
+				serv.doSend(db->get_client(i));
 			}
 		}
 		FD_ZERO(&tmpReadFdSet);
