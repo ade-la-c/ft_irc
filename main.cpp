@@ -93,20 +93,19 @@ void	do_main() {
 					if (newFd > serv.getMaxFd())
 						serv.setMaxFd(newFd);
 					serv.addToFdSet(newFd, READFD);
-					// serv.addToFdSet(newFd, WRITEFD);
+					serv.addToFdSet(newFd, WRITEFD);
 					db->add_client(newFd);
 				} else {							// handle other readfds
 					if (serv.doRecv(i, tmpReadFdSet, buf)) {
 						db->get_client(i)->setBuf(buf);
 						db->get_client(i)->parse_input();
-//					std::cout << "-->" << db->responses.back().second << std::endl;
 					} else {
 						db->remove_client(i);
 					}
 				}
-			}std::cout<<fdIsset(i, &tmpWriteFdSet)<<std::endl;;
-			if (fdIsset(i, &tmpWriteFdSet) && (db->clients.count(i) > 0)) {		//! writefdset ain't gonna fill itself
-std::cout << "writefd" << std::endl;
+			}//std::cout << "->" << fdIsset(i, &tmpWriteFdSet) << std::endl;
+			if (fdIsset(i, &tmpWriteFdSet) && (db->clients.count(i) > 0)) {
+// std::cout << "writefd" << std::endl;
 				serv.doSend(db->get_client(i));
 			}
 		}
