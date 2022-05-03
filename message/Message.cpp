@@ -18,31 +18,29 @@ Message::Message(const Message & copy) : msg(copy.msg), params(15) {
 Message::~Message() {
 }
 
-void Message::parse_from_str(std::string const & msg) {
+bool Message::parse_from_str(std::string const & msg) {
 	this->msg = msg;
-	parse();
+	return parse();
 }
 
-void Message::parse() {
+bool Message::parse() {
 	std::string::size_type pos = 0;
 	std::string::size_type end;
 
 	msg = buffer + msg;
 	buffer.clear();
-//	end = msg.find("\n");
 	end = msg.find("\r\n");
 
 	if (end > MAX_SIZE - 2 && end != std::string::npos) {
 		msg = msg.substr(MAX_SIZE);
-		this->parse();
-		return;
+		return this->parse();
 	} else if (end == std::string::npos) {
 		buffer = msg;
-		return;
+		return false;
 	}
 
-	buffer = msg.substr(end + 2);
 	complete = true;
+	buffer = msg.substr(end + 2, msg.find('\0'));
 
 	if (msg[0] == ':') {
 		pos = parse_prefix(end);
@@ -58,8 +56,9 @@ void Message::parse() {
 		params_count = 0;
 	}
 
-	if (!buffer.empty())
-		this->parse();
+	msg.clear();
+
+	return true;
 }
 
 bool Message::is_complete() {
@@ -144,9 +143,8 @@ std::string::size_type Message::parse_prefix(std::string::size_type end) {
 	//TODO just ignore prefix anyway? -> never send errors
 	if (sp >= end)
 		throw IllFormedMessageException();
-	if (!is_nickname(msg, 1, sp)) {
+	if (!is_nickname(msg, 1, sp))
 		throw IllFormedMessageException();
-	}
 	prefix = this->msg.substr(1, sp - 1);
 	return sp;
 }
@@ -157,46 +155,31 @@ std::string::size_type Message::parse_command(std::string::size_type pos, std::s
 	sp = this->msg.find(" ", pos);
 	if (sp > end)
 		sp = end;
-	if (sp - pos == 3 && is_numeric(msg, pos, 3)) {
-		command = msg.substr(pos, 3);
-	} else {
-		for (std::string::size_type i = pos; i < sp; i++) {
-			if (!std::isalpha(msg[i]))
-				throw IllFormedMessageException();
-			command += msg[i];
-		}
-	}
+	command = msg.substr(pos, sp - pos);
 	return sp;
 }
 
 std::string::size_type Message::parse_params(std::string::size_type pos, std::string::size_type end) {
 	std::string::size_type count = 0;
-	std::string::size_type i = pos;
+	std::string::size_type sp;
+
+	sp = this->msg.find(" ", pos);
 	
-	while (i < end && msg[i] != ':' && count < 14) {
-		while (msg[i] != ' ' && i < end) {
-			if (msg[i] == '\0' || msg[i] == '\r' || msg[i] == '\n') {
-				std::cout << "yo" << std::endl;
-				throw IllFormedMessageException();
-			}
-			params[count] += msg[i];
-			i++;
-		}
-		i++;
+	while (pos < end && msg[pos] != ':' && count < 14) {
+		params[count] = msg.substr(pos, sp - pos);
 		count++;
+		pos = sp + 1;
+		while (msg[pos] == ' ')
+			pos++;
+		sp = this->msg.find(" ", pos);
 	}
-	if (msg[i] == ':')
-		i++;
+
+	if (msg[pos] == ':')
+		pos++;
 	params_count = count;
-	if (i < end)
+	if (pos < end){
 		++params_count;
-	while (i < end) {
-		if (msg[i] == '\0' || msg[i] == '\r' || msg[i] == '\n') {
-			std::cout << "wsh" << std::endl;
-			throw IllFormedMessageException();
-		}
-		params[count] += msg[i];
-		i++;
+		params[count] = msg.substr(pos, end);
 	}
 	return end;
 }

@@ -29,8 +29,10 @@ void _IRCClient::parse_input() {
 	try { //TODO this is bad design, don't do this
 		if (Database::get_instance()->debug)
 			std::cout << "<-" << this->nickname << ": [" << static_cast<Client *>(this)->getBuf() << "]" << std::endl;;
-		msg.parse_from_str(std::string(static_cast<Client *>(this)->getBuf(), 512));
+		msg.parse_from_str(std::string(static_cast<Client *>(this)->getBuf()));
 		execute(*static_cast<Client *>(this), msg);
+		while (msg.parse())
+			execute(*static_cast<Client *>(this), msg);
 	} catch (std::exception & e) {
 		std::cerr << "parse input: " <<  e.what() << std::endl;
 		//TODO what do

@@ -12,8 +12,7 @@ class Message {
 		class IllFormedMessageException : public std::exception {
 			public:
 				virtual char const * what() const throw() {
-					return "Ill-formed Message";
-				}
+					return "Ill-formed Message"; }
 		};
 
 		/* Constructors and destructors */
@@ -26,7 +25,8 @@ class Message {
 		/* Member functions */
 
 		bool is_complete();
-		void parse_from_str(std::string const & msg);
+		bool parse_from_str(std::string const & msg);
+		bool parse();
 
 		static bool is_numeric(std::string str, std::string::size_type pos = 0, std::string::size_type count = std::string::npos);
 		static bool is_special(int c);
@@ -47,7 +47,6 @@ class Message {
 
 	private:
 
-		void parse();
 
 		bool complete;
 
