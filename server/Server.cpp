@@ -153,29 +153,6 @@ std::cout <<"prerecv"<<std::endl;
 }
 
 /**
-// fixing doRecv
-bool		Server::doRecv( int fd, fd_set readfds, char buf[512] ) {
-
-	int		nbytes;
-std::cout <<"prerecv"<<std::endl;
-	while ((nbytes = recv(fd, buf, 512, 0)) <= 0) {	// connection close ou error
-		if (nbytes == -1) {
-			continue;
-		} else if (nbytes == 0) {
-			fdClr(fd, &readfds);
-			fdClr(fd, &_readFds);
-			fdClr(fd, &_writeFds);
-			close(fd);
-			std::cout << "Connection has been closed on fd " << fd << std::endl;
-			break;
-		}
-		return false;
-		}
-	if (nbytes > 0) {
-	std::cout <<"postrecv"<<std::endl;
-			return true;
-	} else { return false; }
-}
 
 // */
 
@@ -194,9 +171,9 @@ std::cout << "dosend" << std::endl;
 			_responseCache.push_back(pair);
 		} else if ((sentbytes = send(pair.first->getSockFd(), pair.second.c_str(), sizeof(pair.second), 0)) < 0) {
 			perror("send");
-			// exit(EXIT_FAILURE);				//?
+			exit(EXIT_FAILURE);				//?
 		} else {
-			tmp = pair.second.substr(sentbytes-1, pair.second.size());
+			tmp = pair.second.substr(sentbytes);
 			pair.second = tmp;
 			_responseCache.push_back(pair);
 		}
@@ -213,7 +190,7 @@ std::cout << "dosend" << std::endl;
 			perror("send");
 			exit(EXIT_FAILURE);
 		} else {
-			tmp = pair.second.substr(sentbytes-1, pair.second.size());
+			tmp = pair.second.substr(sentbytes);
 			pair.second = tmp;
 			_responseCache.push_back(pair);
 		}

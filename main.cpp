@@ -99,10 +99,10 @@ void	do_main() {
 					if (serv.doRecv(i, tmpReadFdSet, buf)) {
 						db->get_client(i)->setBuf(buf);
 						db->get_client(i)->parse_input();
-					response_pair response;
-					while ((response = db->next_response()).first)
-						std::cout << "-> " << response.first->nickname << ": " << response.second;
-//					std::cout << "-->" << db->responses.back().second << std::endl;
+			response_pair response;
+			while ((response = db->next_response()).first)
+				std::cout << "-> " << response.first->nickname << ": " << response.second;
+//				std::cout << "-->" << db->responses.back().second << std::endl;
 					} else {
 						db->remove_client(i);
 					}
