@@ -22,7 +22,7 @@ public:
 	void		addToFdSet( int fd, int fdType );
 	int			doAccept() const;
 	void		doSelect( fd_set *readfds, fd_set *writefds ) const;
-	bool		doRecv( int fd, fd_set readfds, char buf[512] );
+	bool		doRecv( int fd, char buf[512] );
 	void		doSend( Client * client );
 
 	void		closeClient( Client * client );

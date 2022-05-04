@@ -69,7 +69,6 @@ void	Database::remove_client(int socket, std::string msg) {
 		pchannel_map::iterator end = client.subscribed_channels.end();
 		pclient_map::iterator clbegin;
 		pclient_map::iterator clend;
-	std::cout << "wsh" << std::endl;
 		while (begin != end) {
 			clbegin = begin->second->subscribed_clients.begin();
 			clend = begin->second->subscribed_clients.end();
@@ -78,7 +77,6 @@ void	Database::remove_client(int socket, std::string msg) {
 					clbegin->second->command(CMD_QUIT, client.nickname.c_str(), client.username.c_str(), client.hostname.c_str(), msg.c_str());
 				clbegin++;
 			}
-	std::cout << "ayo?" << std::endl;
 			begin->second->remove_client(client);
 			if (begin->second->empty())
 				Database::get_instance()->remove_channel(begin->second);
@@ -86,9 +84,8 @@ void	Database::remove_client(int socket, std::string msg) {
 		}
 		pclients.erase(client.nickname);
 	}
+	serv->closeClient(&client);
 	clients.erase(socket);
-//	close(socket);
-//	TODO disconnect
 }
 
 void	Database::remove_channel(Channel * chan) {
@@ -122,7 +119,7 @@ bool Database::init(int argc, char **argv) {
 
 void	Database::set_server( Server * serv ) {
 
-	serv = this->serv;
+	this->serv = serv;
 }
 
 Database * Database::get_instance() {

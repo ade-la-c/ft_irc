@@ -393,7 +393,6 @@ void die(Client & client, Message & msg) {
 }
 
 void quit(Client & client, Message & msg) {
-	std::cerr << "yo" << std::endl;
 	if (msg.get_params_count() > 0)
 		Database::get_instance()->remove_client(client.getSockFd(), msg.get_params()[0]);
 	else

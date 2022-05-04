@@ -31,7 +31,7 @@ void	do_main() {
 					serv.addToFdSet(newFd, WRITEFD);
 					db->add_client(newFd);
 				} else {							// handle other readfds	//! faire function qui close tous les fds
-					if (serv.doRecv(i, tmpReadFdSet, buf)) {
+					if (serv.doRecv(i, buf)) {
 						db->get_client(i)->setBuf(buf);
 						db->get_client(i)->parse_input();
 					} else {

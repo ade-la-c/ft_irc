@@ -130,7 +130,7 @@ void		Server::doSelect( fd_set *readfds, fd_set *writefds ) const {
 	}
 }
 
-bool		Server::doRecv( int fd, fd_set readfds, char buf[512] ) {
+bool		Server::doRecv( int fd, char buf[512] ) {
 
 	int		nbytes;
 // std::cout <<"prerecv"<<std::endl;
