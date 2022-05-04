@@ -245,7 +245,7 @@ void privmsg(Client & client, Message & msg) {
 			pclient_map::iterator begin = db->pclients.begin();
 			pclient_map::iterator end = db->pclients.end();
 			while (begin != end) {
-				if (Message::match_wildcard(recipient, begin->second->hostname)
+				if (Message::match_wildcard(recipient.substr(1), begin->second->hostname)
 						&& client.getSockFd() != begin->second->getSockFd()) {
 					begin->second->command(CMD_PRIVMSG, client.nickname.c_str(), client.username.c_str(), client.hostname.c_str(), recipient.c_str(), msg.get_params()[1].c_str());
 				}
@@ -303,7 +303,7 @@ void notice(Client & client, Message & msg) {
 			pclient_map::iterator begin = db->pclients.begin();
 			pclient_map::iterator end = db->pclients.end();
 			while (begin != end) {
-				if (Message::match_wildcard(recipient, begin->second->hostname)
+				if (Message::match_wildcard(recipient.substr(1), begin->second->hostname)
 						&& client.getSockFd() != begin->second->getSockFd()) {
 					begin->second->command(CMD_NOTICE, client.nickname.c_str(), client.username.c_str(), client.hostname.c_str(), recipient.c_str(), msg.get_params()[1].c_str());
 				}
