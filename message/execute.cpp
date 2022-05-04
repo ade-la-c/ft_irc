@@ -1,7 +1,6 @@
 #include "../includes/ft_irc.hpp"
 
 void pass(Client & client, Message & msg) {
-	Database * db = Database::get_instance();
 	if (client.registered) {
 		client.response(ERR_ALREADYREGISTERED);
 		return ;
@@ -182,7 +181,6 @@ void join(Client & client, Message & msg) {
 }
 
 bool send_to_channel(Client & client, Message & msg, Channel * chan) {
-	Database * db = Database::get_instance();
 	pclient_map::iterator begin = chan->subscribed_clients.begin();
 	pclient_map::iterator end = chan->subscribed_clients.end();
 	std::string recipient = msg.get_params()[0];

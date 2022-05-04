@@ -6,7 +6,6 @@ Server::Server() {}
 
 Server::Server( int port ) : _maxFd(2) {
 
-	int		clientSocket, addrSize;
 	SA_IN	servAddr;
 	int		yes = 1;
 
