@@ -1,13 +1,5 @@
 #include "../includes/ft_irc.hpp"
 
-void	exit_error( std::string const & str ) {
-
-	std::cerr << "error: " << str << std::endl;
-	std::cerr << "errno = " << errno << std::endl;
-	exit(EXIT_FAILURE);
-}
-
-
 bool	fdIsset( int fd, fd_set * set ) {
 
 	if (fd < 0) {
