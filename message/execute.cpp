@@ -274,7 +274,7 @@ void notice(Client & client, Message & msg) {
 	if (Message::is_nickname(recipient)) {
 		pclient_map::iterator cl = db->pclients.find(recipient);
 		if (cl != db->pclients.end())
-			cl->second->command(CMD_PRIVMSG, client.nickname.c_str(), client.username.c_str(), client.hostname.c_str(), recipient.c_str(), msg.get_params()[1].c_str());
+			cl->second->command(CMD_NOTICE, client.nickname.c_str(), client.username.c_str(), client.hostname.c_str(), recipient.c_str(), msg.get_params()[1].c_str());
 	} else if ((chan = db->get_channel(recipient))) {
 		send_to_channel(client, msg, chan);
 	} else if ((recipient[0] == '#' || recipient[0] == '$')
@@ -295,7 +295,7 @@ void notice(Client & client, Message & msg) {
 			pclient_map::iterator end = db->pclients.end();
 			while (begin != end) {
 				if (client.getSockFd() != begin->second->getSockFd()) {
-					begin->second->command(CMD_PRIVMSG, client.nickname.c_str(), client.username.c_str(), client.hostname.c_str(), recipient.c_str(), msg.get_params()[1].c_str());
+					begin->second->command(CMD_NOTICE, client.nickname.c_str(), client.username.c_str(), client.hostname.c_str(), recipient.c_str(), msg.get_params()[1].c_str());
 				}
 				begin++;
 			}
@@ -305,7 +305,7 @@ void notice(Client & client, Message & msg) {
 			while (begin != end) {
 				if (Message::match_wildcard(recipient, begin->second->hostname)
 						&& client.getSockFd() != begin->second->getSockFd()) {
-					begin->second->command(CMD_PRIVMSG, client.nickname.c_str(), client.username.c_str(), client.hostname.c_str(), recipient.c_str(), msg.get_params()[1].c_str());
+					begin->second->command(CMD_NOTICE, client.nickname.c_str(), client.username.c_str(), client.hostname.c_str(), recipient.c_str(), msg.get_params()[1].c_str());
 				}
 				begin++;
 			}

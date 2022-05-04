@@ -42,6 +42,7 @@
 # define ERR_NOOPERHOST			491
 # define CMD_JOIN				1001
 # define CMD_PRIVMSG			1002
+# define CMD_NOTICE				1005
 # define CMD_PART				1003
 # define CMD_QUIT				1004
 
@@ -88,6 +89,7 @@ reply const _rpl_arr[] = {
 	reply(ERR_NOOPERHOST, ":No O-lines for your host\r\n"), //":No O-lines for your host"
 	reply(CMD_JOIN, ":%s!%s@%s JOIN %s\r\n"), //":<nick>!<user>@<host> JOIN <channel>"
 	reply(CMD_PRIVMSG, ":%s!%s@%s PRIVMSG %s :%s\r\n"), //":<nick>!<user>@<host> PRIVMSG <recipient> <message>"
+	reply(CMD_NOTICE, ":%s!%s@%s NOTICE %s :%s\r\n"), //":<nick>!<user>@<host> PRIVMSG <recipient> <message>"
 	reply(CMD_PART, ":%s!%s@%s PART :%s\r\n"), //":<nick>!<user>@<host> PART <channel>"
 	reply(CMD_QUIT, ":%s!%s@%s QUIT :%s\r\n"), //":<nick>!<user>@<host> QUIT [<message>]"
 };
