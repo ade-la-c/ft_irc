@@ -132,23 +132,17 @@ void		Server::doSelect( fd_set *readfds, fd_set *writefds ) const {
 bool		Server::doRecv( int fd, char buf[512] ) {
 
 	int		nbytes;
-// std::cout <<"prerecv"<<std::endl;
+
 	bzero(buf, 512);
 	if ((nbytes = recv(fd, buf, 512, 0)) <= 0) {	// connection close ou error
 		if (nbytes == -1) {
 			std::cout << fd << std::endl;
 			perror("recv");
-		} else if (nbytes == 0) {
-			fdClr(fd, &_readFds);
-			fdClr(fd, &_writeFds);
-			close(fd);
-			std::cout << "Connection has been closed on fd " << fd << std::endl;
 		}
 		return false;
-		}
+	}
 	if (nbytes > 0) {
-//	std::cout <<"postrecv"<<std::endl;
-			return true;
+		return true;
 	} else {
 		return false;
 	}
@@ -160,7 +154,6 @@ void		Server::doSend( Client * client ) {
 
 	if (!(client->should_send()))
 		return;
-//std::cout<<client->response();
 	if ((sentbytes = send(client->getSockFd(), client->response().c_str(), client->response().length(), 0)) < 0)
 		exit_error("send");
 	client->sent_bytes(sentbytes);
