@@ -140,7 +140,6 @@ bool		Server::doRecv( int fd, fd_set readfds, char buf[512] ) {
 			std::cout << fd << std::endl;
 			perror("recv");
 		} else if (nbytes == 0) {
-			fdClr(fd, &readfds);
 			fdClr(fd, &_readFds);
 			fdClr(fd, &_writeFds);
 			close(fd);
@@ -167,4 +166,14 @@ void		Server::doSend( Client * client ) {
 		exit_error("send");
 	client->sent_bytes(sentbytes);
 	
+}
+
+void		Server::closeClient( Client * client ) {
+
+	int	fd = client->getSockFd();
+
+	fdClr(fd, &_writeFds);
+	fdClr(fd, &_readFds);
+	close(fd);
+	std::cout << "Connection has been closed on fd " << fd << std::endl;
 }

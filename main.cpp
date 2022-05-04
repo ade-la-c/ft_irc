@@ -8,6 +8,7 @@ void	do_main() {
 	char		buf[512];
 	int			newFd;
 
+	db->set_server(&serv);
 
 	serv.addToFdSet(serv.getServSocket(), READFD);
 	serv.setMaxFd(serv.getServSocket());

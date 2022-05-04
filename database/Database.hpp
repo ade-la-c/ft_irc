@@ -54,6 +54,9 @@ class Database {
 		pclient_map pclients;
 		channel_map channels;
 
+		Server * serv;
+
+		void	set_server( Server * serv );
 
 		// only way to get the instance
 		static Database * get_instance();
