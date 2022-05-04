@@ -27,6 +27,7 @@
 # define ERR_NICKNAMEINUSE		433
 # define ERR_NICKCOLLISION		436
 # define ERR_UNAVAILRESOURCE	437
+# define ERR_NOTONCHANNEL		442
 # define ERR_NOTREGISTERED		451
 # define ERR_NEEDMOREPARAMS		461
 # define ERR_ALREADYREGISTERED	462
@@ -71,6 +72,7 @@ reply const _rpl_arr[] = {
 	reply(ERR_NICKNAMEINUSE, "%s :Nickname is already in use\r\n"), //"<nick> :Nickname is already in use"
 	reply(ERR_NICKCOLLISION, "%s :Nickname collision KILL\r\n"), //"<nick> :Nickname collision KILL"
 	reply(ERR_UNAVAILRESOURCE, "%s :Nick/channel is temporarily unavailable\r\n"), //"<nick/channel> :Nick/channel is temporarily unavailable"
+	reply(ERR_NOTONCHANNEL, "%s :You're not on that channel\r\n"), //"<channel> :You're not on that channel"
 	reply(ERR_NOTREGISTERED, ":You have not registered:\r\n"), //":You have not registered"
 	reply(ERR_NEEDMOREPARAMS, "%s :Not enough parameters\r\n"), //"<command> :Not enough parameters"
 	reply(ERR_ALREADYREGISTERED, ":You may not reregister\r\n"), //":You may not reregister"

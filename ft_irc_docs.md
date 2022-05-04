@@ -109,6 +109,19 @@ RPL_TOPIC                       RPL_NAMREPLY
 RPL_ENDOFNAMES
 ```
 
+#### PART
+```
+Parameters: <channel>{,<channel>}
+```
+
+Used to leave a channel or a lsit of channels. \
+Technically not required by the subject.
+
+* Replies:
+```
+ERR_NEEDMOREPARAMS              ERR_NOSUCHCHANNEL
+ERR_NOTONCHANNEL
+```
 #### PRIVMSG
 
 ```
@@ -306,6 +319,11 @@ Returned by a server to a client when it detects a nickname collision
 "<nick/channel> :Nick/channel is temporarily unavailable"
 Returned by a server to a user trying to join a channel currently blocked by the channel delay mechanism.
 Returned by a server to a user trying to change nickname when the desired nickname is blocked by the nick delay mechanism.
+```
+* 442 - ERR\_NOTONCHANNEL
+```
+"<channel> :You're not on that channel"
+Returned by the server whenever a client tries toperform a channel effecting command for which theclient isn't a member.
 ```
 * 451 - ERR\_NOTREGISTERED
 ```

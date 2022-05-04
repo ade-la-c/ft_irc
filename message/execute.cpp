@@ -70,8 +70,45 @@ void leave_channel(Client & client, Channel * chan) {
 		clbegin++;
 	}
 	chan->remove_client(client);
+	client.subscribed_channels.erase(chan->name);
 	if (chan->empty())
 		Database::get_instance()->remove_channel(chan);
+}
+
+void part(Client & client, Message & msg) {
+	Database * db = Database::get_instance();
+	if (!client.registered) {
+		client.response(ERR_NOTREGISTERED);
+		return ;
+	}
+	if (msg.get_params_count() == 0) {
+		client.response(ERR_NEEDMOREPARAMS, msg.get_command().c_str());
+		return ;
+	}
+
+	std::string channels = msg.get_params()[0];
+
+	char * tok = strtok(const_cast<char *>(channels.c_str()), ",");
+	Channel * chan;
+	while (tok) {
+
+		chan = db->get_channel(tok);
+
+		if (!chan) {
+			client.response(ERR_NOSUCHCHANNEL, chan->name.c_str());
+			tok = strtok(NULL, ",");
+			continue;
+		}
+		if (!chan->subscribed_clients.count(client.nickname)) {
+			client.response(ERR_NOTONCHANNEL, chan->name.c_str());
+			tok = strtok(NULL, ",");
+			continue;
+		}
+
+		leave_channel(client, chan);
+
+		tok = strtok(NULL, ",");
+	}
 }
 
 void join(Client & client, Message & msg) {
@@ -369,6 +406,8 @@ void execute(Client & client, Message & msg) {
 		user(client, msg);
 	else if (cmd == "JOIN")
 		join(client, msg);
+	else if (cmd == "PART")
+		part(client, msg);
 	else if (cmd == "PRIVMSG")
 		privmsg(client, msg);
 	else if (cmd == "NOTICE")
