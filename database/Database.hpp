@@ -44,7 +44,7 @@ class Database {
 		Client * add_pclient(Client * client);
 		Channel * add_channel(std::string const & name);
 
-		void remove_client(int socket);
+		void remove_client(int socket, std::string msg = "");
 		void remove_channel(Channel * chan);
 
 		//returns false if wrong amount of args

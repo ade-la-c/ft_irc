@@ -392,6 +392,14 @@ void die(Client & client, Message & msg) {
 	exit(0);
 }
 
+void quit(Client & client, Message & msg) {
+	std::cerr << "yo" << std::endl;
+	if (msg.get_params_count() > 0)
+		Database::get_instance()->remove_client(client.getSockFd(), msg.get_params()[0]);
+	else
+		Database::get_instance()->remove_client(client.getSockFd());
+}
+
 void execute(Client & client, Message & msg) {
 	if (!msg.is_complete())
 		return; //TODO enough?
@@ -414,14 +422,16 @@ void execute(Client & client, Message & msg) {
 		notice(client, msg);
 	else if (cmd == "OPER")
 		oper(client, msg);
-	else if (cmd == "KILL")
-		kill(client, msg);
-	else if (cmd == "REHASH")
-		rehash(client, msg);
-	else if (cmd == "RESTART")
-		restart(client, msg);
+//	else if (cmd == "KILL")
+//		kill(client, msg);
+//	else if (cmd == "REHASH")
+//		rehash(client, msg);
+//	else if (cmd == "RESTART")
+//		restart(client, msg);
 	else if (cmd == "DIE")
 		die(client, msg);
+	else if (cmd == "QUIT")
+		quit(client, msg);
 	else
 		client.response(ERR_UNKNOWNCOMMAND, msg.get_command().c_str());
 }

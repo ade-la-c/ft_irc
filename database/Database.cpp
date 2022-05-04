@@ -57,20 +57,36 @@ Channel * Database::add_channel(std::string const & name) {
 	return &(ret.first->second);
 }
 
-void	Database::remove_client(int socket) {
+void	Database::remove_client(int socket, std::string msg) {
 	if (!clients.count(socket))
 		return ;
 	Client & client = clients.at(socket);
+	if (msg.empty()) {
+		msg = "Lost connection";
+	}
 	if (client.registered) {
 		pchannel_map::iterator begin = client.subscribed_channels.begin();
 		pchannel_map::iterator end = client.subscribed_channels.end();
+		pclient_map::iterator clbegin;
+		pclient_map::iterator clend;
 		while (begin != end) {
-			leave_channel(client, begin->second);
+			clbegin = begin->second->subscribed_clients.begin();
+			clend = begin->second->subscribed_clients.end();
+			while (clbegin != clend) {
+				if (clbegin->second->getSockFd() != socket)
+					clbegin->second->command(CMD_QUIT, client.nickname.c_str(), client.username.c_str(), client.hostname.c_str(), msg.c_str());
+				clbegin++;
+			}
+			begin->second->remove_client(client);
+			if (begin->second->empty())
+				Database::get_instance()->remove_channel(begin->second);
 			begin++;
 		}
 		pclients.erase(client.nickname);
 	}
 	clients.erase(socket);
+//	close(socket);
+//	TODO disconnect
 }
 
 void	Database::remove_channel(Channel * chan) {
