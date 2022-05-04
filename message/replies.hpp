@@ -88,8 +88,8 @@ reply const _rpl_arr[] = {
 	reply(ERR_NOOPERHOST, ":No O-lines for your host\r\n"), //":No O-lines for your host"
 	reply(CMD_JOIN, ":%s!%s@%s JOIN %s\r\n"), //":<nick>!<user>@<host> JOIN <channel>"
 	reply(CMD_PRIVMSG, ":%s!%s@%s PRIVMSG %s :%s\r\n"), //":<nick>!<user>@<host> PRIVMSG <recipient> <message>"
-	reply(CMD_PART, ":%s!%s@%s PART %s\r\n"), //":<nick>!<user>@<host> PART <channel>"
-	reply(CMD_QUIT, ":%s!%s@%s QUIT %s\r\n"), //":<nick>!<user>@<host> QUIT [<message>]"
+	reply(CMD_PART, ":%s!%s@%s PART :%s\r\n"), //":<nick>!<user>@<host> PART <channel>"
+	reply(CMD_QUIT, ":%s!%s@%s QUIT :%s\r\n"), //":<nick>!<user>@<host> QUIT [<message>]"
 };
 
 std::map<uint16_t, std::string> const replies(_rpl_arr, _rpl_arr + sizeof(_rpl_arr) / sizeof(_rpl_arr[0]));

@@ -94,7 +94,7 @@ void part(Client & client, Message & msg) {
 		chan = db->get_channel(tok);
 
 		if (!chan) {
-			client.response(ERR_NOSUCHCHANNEL, chan->name.c_str());
+			client.response(ERR_NOSUCHCHANNEL, tok);
 			tok = strtok(NULL, ",");
 			continue;
 		}
