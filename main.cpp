@@ -1,6 +1,6 @@
 #include "includes/ft_irc.hpp"
 
-void	do_main() {
+void	main_loop() {
 
 	Database *	db = Database::get_instance();
 	Server		serv(atoi(db->port.c_str()));
@@ -30,7 +30,7 @@ void	do_main() {
 					serv.addToFdSet(newFd, READFD);
 					serv.addToFdSet(newFd, WRITEFD);
 					db->add_client(newFd);
-				} else {							// handle other readfds	//! faire function qui close tous les fds
+				} else {							// handle other readfds
 					if (serv.doRecv(i, buf)) {
 						db->get_client(i)->setBuf(buf);
 						db->get_client(i)->parse_input();
@@ -56,17 +56,6 @@ int		main(int argc, char **argv) {
 		error("Wrong number of arguments (need two)");
 		return 1;
 	}
-
-//	Client client(4);
-//	response_pair response;
-//	while (1) {
-//		bzero(client.getBuf(), 512);
-//		read(1, client.getBuf(), 512);
-//		client.parse_input();
-//		while ((response = db->next_response()).first)
-//			std::cout << response.second;
-//	}
-//	return 0;
-	do_main();
+	main_loop();
 	return 0;
 }
