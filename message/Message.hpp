@@ -36,6 +36,7 @@ class Message {
 
 		/* Setters and Getters */
 
+		std::string get_msg();
 		std::string get_prefix() const;
 		std::string get_command() const;
 		std::vector<std::string> get_params() const;

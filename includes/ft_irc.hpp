@@ -55,6 +55,7 @@ void	fdSet( int fd, fd_set * set );
 void	fdClr( int fd, fd_set * set );
 
 void execute(Client & client, Message & msg);
+void leave_channel(Client & client, Channel * chan);
 
 //#include "response.hpp" TODO
 

@@ -58,12 +58,28 @@ Channel * Database::add_channel(std::string const & name) {
 }
 
 void	Database::remove_client(int socket) {
-	if (clients.count(socket) && clients.at(socket).registered)
-		pclients.erase(clients.at(socket).nickname);
+	if (!clients.count(socket))
+		return ;
+	Client & client = clients.at(socket);
+	if (client.registered) {
+		pchannel_map::iterator begin = client.subscribed_channels.begin();
+		pchannel_map::iterator end = client.subscribed_channels.end();
+		while (begin != end) {
+			leave_channel(client, begin->second);
+			begin++;
+		}
+		pclients.erase(client.nickname);
+	}
 	clients.erase(socket);
 }
 
 void	Database::remove_channel(Channel * chan) {
+	pclient_map::iterator begin = chan->subscribed_clients.begin();
+	pclient_map::iterator end = chan->subscribed_clients.end();
+	while (begin != end) {
+		begin->second->subscribed_channels.erase(chan->name);
+		begin ++;
+	}
 	channels.erase(chan->name);
 }
 

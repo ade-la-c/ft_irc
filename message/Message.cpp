@@ -37,6 +37,8 @@ bool Message::parse() {
 	} else if (end == std::string::npos) {
 		buffer = msg;
 		return false;
+	} else if (!end) {
+		return false;
 	}
 
 	complete = true;
@@ -63,6 +65,10 @@ bool Message::parse() {
 
 bool Message::is_complete() {
 	return complete;
+}
+
+std::string Message::get_msg() {
+	return msg;
 }
 
 std::string Message::get_prefix() const {
@@ -143,8 +149,6 @@ std::string::size_type Message::parse_prefix(std::string::size_type end) {
 	//TODO just ignore prefix anyway? -> never send errors
 	if (sp >= end)
 		throw IllFormedMessageException();
-	if (!is_nickname(msg, 1, sp))
-		throw IllFormedMessageException();
 	prefix = this->msg.substr(1, sp - 1);
 	return sp;
 }
@@ -166,6 +170,8 @@ std::string::size_type Message::parse_params(std::string::size_type pos, std::st
 	sp = this->msg.find(" ", pos);
 	
 	while (pos < end && msg[pos] != ':' && count < 14) {
+		if (sp > end)
+			sp = end;
 		params[count] = msg.substr(pos, sp - pos);
 		count++;
 		pos = sp + 1;
@@ -179,7 +185,7 @@ std::string::size_type Message::parse_params(std::string::size_type pos, std::st
 	params_count = count;
 	if (pos < end){
 		++params_count;
-		params[count] = msg.substr(pos, end);
+		params[count] = msg.substr(pos, end - pos);
 	}
 	return end;
 }

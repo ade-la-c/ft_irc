@@ -27,28 +27,38 @@ _IRCClient::~_IRCClient() {
 void _IRCClient::parse_input() {
 	Message msg;
 	try { //TODO this is bad design, don't do this
+		Client * c = static_cast<Client *>(this);
+		char * buf = c->getBuf();
 		if (Database::get_instance()->debug)
-			std::cout << "<-" << this->nickname << ": [" << static_cast<Client *>(this)->getBuf() << "]" << std::endl;;
-		msg.parse_from_str(std::string(static_cast<Client *>(this)->getBuf()));
-		execute(*static_cast<Client *>(this), msg);
-		while (msg.parse())
-			execute(*static_cast<Client *>(this), msg);
+			std::cerr << "<- " << this->nickname << ": [" << std::string(buf) << "]" << std::endl;
+		if (msg.parse_from_str(c->buffer + std::string(buf))) {
+			execute(*c, msg);
+			while (msg.parse())
+				execute(*c, msg);
+		}
+		c->buffer.clear();
+		if (!msg.is_complete())
+			c->buffer = msg.get_msg();
+		bzero(buf, 512);
 	} catch (std::exception & e) {
 		std::cerr << "parse input: " <<  e.what() << std::endl;
-		//TODO what do
 	}
 }
 
 void _IRCClient::reg() {
 	if (pass_set && nick_set && user_set) {
 		if (password == Database::get_instance()->password) {
-			registered = true;
 			Database * db = Database::get_instance();
+			if (db->pclients.count(nickname)) {
+				this->response(ERR_NICKNAMEINUSE, nickname.c_str());
+				return ;
+			}
+			registered = true;
 			db->add_pclient(static_cast<Client *>(this));
-			this->response(RPL_WELCOME, nickname.c_str(), username.c_str(), db->hostname.c_str());
+			this->response(RPL_WELCOME, nickname.c_str(), username.c_str(), hostname.c_str());
 			this->response(RPL_YOURHOST, db->hostname.c_str(), "0.1");
 			this->response(RPL_CREATED, "a long time ago");
-			this->response(RPL_MYINFO, db->hostname.c_str(), "0.1", "none", "none");
+			this->response(RPL_MYINFO, hostname.c_str(), "0.1", "none", "none");
 		} else {
 			this->response(ERR_PASSWDMISMATCH);
 		}
@@ -72,7 +82,7 @@ void _IRCClient::response(int r, ...) {
 	strncat(response, r_text, 512);
 
 	if (Database::get_instance()->debug)
-		std::cout << "-> " << this->nickname << ": [" << response << "]" <<std::endl;
+		std::cerr << "-> " << this->nickname << ": [" << response << "]" << std::endl;
 	responses.push_back(std::string(response));
 }
 
@@ -85,7 +95,7 @@ void _IRCClient::command(int r, ...) {
 	va_end(arg);
 
 	if (Database::get_instance()->debug)
-		std::cout << "-> " << this->nickname << ": " << response;
+		std::cerr << "-> " << this->nickname << ": [" << response << "]" << std::endl;
 	responses.push_back(std::string(response));
 }
 

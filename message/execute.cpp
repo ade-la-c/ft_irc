@@ -62,6 +62,18 @@ void user(Client & client, Message & msg) {
 	client.reg();
 }
 
+void leave_channel(Client & client, Channel * chan) {
+	pclient_map::iterator clbegin = chan->subscribed_clients.begin();
+	pclient_map::iterator clend = chan->subscribed_clients.end();
+	while (clbegin != clend) {
+		clbegin->second->command(CMD_PART, client.nickname.c_str(), client.username.c_str(), client.hostname.c_str(), chan->name.c_str());
+		clbegin++;
+	}
+	chan->remove_client(client);
+	if (chan->empty())
+		Database::get_instance()->remove_channel(chan);
+}
+
 void join(Client & client, Message & msg) {
 	Database * db = Database::get_instance();
 	if (!client.registered) {
@@ -78,18 +90,8 @@ void join(Client & client, Message & msg) {
 	if (channels == "0") {
 		pchannel_map::iterator begin = client.subscribed_channels.begin();
 		pchannel_map::iterator end = client.subscribed_channels.end();
-		pclient_map::iterator clbegin;
-		pclient_map::iterator clend;
 		while (begin != end) {
-			clbegin = begin->second->subscribed_clients.begin();
-			clend = begin->second->subscribed_clients.end();
-			while (clbegin != clend) {
-				clbegin->second->command(CMD_PART, client.nickname.c_str(), client.username.c_str(), client.hostname.c_str(), begin->second->name.c_str());
-				clbegin++;
-			}
-			begin->second->remove_client(client);
-			if (begin->second->empty())
-				db->remove_channel(begin->second);
+			leave_channel(client, begin->second);
 			begin++;
 		}
 		client.subscribed_channels.clear();

@@ -32,6 +32,7 @@ class _IRCClient {
 		std::string hostname;
 		std::string servername;
 		std::string realname;
+		std::string buffer;
 		bool registered;
 		bool pass_set;
 		bool nick_set;
