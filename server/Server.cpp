@@ -4,7 +4,7 @@
 
 Server::Server() {}
 
-Server::Server( int port ) : _maxFd(4) {
+Server::Server( int port ) : _maxFd(2) {
 
 	int		clientSocket, addrSize;
 	SA_IN	servAddr;
@@ -73,7 +73,8 @@ int			Server::getMaxFd() const {
 
 void		Server::setMaxFd( int newMaxFd ) {
 
-	this->_maxFd = newMaxFd;
+	if (newMaxFd >= _maxFd)
+		this->_maxFd = newMaxFd;
 }
 
 void		Server::setFdSet( fd_set set, int fdType ) {
@@ -167,49 +168,3 @@ void		Server::doSend( Client * client ) {
 	client->sent_bytes(sentbytes);
 	
 }
-
-/**
-
-void		Server::doSend( int fd, response_list responses ) {
-std::cout << "dosend" << std::endl;
-	response_pair		pair;
-	std::string			tmp;
-	int					sentbytes;
-
-	while (!(_responseCache.empty())) {
-
-		pair = _responseCache.front();
-		_responseCache.pop_front();
-
-		if (pair.first->getSockFd() != fd) {
-			_responseCache.push_back(pair);
-		} else if ((sentbytes = send(pair.first->getSockFd(), pair.second.c_str(), sizeof(pair.second), 0)) < 0) {
-			perror("send");
-			exit(EXIT_FAILURE);				//?
-		} else {
-			tmp = pair.second.substr(sentbytes);
-			pair.second = tmp;
-			_responseCache.push_back(pair);
-		}
-	}
-
-	while (!(responses.empty())) {
-
-		pair = responses.front();
-		responses.pop_front();
-
-		if (pair.first->getSockFd() != fd) {
-			_responseCache.push_back(pair);
-		} else if ((sentbytes = send(pair.first->getSockFd(), pair.second.c_str(), sizeof(pair.second), 0)) < 0) {
-			perror("send");
-			exit(EXIT_FAILURE);
-		} else {
-			tmp = pair.second.substr(sentbytes);
-			pair.second = tmp;
-			_responseCache.push_back(pair);
-		}
-	}
-	responses.clear();
-}	//! il est possible qu'il y ait des response_pair "fantomes" de 1 empty byte genre
-
-// */
