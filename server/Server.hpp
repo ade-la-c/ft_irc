@@ -25,6 +25,8 @@ public:
 	bool		doRecv( int fd, fd_set readfds, char buf[512] );
 	void		doSend( Client * client );
 
+	void		closeClient( Client * client );
+
 	class	init_error : public std::exception {
 		public:
 			virtual char const * what() const throw() {

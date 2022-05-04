@@ -120,6 +120,11 @@ bool Database::init(int argc, char **argv) {
 	return true;
 }
 
+void	Database::set_server( Server * serv ) {
+
+	serv = this->serv;
+}
+
 Database * Database::get_instance() {
 
 	static Database db;
