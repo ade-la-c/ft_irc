@@ -127,8 +127,7 @@ void join(Client & client, Message & msg) {
 		pchannel_map::iterator begin = client.subscribed_channels.begin();
 		pchannel_map::iterator end = client.subscribed_channels.end();
 		while (begin != end) {
-			leave_channel(client, begin->second);
-			begin++;
+			leave_channel(client, (begin++)->second);
 		}
 		client.subscribed_channels.clear();
 		return ;
