@@ -25,7 +25,7 @@ OBJS			= $(addprefix $(OBJDIR)/, $(SRCS:.cpp=.o))
 CXX				= c++
 
 CXXFLAGS		= -Wall -Werror -Wextra -std=c++98 -Wno-unused-variable \
-				# -g -fsanitize=address
+				-g -fsanitize=address
 
 RM				= rm -f
 
