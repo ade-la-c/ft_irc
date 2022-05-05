@@ -178,7 +178,7 @@ Parameters: <quit message>
 ```
 
 Used to disconnect from the server. \
-If a client disconnects without a quit message, the server should generated one on their behalf. \
+If a client disconnects without a quit message, the server should generate one on their behalf. \
 The server relays the quit message to all user connected on the same channels.
 
 * REPLIES
