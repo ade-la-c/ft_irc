@@ -2,7 +2,6 @@
 
 ### A (very) small irc server made in c++98 with sockets during the 42 cursus
 ### The first one ever made at 19
-### Follows the most recent RFC specification, when applicable given the subject
 
 ## Requirements
 
