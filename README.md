@@ -26,6 +26,11 @@ PRIVMSG masks, KILL, REHASH, RESTART, DIE
 * We must **NOT** handle server to server connections
 * While a configuration file is recommended by the rfc standard, it is not *required*
 
+* Additional command I implemented because it made sense
+```
+PART, QUIT
+```
+
 ## Command Details
 
 ### Regular users
@@ -167,6 +172,20 @@ ERR_NEEDMOREPARAMS              RPL_YOUREOPER
 ERR_NOOPERHOST                  ERR_PASSWDMISMATCH
 ```
 
+#### QUIT
+```
+Parameters: <quit message>
+```
+
+Used to disconnect from the server. \
+If a client disconnects without a quit message, the server should generated one on their behalf. \
+The server relays the quit message to all user connected on the same channels.
+
+* REPLIES
+```
+none
+```
+
 ### Operators
 
 #### KILL
@@ -186,7 +205,7 @@ ERR_NOPRIVILEGES              ERR_NEEDMOREPARAMS
 ERR_NOSUCHNICK                ERR_CANTKILLSERVER
 ```
 
-### Optional features
+### Optional features according to the RFC
 
 In the absence of these options, an error reply message must be generated or an unknown command error.
 
